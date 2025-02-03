@@ -1,0 +1,2 @@
+class EntregasController < ApplicationController
+end
