@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_03_023709) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_04_003636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_03_023709) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pedido_id"], name: "index_avaliacoes_on_pedido_id"
+  end
+
+  create_table "clientes", force: :cascade do |t|
+    t.string "nome"
+    t.string "telefone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "enderecos", force: :cascade do |t|
+    t.string "rua"
+    t.string "numero"
+    t.string "complemento"
+    t.string "bairro"
+    t.string "cidade"
+    t.string "estado"
+    t.string "cep"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "entregadores", force: :cascade do |t|
@@ -65,9 +84,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_03_023709) do
 
   create_table "pedidos", force: :cascade do |t|
     t.bigint "restaurante_id", null: false
-    t.string "nome_cliente", null: false
-    t.string "telefone_cliente"
-    t.text "endereco_entrega", null: false
     t.string "status", default: "Recebido"
     t.string "forma_pagamento"
     t.decimal "troco", precision: 10, scale: 2, default: "0.0"
@@ -75,6 +91,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_03_023709) do
     t.text "observacoes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "cliente_id", null: false
+    t.bigint "endereco_id"
+    t.index ["cliente_id"], name: "index_pedidos_on_cliente_id"
+    t.index ["endereco_id"], name: "index_pedidos_on_endereco_id"
     t.index ["restaurante_id"], name: "index_pedidos_on_restaurante_id"
   end
 
@@ -100,6 +120,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_03_023709) do
     t.boolean "ativo", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "endereco_id"
+    t.index ["endereco_id"], name: "index_restaurantes_on_endereco_id"
   end
 
   add_foreign_key "avaliacoes", "pedidos"
@@ -108,6 +130,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_03_023709) do
   add_foreign_key "itens_pedidos", "pedidos"
   add_foreign_key "itens_pedidos", "produtos"
   add_foreign_key "pagamentos", "pedidos"
+  add_foreign_key "pedidos", "clientes"
+  add_foreign_key "pedidos", "enderecos"
   add_foreign_key "pedidos", "restaurantes"
   add_foreign_key "produtos", "restaurantes"
+  add_foreign_key "restaurantes", "enderecos"
 end

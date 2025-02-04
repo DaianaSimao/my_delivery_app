@@ -1,7 +1,9 @@
 class Pedido < ApplicationRecord
   belongs_to :restaurante
-  has_many :itens_pedido
+  belongs_to :cliente
+  belongs_to :endereco, optional: true
+
+  has_many :itens_pedidos
   has_one :pagamento
   has_one :entrega
-  has_one :avaliacao
 end
