@@ -1,2 +1,0 @@
-class EntregadoresController < ApplicationController
-end
