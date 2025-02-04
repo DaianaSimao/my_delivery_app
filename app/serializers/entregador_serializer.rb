@@ -1,4 +1,8 @@
 class EntregadorSerializer
   include FastJsonapi::ObjectSerializer
-  attributes
+
+  attributes :id, :nome, :telefone, :veiculo, :ativo
+
+  has_many :entregas
 end
+
