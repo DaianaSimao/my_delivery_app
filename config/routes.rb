@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  devise_for :users, defaults: { format: :json }, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
+
+  devise_scope :user do
+    post 'login', to: 'users/sessions#create'
+    delete 'logout', to: 'users/sessions#destroy'
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   get "hello", to: "api#index"
