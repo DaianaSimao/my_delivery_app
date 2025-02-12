@@ -1,15 +1,14 @@
 class User < ApplicationRecord
+  include Devise::JWT::RevocationStrategies::JTIMatcher
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :jwt_authenticatable, jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+         :jwt_authenticatable, jwt_revocation_strategy: self
   
   # Método para gerar o JWT
-  def generate_jwt
-    JWT.encode(
-      { user_id: id, exp: 24.hours.from_now.to_i },
-      Rails.application.credentials[:devise_jwt_secret_key]
-    )
+  before_create :generate_jti
+
+  def generate_jti
+    self.jti = request.env['warden-jwt_auth.token']
   end
 end
-
-

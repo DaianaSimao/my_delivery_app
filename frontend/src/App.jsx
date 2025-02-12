@@ -1,29 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; // Importações corretas
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import Produtos from './components/Produtos';
 
-function App() {
-  const [message, setMessage] = useState('');
+// Componente para proteger rotas
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token'); // Verifica se o token existe
+  return token ? children : <Navigate to="/login" replace />; // Redireciona para o login se não houver token
+};
 
-  useEffect(() => {
-    // Fazendo uma requisição GET para a API do Rails
-    axios.get('http://localhost:3000/hello')  // Substitua pela URL da sua API Rails
-      .then(response => {
-        setMessage(response.data.message);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the data!', error);
-      });
-  }, []);
-
+const App = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-red-100">
-      <div className="text-center p-8 bg-white shadow-lg rounded-lg">
-        <h1 className="text-4xl font-bold text-red-600 mb-4">React + Tailwind + Rails API</h1>
-        <p className="text-xl text-gray-700">{message}</p>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard userData={JSON.parse(localStorage.getItem('userData'))} />
+              <Produtos />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" replace />} /> {/* Redireciona para o login por padrão */}
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
-
