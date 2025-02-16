@@ -10,8 +10,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Faz a requisição para o backend
+  
     try {
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
@@ -23,18 +22,26 @@ const Login: React.FC = () => {
           },
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Login inválido");
       }
-
+  
       const data = await response.json();
-      login(data.token); // Salva o token no contexto de autenticação
-      navigate("/dashboard"); // Redireciona para o dashboard
+      console.log("Resposta do backend:", data);
+  
+      const token = data.status?.data?.token;
+      if (!token) {
+        throw new Error("Token não encontrado na resposta do backend");
+      }
+  
+      login(token);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Erro ao fazer login:", error);
     }
   };
+  
 
   return (
     <div className="bg-white dark:bg-gray-900">

@@ -1,17 +1,3 @@
-# class Users::SessionsController < Devise::SessionsController
-#   respond_to :json
-
-#   private
-
-#   def respond_with(resource, _opts = {})
-#     render json: { user: resource, token: request.env['warden-jwt_auth.token'] }, status: :ok
-#   end
-
-#   def respond_to_on_destroy
-#     head :no_content
-#   end
-# end
-# 
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
 
@@ -20,7 +6,7 @@ class Users::SessionsController < Devise::SessionsController
   def respond_with(resource, _opt = {})
     @token = request.env['warden-jwt_auth.token']
     headers['Authorization'] = @token
-
+    resource.update(jti: request.env['warden-jwt_auth.token']) # Atualizar o jti do usuário
     render json: {
       status: {
         code: 200, message: 'Logged in successfully.',
@@ -43,7 +29,7 @@ class Users::SessionsController < Devise::SessionsController
     if current_user
       render json: {
         status: 200,
-        message: 'Logged out successfully.'
+        message: "Logout successfully.",
       }, status: :ok
     else
       render json: {
