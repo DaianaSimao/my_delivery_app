@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios"; // Importando o axios
 import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -10,38 +11,31 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
+      // Usando o axios para fazer a requisição POST
+      const response = await axios.post("http://localhost:3000/login", {
+        user: {
+          email,
+          password,
+        },
+      }, {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user: {
-            email,
-            password,
-          },
-        }),
       });
-  
-      if (!response.ok) {
-        throw new Error("Login inválido");
-      }
-  
-      const data = await response.json();
-      console.log("Resposta do backend:", data);
-  
-      const token = data.status?.data?.token;
+
+      console.log("Resposta do backend:", response.data);
+
+      const token = response.data.status?.data?.token;
       if (!token) {
         throw new Error("Token não encontrado na resposta do backend");
       }
-  
+
       login(token);
       navigate("/dashboard");
     } catch (error) {
       console.error("Erro ao fazer login:", error);
     }
   };
-  
 
   return (
     <div className="bg-white dark:bg-gray-900">
