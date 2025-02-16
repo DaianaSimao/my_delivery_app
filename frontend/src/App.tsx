@@ -1,20 +1,23 @@
+// src/App.tsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./context/useAuth";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
-import Navbar from "./components/Navbar";
 import { Header } from "./components/Header";
+import { HeaderAdmin } from "./components/HeaderAdmin";
 
-const restaurantInfo: RestaurantInfo = {
+const restaurantInfo = {
   name: "Sushi Express",
   openingHours: "Seg-Dom: 11:30 - 23:00",
   minimumOrder: 30,
   profileUrl: "#",
 };
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -30,25 +33,29 @@ const App: React.FC = () => {
   };
 
   return (
-    <Router>
-      <AuthProvider>
-        <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-          <Header restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-          <Routes>
-            {/* Redireciona para login se o usuário acessar a raiz "/" */}
-            <Route path="/" element={<Navigate to="/login" />} />
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
+      {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
+      {isAuthenticated && <HeaderAdmin restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
+      
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </div>
+  );
+};
 
-
-            <Route path="/login" element={<Login />} />
-
-            {/* Protege a rota do dashboard */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
-          </Routes>
-        </div>
-      </AuthProvider>
-    </Router>
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 };
 

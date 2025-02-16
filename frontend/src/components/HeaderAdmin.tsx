@@ -1,16 +1,25 @@
+import { Utensils } from 'lucide-react';
+import type { RestaurantInfo } from '../types';
 import styled from 'styled-components';
 
 interface HeaderProps {
+  restaurantInfo: RestaurantInfo;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
 
-export function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
+export function HeaderAdmin({ restaurantInfo, isDarkMode, onToggleDarkMode }: HeaderProps) {
   return (
     <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top section */}
         <div className="py-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <Utensils className="h-8 w-8 text-primary-500" />
+            <h1 className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">
+              {restaurantInfo.name}
+            </h1>
+          </div>
           <div className="flex items-center gap-4">
             <StyledWrapper>
               <label className="theme-switch">
@@ -44,6 +53,17 @@ export function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
                 </div>
               </label>
             </StyledWrapper>
+          </div>
+        </div>
+        {/* Bottom section */}
+        <div className="py-2 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {restaurantInfo.openingHours}
+            </span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Pedido mínimo: R$ {restaurantInfo.minimumOrder.toFixed(2)}
+            </span>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import LogoutButton from "../components/LogoutButton";
+import { useAuth } from "../context/useAuth";
 
 type DashboardProps = {
   userData?: {
@@ -12,9 +12,11 @@ type DashboardProps = {
 const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove o token do localStorage
-    navigate("/login"); // Redireciona para a página de login
+  const { logout } = useAuth();
+
+  const handleLogout = (event: React.MouseEvent) => {
+    event.preventDefault(); 
+    logout();
   };
 
   return (
