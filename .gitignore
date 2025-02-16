@@ -30,3 +30,8 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore yarn files
+/node_modules
+/yarn-error.log
+.yarn-integrity
