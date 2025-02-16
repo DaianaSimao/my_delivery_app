@@ -1,15 +1,20 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
-import TestDarkMode from './TestDarkMode';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import LogoutButton from "../components/LogoutButton";
 
-const Dashboard = ({ userData }) => {
-  const { isDarkMode } = useTheme();
+type DashboardProps = {
+  userData?: {
+    name: string;
+    email: string;
+  };
+};
+
+const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove o token do localStorage
-    navigate('/login'); // Redireciona para a página de login
+    localStorage.removeItem("token"); // Remove o token do localStorage
+    navigate("/login"); // Redireciona para a página de login
   };
 
   return (
@@ -38,7 +43,6 @@ const Dashboard = ({ userData }) => {
                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
                 </svg>
                 <span className="ms-3">Dashboard</span>
-                <TestDarkMode />
               </a>
             </li>
             <li>
@@ -155,6 +159,28 @@ const Dashboard = ({ userData }) => {
                   <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z" />
                 </svg>
                 <span className="flex-1 ms-3 whitespace-nowrap">Sign Up</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={handleLogout}
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 10a1 1 0 0 1 1-1h8.586l-3.293-3.293a1 1 0 1 1 1.414-1.414l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 1 1-1.414-1.414L12.586 11H4a1 1 0 0 1-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="flex-1 ms-3 whitespace-nowrap">Logout</span>
               </a>
             </li>
           </ul>

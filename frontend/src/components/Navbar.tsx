@@ -1,8 +1,7 @@
 import React from 'react';
-import Logout from './Logout';
-import Switch from './Switch'; // Importe o Switch
+// import Logout from './Logout';
 
-const Navbar = () => {
+export function Navbar() {
   return (
     <>
       {/* Navbar */}
