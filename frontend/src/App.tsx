@@ -5,9 +5,10 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./context/useAuth";
 import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
+import { Dashboard } from "./components/Dashboard";
 import { Header } from "./components/Header";
-import { HeaderAdmin } from "./components/HeaderAdmin";
+import Produtos from "./components/Produtos";
+
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -34,15 +35,19 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-      {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
-      {isAuthenticated && <HeaderAdmin restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
-      
+      {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}      
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={
+            <Dashboard
+              isDarkMode={isDarkMode}
+              onToggleDarkMode={toggleDarkMode}
+            />
+          } />
+          <Route path="/produtos" element={<Produtos />} />
         </Route>
       </Routes>
     </div>

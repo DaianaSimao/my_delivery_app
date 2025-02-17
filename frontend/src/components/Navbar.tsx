@@ -1,6 +1,3 @@
-import React from 'react';
-// import Logout from './Logout';
-
 export function Navbar() {
   return (
     <>
@@ -104,7 +101,6 @@ export function Navbar() {
                     </a>
                   </li>
                 </ul>
-                <Logout />
               </div>
             </div>
           </div>
