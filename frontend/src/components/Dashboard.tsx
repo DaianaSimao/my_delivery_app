@@ -2,13 +2,16 @@ import LogoutButton from "./LogoutButton";
 import styled from "styled-components";
 import { useState } from "react";
 import Switch from "./Switch";
+import { Utensils } from "lucide-react";
+import type { RestaurantInfo } from '../types';
 
 interface DashboardProps {
+  restaurantInfo: RestaurantInfo;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
 
-export function Dashboard({ isDarkMode, onToggleDarkMode }: DashboardProps) {
+export function Dashboard({restaurantInfo, isDarkMode, onToggleDarkMode }: DashboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   return (
     <>
@@ -41,16 +44,10 @@ export function Dashboard({ isDarkMode, onToggleDarkMode }: DashboardProps) {
                     ></path>
                   </svg>
                 </button>
-                <a href="https://flowbite.com" className="flex ms-2 md:me-24">
-                  <img
-                    src="https://flowbite.com/docs/images/logo.svg"
-                    className="h-8 me-3"
-                    alt="FlowBite Logo"
-                  />
-                  <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                    Flowbite
-                  </span>
-                </a>
+                <Utensils className="h-8 w-8 text-primary-500" />
+                <h1 className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">
+                  {restaurantInfo.name}
+                </h1>
               </div>
               <div className="flex items-center">
                 <div className="flex items-center ms-3">

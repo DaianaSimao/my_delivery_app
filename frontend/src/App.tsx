@@ -35,23 +35,19 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-      {/* Se NÃO estiver autenticado, mostra apenas o Header */}
       {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
 
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Aplicando layout autenticado */}
         {isAuthenticated && (
           <Route element={<ProtectedRoute />}>
             <Route
               element={
                 <div className="flex">
-                  {/* Sidebar e Navbar aparecem apenas quando autenticado */}
-                  <Dashboard isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+                  <Dashboard restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
                   
-                  {/* Área principal do conteúdo */}
                   <div className="flex-1 p-4">
                     <Routes>
                       <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
