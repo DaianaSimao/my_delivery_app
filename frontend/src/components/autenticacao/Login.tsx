@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios"; // Importando o axios
-import { useAuth } from "../context/useAuth";
+import axios from "axios";
+import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -13,15 +14,18 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     try {
-      // Usando o axios para fazer a requisição POST
-      const response = await axios.post("http://localhost:3000/login", {
-        user: {
-          email,
-          password,
+      const response = await axios.post(
+        "http://localhost:3000/login",
+        {
+          user: {
+            email,
+            password,
+          },
         },
-      }, {
-        headers: { "Content-Type": "application/json" },
-      });
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       console.log("Resposta do backend:", response.data);
 
@@ -30,17 +34,21 @@ const Login: React.FC = () => {
         throw new Error("Token não encontrado na resposta do backend");
       }
 
+      toast.success("Login realizado com sucesso!");
       login(token);
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
+    } catch (error: unknown) {
+      let errorMessage = "Erro ao realizar login. Verifique suas credenciais.";
+      if (axios.isAxiosError(error) && error.response) {
+        errorMessage = error.response.data.message;
+      }
+      toast.error(errorMessage);
     }
   };
 
   return (
     <div className="bg-white dark:bg-gray-900">
       <div className="flex justify-center h-screen">
-        {/* Lado esquerdo com imagem */}
         <div
           className="hidden bg-cover lg:block lg:w-2/3"
           style={{
@@ -59,7 +67,6 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* Lado direito - Formulário */}
         <div className="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
           <div className="flex-1">
             <div className="text-center">

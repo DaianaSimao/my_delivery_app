@@ -1,9 +1,9 @@
-import LogoutButton from "./LogoutButton";
+import LogoutButton from "../autenticacao/LogoutButton";
 import styled from "styled-components";
 import { useState } from "react";
-import Switch from "./Switch";
+import Switch from "../Switch";
 import { Utensils } from "lucide-react";
-import type { RestaurantInfo } from '../types';
+import type { RestaurantInfo } from '../../types';
 import { useNavigate } from "react-router-dom";
 
 interface DashboardProps {

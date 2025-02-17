@@ -11,15 +11,32 @@ const ProdutosForm = () => {
     disponivel: true,
   });
 
-  const handleChange = (e) => {
+  interface Product {
+    nome: string;
+    marca: string;
+    preco: string;
+    categoria: string;
+    peso: string;
+    descricao: string;
+    disponivel: boolean;
+  }
+
+  interface ChangeEvent {
+    target: {
+      name: string;
+      value: string;
+    };
+  }
+
+  const handleChange = (e: ChangeEvent) => {
     const { name, value } = e.target;
-    setProduct((prevProduct) => ({
+    setProduct((prevProduct: Product) => ({
       ...prevProduct,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Produto adicionado:", product);
     // Aqui você pode adicionar a lógica para enviar os dados para a API ou o backend

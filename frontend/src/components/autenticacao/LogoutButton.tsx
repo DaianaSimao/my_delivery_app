@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios"; // Importando o axios
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 
 const LogoutButton: React.FC = () => {

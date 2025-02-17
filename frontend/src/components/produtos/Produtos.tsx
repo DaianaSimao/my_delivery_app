@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 
+interface Produto {
+  id: number;
+  attributes: {
+    nome: string;
+    preco: number;
+    categoria: string;
+    descricao: string;
+  };
+}
+
 const Produtos: React.FC = () => {
-  const [produtos, setProdutos] = useState([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 

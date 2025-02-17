@@ -1,4 +1,3 @@
-import React from 'react';
 import type { MenuSection } from '../types';
 
 interface TabBarProps {

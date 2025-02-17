@@ -3,10 +3,9 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
-import { useAuth } from "./context/useAuth";
-import Login from "./components/Login";
-import { Dashboard } from "./components/Dashboard";
-import { Header } from "./components/Header";
+import Login from "./components/autenticacao/Login";
+import { Dashboard } from "./components/admin/Dashboard";
+import { Header } from "./components/autenticacao/Header";
 import Produtos from "./components/produtos/Produtos";
 import ProdutosForm from './components/produtos/ProdutosForm';
 
@@ -19,7 +18,6 @@ const restaurantInfo = {
 };
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -36,13 +34,13 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-      {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
 
       <Routes>
+
         <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<><Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} /><Login /></>} />
         <Route path="/login" element={<Login />} />
 
-        {isAuthenticated && (
           <Route element={<ProtectedRoute />}>
             <Route
               element={
@@ -62,7 +60,6 @@ const AppContent: React.FC = () => {
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Route>
           </Route>
-        )}
       </Routes>
     </div>
   );

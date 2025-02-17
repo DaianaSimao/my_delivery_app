@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-const Switch = ({ onToggle }) => {
+interface SwitchProps {
+  onToggle: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const Switch: React.FC<SwitchProps> = ({ onToggle }) => {
   return (
     <StyledWrapper>
       <div>
@@ -22,8 +26,8 @@ const StyledWrapper = styled.div`
 
   .toggle {
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -36,7 +40,7 @@ const StyledWrapper = styled.div`
   .bars {
     width: 100%;
     height: 4px;
-    background-color: rgb(92, 108, 255);
+    background-color: rgb(255, 92, 92);
     border-radius: 4px;
   }
 
