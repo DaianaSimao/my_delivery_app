@@ -7,7 +7,8 @@ import { useAuth } from "./context/useAuth";
 import Login from "./components/Login";
 import { Dashboard } from "./components/Dashboard";
 import { Header } from "./components/Header";
-import Produtos from "./components/Produtos";
+import Produtos from "./components/produtos/Produtos";
+import ProdutosForm from './components/produtos/ProdutosForm';
 
 
 const restaurantInfo = {
@@ -52,6 +53,7 @@ const AppContent: React.FC = () => {
                     <Routes>
                       <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
                       <Route path="/produtos" element={<Produtos />} />
+                      <Route path="/add-product" element={<ProdutosForm />} />
                     </Routes>
                   </div>
                 </div>

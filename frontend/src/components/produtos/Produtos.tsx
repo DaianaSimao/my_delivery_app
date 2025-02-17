@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../services/api";
+import api from "../../services/api";
 
 const Produtos: React.FC = () => {
   const [produtos, setProdutos] = useState([]);
@@ -40,7 +40,7 @@ const Produtos: React.FC = () => {
   }
 
   return (
-    <section className="bg-white dark:bg-gray-900">
+    <section className="pt-6 bg-white dark:bg-gray-900">
       <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
         <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Lista de Produtos</h2>
         <div className="space-y-4">
