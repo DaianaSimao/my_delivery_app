@@ -35,20 +35,36 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-      {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}      
+      {/* Se NÃO estiver autenticado, mostra apenas o Header */}
+      {!isAuthenticated && <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
+
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
-        
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={
-            <Dashboard
-              isDarkMode={isDarkMode}
-              onToggleDarkMode={toggleDarkMode}
-            />
-          } />
-          <Route path="/produtos" element={<Produtos />} />
-        </Route>
+
+        {/* Aplicando layout autenticado */}
+        {isAuthenticated && (
+          <Route element={<ProtectedRoute />}>
+            <Route
+              element={
+                <div className="flex">
+                  {/* Sidebar e Navbar aparecem apenas quando autenticado */}
+                  <Dashboard isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+                  
+                  {/* Área principal do conteúdo */}
+                  <div className="flex-1 p-4">
+                    <Routes>
+                      <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
+                      <Route path="/produtos" element={<Produtos />} />
+                    </Routes>
+                  </div>
+                </div>
+              }
+            >
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </Route>
+          </Route>
+        )}
       </Routes>
     </div>
   );
