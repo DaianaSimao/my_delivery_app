@@ -2,8 +2,15 @@ class Api::V1::ProdutosController < ApplicationController
   before_action :set_produto, only: %i[show update destroy]
 
   def index
-    produtos = Produto.all
-    render json: ProdutoSerializer.new(produtos)
+    @produtos = Produto.page(params[:page]).per(params[:per_page])
+    render json: {
+      data: @produtos,
+      meta: {
+        total_pages: @produtos.total_pages,
+        total_count: @produtos.total_count,
+        current_page: @produtos.current_page
+      }
+    }
   end
 
   def show
