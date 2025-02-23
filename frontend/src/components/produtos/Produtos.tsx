@@ -16,8 +16,6 @@ interface Produto {
   };
 }
 
-type ChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
-
 const Produtos: React.FC = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +23,7 @@ const Produtos: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [totalProdutos, setTotalProdutos] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [totalPages, setTotalPages] = useState(1);
   const handlePageChange = (page: number) => {
@@ -43,7 +42,8 @@ const Produtos: React.FC = () => {
         const response = await api.get("/api/v1/produtos", {
           params: {
             page: currentPage,
-            per_page: perPage
+            per_page: perPage,
+            search: searchTerm,
           }
         });
 
@@ -59,7 +59,7 @@ const Produtos: React.FC = () => {
     };
 
     fetchProdutos();
-  }, [currentPage, perPage]);
+  }, [currentPage, perPage, searchTerm]);
 
   if (loading) {
     return <div className="text-center py-8 mt-5">Carregando...</div>;
@@ -93,7 +93,13 @@ const Produtos: React.FC = () => {
           </div>
           <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700">
             <div className="w-full md:w-1/2">
-              <form className="flex items-center">
+              <form
+                className="flex items-center"
+                onSubmit={(e) => {
+                  e.preventDefault(); // Evita o recarregamento da página
+                  handlePageChange(1); // Volta para a primeira página ao buscar
+                }}
+              >
                 <label htmlFor="simple-search" className="sr-only">Buscar</label>
                 <div className="relative w-full">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -101,7 +107,14 @@ const Produtos: React.FC = () => {
                       <path fillRule="evenodd" clipRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
                     </svg>
                   </div>
-                  <input type="text" id="simple-search" placeholder="Search for products" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                  <input
+                    type="text"
+                    id="simple-search"
+                    placeholder="Search for products"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
                 </div>
               </form>
             </div>

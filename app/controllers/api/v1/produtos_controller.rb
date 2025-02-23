@@ -2,7 +2,14 @@ class Api::V1::ProdutosController < ApplicationController
   before_action :set_produto, only: %i[show update destroy]
 
   def index
-    @produtos = Produto.page(params[:page]).per(params[:per_page])
+    @produtos = Produto.all
+
+    # Filtra os produtos com base no termo de busca
+    if params[:search].present?
+      @produtos = @produtos.where("nome ILIKE ?", "%#{params[:search]}%")
+    end
+
+    @produtos =  @produtos.page(params[:page]).per(params[:per_page])
     render json: {
       data: @produtos,
       meta: {
