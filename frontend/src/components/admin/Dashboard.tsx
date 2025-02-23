@@ -13,7 +13,7 @@ interface DashboardProps {
 }
 
 export function Dashboard({restaurantInfo, isDarkMode, onToggleDarkMode }: DashboardProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   return (
     <>
