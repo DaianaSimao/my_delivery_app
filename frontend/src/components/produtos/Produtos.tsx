@@ -8,6 +8,8 @@ interface Produto {
     preco: number;
     categoria: string;
     descricao: string;
+    imagem_url: string;
+    disponivel: boolean;
   };
 }
 
@@ -114,7 +116,6 @@ const Produtos: React.FC = () => {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-
                   <th scope="col" className="p-4">Produto</th>
                   <th scope="col" className="p-4">Categoria</th>
                   <th scope="col" className="p-4">Preço</th>
@@ -124,15 +125,15 @@ const Produtos: React.FC = () => {
               <tbody>
                 {produtos.map((produto) => (
                   <tr key={produto.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-
-                    <th scope="row" className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <th scope="row" className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white flex items-center">
+                      <img src={produto.attributes.imagem_url} alt={produto.attributes.nome} className="h-8 w-auto mr-3" />
                       {produto.attributes.nome}
                     </th>
                     <td className="px-4 py-3">
                       <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">{produto.attributes.categoria}</span>
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      ${produto.attributes.preco}
+                      R${produto.attributes.preco}
                     </td>
                     <td className="px-4 py-3">
                       {produto.attributes.descricao}
