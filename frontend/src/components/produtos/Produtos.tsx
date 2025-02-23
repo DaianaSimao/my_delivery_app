@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ReactNode} from "react";
 import api from "../../services/api";
 
 interface Produto {
+  imagem_url: string;
+  nome: string | undefined;
+  preco: ReactNode;
+  descricao: string;
   id: number;
   attributes: {
     nome: string;
     preco: number;
-    categoria: string;
     descricao: string;
     imagem_url: string;
     disponivel: boolean;
