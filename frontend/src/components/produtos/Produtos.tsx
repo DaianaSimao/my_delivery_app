@@ -70,7 +70,7 @@ const Produtos: React.FC = () => {
   }
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased mt-5">
+    <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased mt-5 w-full">
       <div className="mx-auto max-w-screen-2xl px-4 lg:px-12 mt-7">
         <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">

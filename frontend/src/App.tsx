@@ -49,24 +49,24 @@ const AppContent: React.FC = () => {
             } 
           />
           <Route element={<ProtectedRoute />}>
-              <Route
-                element={
-                  <div className="flex">
-                    <Dashboard restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+            <Route
+              element={
+                <div className="flex">
+                  <Dashboard restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
                     
-                    <div className="flex-1 p-4">
-                      <Routes>
-                        <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
-                        <Route path="/produtos" element={<Produtos />} />
-                        <Route path="/add-product" element={<ProdutosForm />} />
-                      </Routes>
-                    </div>
+                  <div className="w-full mt-5">
+                    <Routes>
+                      <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
+                      <Route path="/produtos" element={<Produtos />} />
+                      <Route path="/add-product" element={<ProdutosForm />} />
+                    </Routes>
                   </div>
-                }
-              >
-                <Route path="*" element={<Navigate to="/dashboard" />} />
-              </Route>
+                </div>
+              }
+            >
+            <Route path="*" element={<Navigate to="/dashboard" />} />
             </Route>
+          </Route>
         </Routes>
   </div>
   );
