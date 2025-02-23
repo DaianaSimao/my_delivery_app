@@ -16,6 +16,7 @@ gem "devise"
 gem "devise-jwt"
 gem "pry-rails"
 gem "faker"
+gem "kaminari"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
