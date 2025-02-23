@@ -37,10 +37,16 @@ const Login: React.FC = () => {
       toast.success("Login realizado com sucesso!");
       login(token);
       navigate("/dashboard");
-    } catch (error: unknown) {
+    }
+    
+    catch (error: unknown) {
+      console.log(error);
       let errorMessage = "Erro ao realizar login. Verifique suas credenciais.";
-      if (axios.isAxiosError(error) && error.response) {
-        errorMessage = error.response.data.message;
+      if (axios.isAxiosError(error)) {
+        console.error('Erro do axios:', error.response);  // Log para depurar o erro
+        if (error.response) {
+          errorMessage = error.response.data || errorMessage;
+        }
       }
       toast.error(errorMessage);
     }
