@@ -11,6 +11,7 @@ import ProdutosForm from "./components/produtos/ProdutosForm";
 import { Toaster } from "react-hot-toast";
 import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
 import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
+import ProdutoDetail from './components/produtos/ProdutoDetail';
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -60,6 +61,7 @@ const AppContent: React.FC = () => {
                       <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
                       <Route path="/produtos" element={<Produtos />} />
                       <Route path="/produtos/new" element={<ProdutosForm />} />
+                      <Route path="/produtos/:id" element={<ProdutoDetail />} />
                       <Route path="/acompanhamentos" element={<Acompanhamentos />} />
                       <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
                     </Routes>
