@@ -14,9 +14,11 @@ interface Produto {
   produto_acompanhamentos: {
     id: number;
     acompanhamento: {
+      [x: string]: any;
       id: number;
       nome: string;
       item_acompanhamentos: {
+        preco: number;
         id: number;
         nome: string;
       }[];
