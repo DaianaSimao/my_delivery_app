@@ -16,6 +16,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_013616) do
 
   create_table "acompanhamentos", force: :cascade do |t|
     t.string "nome"
+    t.integer "quantidade_maxima"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -133,7 +134,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_013616) do
   create_table "produto_acompanhamentos", force: :cascade do |t|
     t.bigint "produto_id", null: false
     t.bigint "acompanhamento_id", null: false
-    t.integer "quantidade_maxima"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["acompanhamento_id"], name: "index_produto_acompanhamentos_on_acompanhamento_id"
