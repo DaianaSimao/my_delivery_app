@@ -67,7 +67,7 @@ const AcompanhamentosForm = () => {
 
       if (response.status === 201) {
         toast.success('Acompanhamento cadastrado com sucesso!');
-        navigate('/produtos'); // Redireciona de volta para a lista de produtos
+        navigate('/acompanhamentos'); // Redireciona de volta para a lista de acompanhamentos
       } else {
         toast.error('Erro ao cadastrar acompanhamento.');
       }
