@@ -8,10 +8,11 @@ import { Dashboard } from "./components/admin/Dashboard";
 import { Header } from "./components/autenticacao/Header";
 import Produtos from "./components/produtos/Produtos";
 import ProdutosForm from "./components/produtos/ProdutosForm";
+import ProdutoDetail from './components/produtos/ProdutoDetail';
+import ProdutosEditForm from "./components/produtos/ProdutoEditForm";
 import { Toaster } from "react-hot-toast";
 import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
 import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
-import ProdutoDetail from './components/produtos/ProdutoDetail';
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -62,6 +63,7 @@ const AppContent: React.FC = () => {
                       <Route path="/produtos" element={<Produtos />} />
                       <Route path="/produtos/new" element={<ProdutosForm />} />
                       <Route path="/produtos/:id" element={<ProdutoDetail />} />
+                      <Route path="/produtos/:id/editar" element={<ProdutosEditForm />} />
                       <Route path="/acompanhamentos" element={<Acompanhamentos />} />
                       <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
                     </Routes>
