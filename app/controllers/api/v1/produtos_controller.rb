@@ -21,7 +21,20 @@ class Api::V1::ProdutosController < ApplicationController
   end
 
   def show
-    render json: ProdutoSerializer.new(@produto)
+    produto = Produto.includes(produto_acompanhamentos: { acompanhamento: :item_acompanhamentos }).find(params[:id])
+    render json: { 
+      data: produto.as_json(
+        include: {
+          produto_acompanhamentos: {
+            include: {
+              acompanhamento: {
+                include: :item_acompanhamentos
+              }
+            }
+          }
+        }
+      )
+    }
   end
 
   def create
