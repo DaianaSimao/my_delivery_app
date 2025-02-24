@@ -53,6 +53,7 @@ class Api::V1::ProdutosController < ApplicationController
   end
 
   def produto_params
-    params.require(:produto).permit(:nome, :descricao, :preco, :imagem_url, :disponivel, :restaurante_id, acompanhamentos_attributes: [:id, :quantidade_maxima])
+    params.require(:produto).permit(:nome, :descricao, :preco, :imagem_url,
+    :disponivel, :restaurante_id, produto_acompanhamentos_attributes: [ :acompanhamento_id ])
   end
 end
