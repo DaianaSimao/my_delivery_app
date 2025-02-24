@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  resources :produto_acompanhamentos
-  resources :item_acompanhamentos
-  resources :acompanhamentos
   devise_for :users, defaults: { format: :json }, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations'
@@ -30,6 +27,9 @@ Rails.application.routes.draw do
       resources :avaliacoes
       resources :enderecos
       resources :clientes
+      resources :produto_acompanhamentos
+      resources :item_acompanhamentos
+      resources :acompanhamentos
     end
   end
 end
