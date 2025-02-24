@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode} from "react";
+import React, { useEffect, useState, ReactNode } from "react";
 import api from "../../services/api";
 
 interface Produto {
@@ -24,21 +24,25 @@ const Produtos: React.FC = () => {
   const [perPage] = useState(10);
   const [totalProdutos, setTotalProdutos] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  
+
   useEffect(() => {
     const fetchProdutos = async () => {
       try {
         const token = localStorage.getItem("token");
-    
+
         if (!token) {
           throw new Error("Token de autenticação não encontrado.");
         }
-    
+
         const response = await api.get("/api/v1/produtos", {
           params: {
             page: currentPage,
