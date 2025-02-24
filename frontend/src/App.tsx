@@ -7,6 +7,7 @@ import Login from "./components/autenticacao/Login";
 import { Dashboard } from "./components/admin/Dashboard";
 import { Header } from "./components/autenticacao/Header";
 import Produtos from "./components/produtos/Produtos";
+import ProdutosForm from "./components/produtos/ProdutosForm";
 import { Toaster } from "react-hot-toast";
 import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
 import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
@@ -58,6 +59,7 @@ const AppContent: React.FC = () => {
                     <Routes>
                       <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
                       <Route path="/produtos" element={<Produtos />} />
+                      <Route path="/produtos/new" element={<ProdutosForm />} />
                       <Route path="/acompanhamentos" element={<Acompanhamentos />} />
                       <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
                     </Routes>
