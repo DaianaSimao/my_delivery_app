@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_12_171647) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_24_013616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "acompanhamentos", force: :cascade do |t|
+    t.string "nome"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "acompanhamentos_adicionais", force: :cascade do |t|
+    t.string "nome"
+    t.decimal "preco"
+    t.string "tipo"
+    t.boolean "disponivel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "avaliacoes", force: :cascade do |t|
     t.bigint "pedido_id", null: false
@@ -61,6 +76,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_12_171647) do
     t.index ["pedido_id"], name: "index_entregas_on_pedido_id"
   end
 
+  create_table "item_acompanhamentos", force: :cascade do |t|
+    t.string "nome"
+    t.decimal "preco"
+    t.bigint "acompanhamento_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["acompanhamento_id"], name: "index_item_acompanhamentos_on_acompanhamento_id"
+  end
+
   create_table "itens_pedidos", force: :cascade do |t|
     t.bigint "pedido_id", null: false
     t.bigint "produto_id", null: false
@@ -106,6 +130,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_12_171647) do
     t.index ["restaurante_id"], name: "index_pedidos_on_restaurante_id"
   end
 
+  create_table "produto_acompanhamentos", force: :cascade do |t|
+    t.bigint "produto_id", null: false
+    t.bigint "acompanhamento_id", null: false
+    t.integer "quantidade_maxima"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["acompanhamento_id"], name: "index_produto_acompanhamentos_on_acompanhamento_id"
+    t.index ["produto_id"], name: "index_produto_acompanhamentos_on_produto_id"
+  end
+
+  create_table "produto_acompanhamentos_adicionais", force: :cascade do |t|
+    t.bigint "produtos_id", null: false
+    t.bigint "acompanhamentos_adicionais_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["acompanhamentos_adicionais_id"], name: "idx_on_acompanhamentos_adicionais_id_d92621c90b"
+    t.index ["produtos_id"], name: "index_produto_acompanhamentos_adicionais_on_produtos_id"
+  end
+
   create_table "produtos", force: :cascade do |t|
     t.bigint "restaurante_id", null: false
     t.string "nome", null: false
@@ -149,12 +192,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_12_171647) do
   add_foreign_key "avaliacoes", "pedidos"
   add_foreign_key "entregas", "entregadores"
   add_foreign_key "entregas", "pedidos"
+  add_foreign_key "item_acompanhamentos", "acompanhamentos"
   add_foreign_key "itens_pedidos", "pedidos"
   add_foreign_key "itens_pedidos", "produtos"
   add_foreign_key "pagamentos", "pedidos"
   add_foreign_key "pedidos", "clientes"
   add_foreign_key "pedidos", "enderecos"
   add_foreign_key "pedidos", "restaurantes"
+  add_foreign_key "produto_acompanhamentos", "acompanhamentos"
+  add_foreign_key "produto_acompanhamentos", "produtos"
+  add_foreign_key "produto_acompanhamentos_adicionais", "acompanhamentos_adicionais", column: "acompanhamentos_adicionais_id"
+  add_foreign_key "produto_acompanhamentos_adicionais", "produtos", column: "produtos_id"
   add_foreign_key "produtos", "restaurantes"
   add_foreign_key "restaurantes", "enderecos"
 end
