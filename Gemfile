@@ -26,5 +26,5 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "rswag-api"
   gem "rswag-ui"
-  gem 'rswag-specs'
+  gem "rswag-specs"
 end
