@@ -9,7 +9,7 @@ import { Header } from "./components/autenticacao/Header";
 import Produtos from "./components/produtos/Produtos";
 import { Toaster } from "react-hot-toast";
 import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
-
+import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -59,6 +59,7 @@ const AppContent: React.FC = () => {
                       <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
                       <Route path="/produtos" element={<Produtos />} />
                       <Route path="/acompanhamentos" element={<Acompanhamentos />} />
+                      <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
                     </Routes>
                   </div>
                 </div>

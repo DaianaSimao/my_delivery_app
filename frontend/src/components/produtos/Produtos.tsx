@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ReactNode } from "react";
 import api from "../../services/api";
+import { useNavigate } from 'react-router-dom';
 
 interface Produto {
   imagem_url: string;
@@ -25,6 +26,11 @@ const Produtos: React.FC = () => {
   const [totalProdutos, setTotalProdutos] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+
+  const handleAcompanhamentosClick = () => {
+    navigate('/acompanhamentos'); // Redireciona para o formulário de acompanhamentos
+  };
 
   useEffect(() => {
     setCurrentPage(1);
@@ -129,7 +135,12 @@ const Produtos: React.FC = () => {
                 </svg>
                 Add produtos
               </button>
-              <button type="button" id="createProductButton" data-modal-toggle="createProductModal" className="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-primary-800">
+              <button
+                type="button"
+                id="createProductButton"
+                onClick={handleAcompanhamentosClick}
+                className="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-primary-800"
+              >
                 Acompanhamentos e Adicionais
               </button>
             </div>
