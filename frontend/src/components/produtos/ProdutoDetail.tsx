@@ -95,16 +95,18 @@ const ProdutoDetail = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Acompanhamentos</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 mt-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Acompanhamentos
+            </h3>
             <div className="space-y-4">
               {produto.produto_acompanhamentos?.length > 0 ? (
                 produto.produto_acompanhamentos.map((pa) => (
                   <div key={pa.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {pa.acompanhamento?.nome}
-                      {pa.acompanhamento?.preco && ( // Exibe o preço do acompanhamento, se existir
+                      {pa.acompanhamento?.preco && (
                         <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                           (R$ {pa.acompanhamento.preco})
                         </span>
@@ -114,7 +116,7 @@ const ProdutoDetail = () => {
                       {pa.acompanhamento?.item_acompanhamentos?.map((item) => (
                         <li key={item.id} className="text-gray-700 dark:text-gray-300">
                           {item.nome}
-                          {item.preco && ( // Exibe o preço do item, se existir
+                          {item.preco && (
                             <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                               (R$ {item.preco})
                             </span>
@@ -125,7 +127,9 @@ const ProdutoDetail = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-700 dark:text-gray-300">Este produto não possui acompanhamentos.</p>
+                <p className="text-gray-700 dark:text-gray-300">
+                  Este produto não possui acompanhamentos.
+                </p>
               )}
             </div>
             <button
