@@ -13,6 +13,7 @@ import ProdutosEditForm from "./components/produtos/ProdutoEditForm";
 import { Toaster } from "react-hot-toast";
 import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
 import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
+import AcompanhamentosEditForm from "./components/acompanhamentos/AcompanhamentosEditForm";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -66,6 +67,7 @@ const AppContent: React.FC = () => {
                       <Route path="/produtos/:id/editar" element={<ProdutosEditForm />} />
                       <Route path="/acompanhamentos" element={<Acompanhamentos />} />
                       <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
+                      <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm/>} />
                     </Routes>
                   </div>
                 </div>
