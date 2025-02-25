@@ -23,7 +23,10 @@ class  Api::V1::AcompanhamentosController < ApplicationController
 
   # GET /acompanhamentos/1
   def show
-    render json: @acompanhamento
+    acompanhamento = Acompanhamento.includes(:item_acompanhamentos).find(params[:id])
+    render json: {
+      data: acompanhamento.as_json(include: :item_acompanhamentos)
+    }
   end
 
   # POST /acompanhamentos
@@ -54,7 +57,7 @@ class  Api::V1::AcompanhamentosController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_acompanhamento
-      @acompanhamento = Acompanhamento.find(:id)
+      @acompanhamento = Acompanhamento.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
@@ -62,7 +65,7 @@ class  Api::V1::AcompanhamentosController < ApplicationController
       params.require(:acompanhamento).permit(
         :nome,
         :quantidade_maxima,
-        item_acompanhamentos_attributes: [:id, :nome, :preco, :_destroy]
+        item_acompanhamentos_attributes: [ :id, :nome, :preco, :_destroy ]
       )
     end
 end
