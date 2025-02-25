@@ -7,12 +7,13 @@ interface ItemAcompanhamento {
   id?: number; // ID é opcional (para novos itens)
   nome: string;
   preco: string;
+  _destroy?: boolean; // Flag para marcar o item para remoção
 }
 
 interface Acompanhamento {
   nome: string;
   quantidade_maxima: number;
-  itens: ItemAcompanhamento[]; // Preço é opcional
+  itens: ItemAcompanhamento[];
 }
 
 const AcompanhamentosEditForm = () => {
@@ -42,6 +43,7 @@ const AcompanhamentosEditForm = () => {
                   id: item.id, // Inclui o ID do item existente
                   nome: item.nome || '', // Define um valor padrão
                   preco: item.preco || '', // Define um valor padrão
+                  _destroy: false, // Inicializa como false
                 }))
               : [], // Define um array vazio caso item_acompanhamentos seja undefined
           });
@@ -78,12 +80,13 @@ const AcompanhamentosEditForm = () => {
   const adicionarItem = () => {
     setAcompanhamento((prev) => ({
       ...prev,
-      itens: [...prev.itens, { nome: '', preco: '' }], // Novo item sem ID
+      itens: [...prev.itens, { nome: '', preco: '', _destroy: false }], // Novo item sem ID
     }));
   };
 
-  const removerItem = (index: number) => {
-    const novosItens = acompanhamento.itens.filter((_, i) => i !== index);
+  const marcarItemParaRemocao = (index: number) => {
+    const novosItens = [...acompanhamento.itens];
+    novosItens[index]._destroy = true; // Marca o item para remoção
     setAcompanhamento((prev) => ({
       ...prev,
       itens: novosItens,
@@ -105,7 +108,7 @@ const AcompanhamentosEditForm = () => {
             id: item.id || null, // Inclui o ID se existir, ou null para novos itens
             nome: item.nome,
             preco: item.preco || null, // Envia null se o preço não for informado
-            _destroy: false, // Define como false por padrão
+            _destroy: item._destroy || false, // Envia a flag _destroy
           })),
         },
       };
@@ -168,32 +171,34 @@ const AcompanhamentosEditForm = () => {
                 Itens do Acompanhamento:
               </label>
               {acompanhamento.itens.map((item, index) => (
-                <div key={index} className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    name="nome"
-                    value={item.nome}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Ex: Salmão"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="preco"
-                    value={item.preco}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Preço (opcional)"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removerItem(index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Remover
-                  </button>
-                </div>
+                !item._destroy && ( // Renderiza apenas os itens que não estão marcados para remoção
+                  <div key={index} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="text"
+                      name="nome"
+                      value={item.nome}
+                      onChange={(e) => handleItemChange(index, e)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="Ex: Salmão"
+                      required
+                    />
+                    <input
+                      type="text"
+                      name="preco"
+                      value={item.preco}
+                      onChange={(e) => handleItemChange(index, e)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="Preço (opcional)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => marcarItemParaRemocao(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                )
               ))}
               <button
                 type="button"
