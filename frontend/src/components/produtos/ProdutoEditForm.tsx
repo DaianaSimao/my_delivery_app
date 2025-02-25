@@ -11,6 +11,7 @@ interface Produto {
   imagem_url: string;
   restaurante_id: number;
   acompanhamentos_selecionados: number[]; // IDs dos acompanhamentos selecionados
+  produto_acompanhamentos: { id: number; acompanhamento_id: number }[]; // Armazena os IDs dos produto_acompanhamentos existentes
 }
 
 interface Acompanhamento {
@@ -28,6 +29,7 @@ const ProdutosEditForm = () => {
     imagem_url: "",
     restaurante_id: 1,
     acompanhamentos_selecionados: [],
+    produto_acompanhamentos: [],
   });
 
   const [acompanhamentos, setAcompanhamentos] = useState<Acompanhamento[]>([]);
@@ -56,6 +58,10 @@ const ProdutosEditForm = () => {
           acompanhamentos_selecionados: produtoData.produto_acompanhamentos.map(
             (pa: any) => pa.acompanhamento_id
           ),
+          produto_acompanhamentos: produtoData.produto_acompanhamentos.map((pa: any) => ({
+            id: pa.id, // Armazena o ID do produto_acompanhamento
+            acompanhamento_id: pa.acompanhamento_id,
+          })),
         });
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -97,6 +103,36 @@ const ProdutosEditForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      // 1. Acompanhamentos que permanecem (selecionados ou novos)
+      const selectedAttributes = produto.acompanhamentos_selecionados.map((acompanhamentoId) => {
+        // Verifica se o acompanhamento já existe na associação
+        const produtoAcompanhamentoExistente = produto.produto_acompanhamentos.find(
+          (pa) => pa.acompanhamento_id === acompanhamentoId
+        );
+  
+        return {
+          id: produtoAcompanhamentoExistente?.id || null, // se não existir, id será null e o Rails criará um novo registro
+          acompanhamento_id: acompanhamentoId,
+          _destroy: false,
+        };
+      });
+  
+      // 2. Acompanhamentos que foram removidos:
+      // São aqueles que estavam associados originalmente, mas não estão mais entre os selecionados
+      const removedAttributes = produto.produto_acompanhamentos
+        .filter((pa) => !produto.acompanhamentos_selecionados.includes(pa.acompanhamento_id))
+        .map((pa) => ({
+          id: pa.id,
+          acompanhamento_id: pa.acompanhamento_id,
+          _destroy: true,
+        }));
+  
+      // Junta os dois arrays para enviar todos os atributos
+      const produtoAcompanhamentosAttributes = [
+        ...selectedAttributes,
+        ...removedAttributes,
+      ];
+  
       const payload = {
         produto: {
           nome: produto.nome,
@@ -105,15 +141,15 @@ const ProdutosEditForm = () => {
           disponivel: produto.disponivel,
           imagem_url: produto.imagem_url,
           restaurante_id: produto.restaurante_id,
-          produto_acompanhamentos_attributes: produto.acompanhamentos_selecionados.map((id) => ({
-            acompanhamento_id: id,
-          })),
+          produto_acompanhamentos_attributes: produtoAcompanhamentosAttributes,
         },
       };
-
-      // Envia uma requisição PUT para atualizar o produto
+  
+      console.log("Payload enviado:", payload); // Confira o payload no console
+  
+      // Envia a requisição PUT para atualizar o produto
       const response = await api.put(`/api/v1/produtos/${id}`, payload);
-
+  
       if (response.status === 200) {
         toast.success("Produto atualizado com sucesso!");
         navigate("/produtos");
@@ -122,15 +158,14 @@ const ProdutosEditForm = () => {
       }
     } catch (error: any) {
       console.error("Erro ao atualizar produto:", error);
-
       let errorMessage = "Erro ao atualizar produto. Tente novamente.";
       if (error.response) {
         errorMessage = error.response.data?.error || error.response.data?.message || errorMessage;
       }
-
       toast.error(errorMessage);
     }
   };
+  
 
   const handleProdutosClick = () => {
     navigate("/produtos");
