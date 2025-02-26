@@ -29,6 +29,9 @@ class Api::V1::PedidosController < ApplicationController
                 }
               }
             }
+          },
+          pagamento: {
+            only: %i[id metodo status valor]
           }
         }
       )
@@ -64,6 +67,9 @@ class Api::V1::PedidosController < ApplicationController
                 }
               }
             }
+          },
+          pagamento: {
+            only: %i[id metodo status valor]
           }
         }
       )

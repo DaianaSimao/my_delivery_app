@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
               </div>
             }
           >
-            <Route path="*" element={<Navigate to="/dashboard" />} />
+            <Route path="/*" element={<Navigate to="/dashboard" />} />
           </Route>
         </Route>
       </Routes>
