@@ -20,7 +20,7 @@ Rails.application.routes.draw do
       resources :restaurantes
       resources :produtos
       resources :pedidos
-      resources :pagamentos
+      resources :pagamentorons
       resources :entregas
       resources :entregadores
       resources :itens_pedidos

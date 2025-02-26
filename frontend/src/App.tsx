@@ -14,6 +14,7 @@ import { Toaster } from "react-hot-toast";
 import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
 import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
 import AcompanhamentosEditForm from "./components/acompanhamentos/AcompanhamentosEditForm";
+import PedidosList from "./components/pedidos/PedidosList";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -39,45 +40,46 @@ const AppContent: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-        <Toaster />
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          {/* Criação de um layout com Header */}
-          <Route 
-            path="/login" 
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Criação de um layout com Header */}
+        <Route 
+          path="/login" 
+          element={
+            <>
+              <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+              <Login />
+            </>
+          } 
+        />
+        <Route element={<ProtectedRoute />}>
+          <Route
             element={
-              <>
-                <Header isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-                <Login />
-              </>
-            } 
-          />
-          <Route element={<ProtectedRoute />}>
-            <Route
-              element={
-                <div className="flex">
-                  <Dashboard restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-                    
-                  <div className="w-full mt-5">
-                    <Routes>
-                      <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
-                      <Route path="/produtos" element={<Produtos />} />
-                      <Route path="/produtos/new" element={<ProdutosForm />} />
-                      <Route path="/produtos/:id" element={<ProdutoDetail />} />
-                      <Route path="/produtos/:id/editar" element={<ProdutosEditForm />} />
-                      <Route path="/acompanhamentos" element={<Acompanhamentos />} />
-                      <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
-                      <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm/>} />
-                    </Routes>
-                  </div>
+              <div className="flex">
+                <Dashboard restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
+                  
+                <div className="w-full mt-5">
+                  <Routes>
+                    <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
+                    <Route path="/produtos" element={<Produtos />} />
+                    <Route path="/produtos/new" element={<ProdutosForm />} />
+                    <Route path="/produtos/:id" element={<ProdutoDetail />} />
+                    <Route path="/produtos/:id/editar" element={<ProdutosEditForm />} />
+                    <Route path="/acompanhamentos" element={<Acompanhamentos />} />
+                    <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
+                    <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm />} />
+                    <Route path="/pedidos" element={<PedidosList />} /> {/* Adicione a rota para a tela de pedidos */}
+                  </Routes>
                 </div>
-              }
-            >
+              </div>
+            }
+          >
             <Route path="*" element={<Navigate to="/dashboard" />} />
-            </Route>
           </Route>
-        </Routes>
-  </div>
+        </Route>
+      </Routes>
+    </div>
   );
 };
 

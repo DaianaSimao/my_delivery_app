@@ -2,12 +2,72 @@ class Api::V1::PedidosController < ApplicationController
   before_action :set_pedido, only: %i[show update destroy]
 
   def index
-    pedidos = Pedido.all
-    render json: PedidoSerializer.new(pedidos)
+    @pedidos = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).all
+    render json: {
+      data: @pedidos.as_json(
+        include: {
+          cliente: {
+            only: %i[id nome telefone]
+          },
+          endereco: {
+            only: %i[id rua numero bairro cidade estado cep]
+          },
+          itens_pedidos: {
+            only: %i[id quantidade preco_total],
+            include: {
+              produto: {
+                only: %i[id nome preco],
+                include: {
+                  acompanhamentos: {
+                    only: %i[id nome quantidade_maxima],
+                    include: {
+                      item_acompanhamentos: {
+                        only: %i[id nome preco]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      )
+    }
   end
 
   def show
-    render json: PedidoSerializer.new(@pedido)
+    pedido = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).find(params[:id])
+
+    render json: {
+      data: pedido.as_json(
+        include: {
+          cliente: {
+            only: %i[id nome telefone]
+          },
+          endereco: {
+            only: %i[id rua numero bairro cidade estado cep]
+          },
+          itens_pedidos: {
+            only: %i[id quantidade preco_total],
+            include: {
+              produto: {
+                only: %i[id nome preco],
+                include: {
+                  acompanhamentos: {
+                    only: %i[id nome quantidade_maxima],
+                    include: {
+                      itens_acompanhamentos: {
+                        only: %i[id nome preco]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      )
+    }
   end
 
   def create
@@ -21,7 +81,41 @@ class Api::V1::PedidosController < ApplicationController
 
   def update
     if @pedido.update(pedido_params)
-      render json: PedidoSerializer.new(@pedido)
+      @pedido = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).find(@pedido.id)
+      # Renderiza o JSON seguindo o mesmo padrão do `index`
+      render json: {
+        data: @pedido.as_json(
+          include: {
+            cliente: {
+              only: %i[id nome telefone]
+            },
+            endereco: {
+              only: %i[id rua numero bairro cidade estado cep]
+            },
+            itens_pedidos: {
+              only: %i[id quantidade preco_total],
+              include: {
+                produto: {
+                  only: %i[id nome preco],
+                  include: {
+                    acompanhamentos: {
+                      only: %i[id nome quantidade_maxima],
+                      include: {
+                        item_acompanhamentos: {
+                          only: %i[id nome preco]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            pagamento: {
+              only: %i[id metodo status valor]
+            }
+          }
+        )
+      }
     else
       render json: { errors: @pedido.errors.full_messages }, status: :unprocessable_entity
     end
