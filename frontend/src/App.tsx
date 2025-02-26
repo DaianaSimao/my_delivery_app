@@ -15,6 +15,7 @@ import Acompanhamentos from './components/acompanhamentos/Acompanhamentos';
 import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosForm';
 import AcompanhamentosEditForm from "./components/acompanhamentos/AcompanhamentosEditForm";
 import PedidosList from "./components/pedidos/PedidosList";
+import EntregasList from "./components/entregas/EntregasList";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -39,7 +40,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 mt-10`}>
       <Toaster />
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
@@ -69,7 +70,8 @@ const AppContent: React.FC = () => {
                     <Route path="/acompanhamentos" element={<Acompanhamentos />} />
                     <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
                     <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm />} />
-                    <Route path="/pedidos" element={<PedidosList />} /> {/* Adicione a rota para a tela de pedidos */}
+                    <Route path="/pedidos" element={<PedidosList />} />
+                    <Route path="/entregas" element={<EntregasList />} />
                   </Routes>
                 </div>
               </div>

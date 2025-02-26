@@ -2,7 +2,26 @@ class Api::V1::EntregasController < ApplicationController
   before_action :set_entrega, only: %i[show update destroy]
 
   def index
-    render json: EntregaSerializer.new(Entrega.all)
+    @entregas = Entrega.includes(:pedido, :entregador)
+
+    render json: @entregas.as_json(
+      include: {
+        pedido: {
+          only: %i[id status forma_pagamento valor_total observacoes],
+          include: {
+            cliente: {
+              only: %i[id nome email telefone]
+            },
+            endereco: {
+              only: %i[id rua numero bairro cidade estado cep]
+            }
+          }
+        },
+        entregador: {
+          only: %i[id nome telefone veiculo]
+        }
+      }
+    )
   end
 
   def show
