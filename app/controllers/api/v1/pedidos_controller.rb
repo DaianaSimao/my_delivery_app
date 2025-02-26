@@ -3,6 +3,11 @@ class Api::V1::PedidosController < ApplicationController
 
   def index
     @pedidos = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).all
+
+    if params[:search].present?
+      @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
+    end
+
     render json: {
       data: @pedidos.as_json(
         include: {

@@ -30,51 +30,57 @@ const PedidosList: React.FC = () => {
     Em_Preparação: [] as Pedido[],
     Expedido: [] as Pedido[],
   });
+  const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca
 
-  // Atualiza o estado `data` quando os pedidos são carregados
+  // Filtra os pedidos com base no nome do cliente
+  const filterPedidos = (pedidos: Pedido[], term: string) => {
+    return pedidos.filter((pedido) =>
+      pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase())
+    );
+  };
+
+  // Atualiza o estado `data` quando os pedidos são carregados ou o termo de busca muda
   useEffect(() => {
     if (pedidos.length > 0) {
-      setData({
-        Recebido: pedidos.filter((p) => p.status === 'Recebido'),
-        Em_Análise: pedidos.filter((p) => p.status === 'Em_Análise'),
-        Em_Preparação: pedidos.filter((p) => p.status === 'Em_Preparação'),
-        Expedido: pedidos.filter((p) => p.status === 'Expedido'),
-      });
+      const filteredPedidos = {
+        Recebido: filterPedidos(pedidos.filter((p) => p.status === 'Recebido'), searchTerm),
+        Em_Análise: filterPedidos(pedidos.filter((p) => p.status === 'Em_Análise'), searchTerm),
+        Em_Preparação: filterPedidos(pedidos.filter((p) => p.status === 'Em_Preparação'), searchTerm),
+        Expedido: filterPedidos(pedidos.filter((p) => p.status === 'Expedido'), searchTerm),
+      };
+      setData(filteredPedidos);
     }
-  }, [pedidos]);
+  }, [pedidos, searchTerm]);
 
   // Função para mudar o status do pedido
   const handleStatusChange = async (pedidoId: number, newStatus: string) => {
     try {
       const formattedStatus = newStatus.replace(/ /g, '_');
-  
+
       // Envia a requisição para atualizar o status no backend
       const response = await api.put(`/api/v1/pedidos/${pedidoId}`, {
         pedido: { status: formattedStatus },
       });
-  
+
       if (response.status !== 200) {
         throw new Error('Erro ao atualizar o status do pedido');
       }
-  
-      // A resposta já é um objeto JavaScript, não é necessário fazer JSON.parse
-      const responseData = response.data;
-  
+
       // Atualiza o estado local (frontend) com o novo status
       setData((prevData) => {
         const updatedData = { ...prevData };
-  
+
         // Remove o pedido da coluna atual
         Object.keys(updatedData).forEach((status) => {
           updatedData[status] = updatedData[status].filter((pedido) => pedido.id !== pedidoId);
         });
-  
+
         // Adiciona o pedido na nova coluna
-        updatedData[formattedStatus].push(responseData.data);
-  
+        updatedData[formattedStatus].push(response.data);
+
         return updatedData;
       });
-  
+
       toast.success('Status do pedido atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar o status do pedido:', error);
@@ -99,7 +105,7 @@ const PedidosList: React.FC = () => {
         });
         return updatedData;
       });
-      console.log('Dados atualizados:', updatedData);
+
       toast.success('Pedido cancelado com sucesso!');
     } catch (error) {
       console.error('Erro ao cancelar o pedido:', error);
@@ -116,42 +122,86 @@ const PedidosList: React.FC = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <DragDropContext onDragEnd={() => {}}>
-      <div className="flex space-x-4 p-4 mt-10">
-        <PedidoColumn
-          columnId="Recebido"
-          title="Recebido"
-          pedidos={data.Recebido}
-          onStatusChange={handleStatusChange}
-          onCancel={handleCancel}
-          onEdit={handleEdit}
-        />
-        <PedidoColumn
-          columnId="Em_Análise"
-          title="Em Análise"
-          pedidos={data.Em_Análise}
-          onStatusChange={handleStatusChange}
-          onCancel={handleCancel}
-          onEdit={handleEdit}
-        />
-        <PedidoColumn
-          columnId="Em_Preparação"
-          title="Em Preparação"
-          pedidos={data.Em_Preparação}
-          onStatusChange={handleStatusChange}
-          onCancel={handleCancel}
-          onEdit={handleEdit}
-        />
-        <PedidoColumn
-          columnId="Expedido"
-          title="Expedido"
-          pedidos={data.Expedido}
-          onStatusChange={handleStatusChange}
-          onCancel={handleCancel}
-          onEdit={handleEdit}
-        />
+    <div className="p-4">
+      {/* Campo de Busca */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
+        <div className="w-full md:w-1/2">
+          <form
+            className="flex items-center"
+            onSubmit={(e) => {
+              e.preventDefault(); // Evita o recarregamento da página
+            }}
+          >
+            <label htmlFor="simple-search" className="sr-only">
+              Buscar
+            </label>
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  aria-hidden="true"
+                  className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                id="simple-search"
+                placeholder="Buscar por nome do cliente"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+            </div>
+          </form>
+        </div>
       </div>
-    </DragDropContext>
+
+      {/* Lista de Pedidos */}
+      <DragDropContext onDragEnd={() => {}}>
+        <div className="flex space-x-4 p-4">
+          <PedidoColumn
+            columnId="Recebido"
+            title="Recebido"
+            pedidos={data.Recebido}
+            onStatusChange={handleStatusChange}
+            onCancel={handleCancel}
+            onEdit={handleEdit}
+          />
+          <PedidoColumn
+            columnId="Em_Análise"
+            title="Em Análise"
+            pedidos={data.Em_Análise}
+            onStatusChange={handleStatusChange}
+            onCancel={handleCancel}
+            onEdit={handleEdit}
+          />
+          <PedidoColumn
+            columnId="Em_Preparação"
+            title="Em Preparação"
+            pedidos={data.Em_Preparação}
+            onStatusChange={handleStatusChange}
+            onCancel={handleCancel}
+            onEdit={handleEdit}
+          />
+          <PedidoColumn
+            columnId="Expedido"
+            title="Expedido"
+            pedidos={data.Expedido}
+            onStatusChange={handleStatusChange}
+            onCancel={handleCancel}
+            onEdit={handleEdit}
+          />
+        </div>
+      </DragDropContext>
+    </div>
   );
 };
 
