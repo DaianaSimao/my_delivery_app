@@ -5,6 +5,10 @@ interface Entrega {
   id: number;
   status: string;
   pedido_id: number;
+  pedido: {
+    id: number;
+    descricao: string;
+  };
   entregador?: {
     id: number;
     nome: string;
@@ -17,8 +21,9 @@ interface EntregaColumnProps {
   columnId: string;
   title: string;
   entregas: Entrega[];
-  onDesignarEntregador?: (entregaId: number) => void;
+  onDesignarEntregador?: (entregaId: number, entregadorId: number) => void;
   onMarcarComoEntregue?: (entregaId: number) => void;
+  onStatusChange: (entregaId: number, newStatus: string) => void;
 }
 
 const EntregaColumn: React.FC<EntregaColumnProps> = ({
@@ -27,6 +32,7 @@ const EntregaColumn: React.FC<EntregaColumnProps> = ({
   entregas,
   onDesignarEntregador,
   onMarcarComoEntregue,
+  onStatusChange,
 }) => {
   return (
     <div className="flex-1 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
@@ -38,7 +44,7 @@ const EntregaColumn: React.FC<EntregaColumnProps> = ({
               entrega={entrega}
               onDesignarEntregador={
                 columnId === 'Aguardando' && onDesignarEntregador
-                  ? () => onDesignarEntregador(entrega.id)
+                  ? () => onDesignarEntregador(entrega.id, entrega.entregador?.id || 0)
                   : undefined
               }
               onMarcarComoEntregue={
@@ -46,6 +52,7 @@ const EntregaColumn: React.FC<EntregaColumnProps> = ({
                   ? () => onMarcarComoEntregue(entrega.id)
                   : undefined
               }
+              onStatusChange={onStatusChange}
             />
           </li>
         ))}

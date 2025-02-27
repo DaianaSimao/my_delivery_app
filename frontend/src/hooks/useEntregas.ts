@@ -1,21 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 
-interface Entrega {
-  id: number;
-  status: string;
-  pedido_id: number;
-  entregador_id?: number;
-  entregador?: {
-    id: number;
-    nome: string;
-    telefone: string;
-    veiculo: string;
-  };
-}
-
 const useEntregas = () => {
-  const [entregas, setEntregas] = useState<Entrega[]>([]);
+  const [entregas, setEntregas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,14 +10,10 @@ const useEntregas = () => {
     const fetchEntregas = async () => {
       try {
         const response = await api.get('/api/v1/entregas');
-        console.log('Resposta da API:', response.data); // Verifique os dados aqui
-        if (response.status === 200) {
-          setEntregas(response.data);
-        } else {
-          throw new Error('Erro ao carregar entregas');
-        }
+        setEntregas(response.data);
       } catch (err) {
-        setError(err.message);
+        console.error('Erro ao buscar entregas:', err);
+        setError('Erro ao carregar entregas');
       } finally {
         setLoading(false);
       }

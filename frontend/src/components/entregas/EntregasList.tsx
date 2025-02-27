@@ -26,6 +26,7 @@ const EntregasList: React.FC = () => {
     Entregue: [] as Entrega[],
   });
 
+  const statusOrder = ['Aguardando', 'Em entrega', 'Entregue'];
   // Atualiza o estado `data` quando as entregas são carregadas
   useEffect(() => {
     if (entregas.length > 0) {
@@ -33,8 +34,7 @@ const EntregasList: React.FC = () => {
         Aguardando: entregas.filter((e) => e.status === 'Aguardando'),
         SaiuParaEntrega: entregas.filter((e) => e.status === 'Em entrega'),
         Entregue: entregas.filter((e) => e.status === 'Entregue'),
-      };
-      console.log('Dados filtrados:', filteredData); // Verifique os dados filtrados aqui
+      }; 
       setData(filteredData);
     }
   }, [entregas]);
@@ -101,6 +101,38 @@ const EntregasList: React.FC = () => {
     }
   };
 
+  const handleStatusChange = async (entregaId: number, newStatus: string) => {
+    try {
+      const formattedStatus = newStatus.replace(/ /g, '_');
+
+      const response = await api.put(`/api/v1/entregas/${entregaId}`, {
+        entrega: { status: formattedStatus },
+      });
+
+      if (response.status !== 200) {
+        throw new Error('Erro ao atualizar o status da entrega');
+      }
+
+      setData((prevData) => {
+        const updatedData = { ...prevData };
+
+        Object.keys(updatedData).forEach((status) => {
+          updatedData[status] = updatedData[status].filter((e) => e.id !== entregaId);
+        });
+
+        updatedData[formattedStatus].push(response.data);
+
+        return updatedData;
+      });
+
+      toast.success('Status da entrega atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar o status da entrega:', error);
+      toast.error('Erro ao atualizar o status da entrega.');
+    }
+  }
+    
+
   if (loading) return <p>Carregando...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
@@ -112,12 +144,14 @@ const EntregasList: React.FC = () => {
           title="Aguardando Entrega"
           entregas={data.Aguardando}
           onDesignarEntregador={handleDesignarEntregador}
+          onStatusChange={handleStatusChange}
         />
         <EntregaColumn
           columnId="SaiuParaEntrega"
           title="Saiu para Entrega"
           entregas={data.SaiuParaEntrega}
           onMarcarComoEntregue={handleMarcarComoEntregue}
+          onStatusChange={handleStatusChange}
         />
         <EntregaColumn
           columnId="Entregue"

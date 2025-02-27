@@ -37,21 +37,24 @@ interface EntregaCardProps {
   onMarcarComoEntregue?: () => void;
   onCancelarEntrega?: () => void;
   onMudarStatus?: (novoStatus: string) => void;
+  onStatusChange: (pedidoId: number, newStatus: string) => void;
 }
 
 const EntregaCard: React.FC<EntregaCardProps> = ({
   entrega,
   onDesignarEntregador,
   onMarcarComoEntregue,
-  onCancelarEntrega,
-  onMudarStatus,
+  onStatusChange,
 }) => {
   const [modalAberto, setModalAberto] = useState(false);
-  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isModalDesignarOpen, setIsModalDesignarOpen] = useState(false);
 
   const abrirModal = () => setModalAberto(true);
   const fecharModal = () => setModalAberto(false);
+
+  const statusOrder = ['Aguardando', 'Em entrega', 'Entregue']
 
   const handleImprimirComanda = (e: React.MouseEvent) => {
     e.stopPropagation(); // Impede que o clique abra o modal
@@ -76,10 +79,10 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
         <div className="absolute top-2 right-2">
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Impede que o clique abra o modal de informações
-              setIsActionsOpen(!isActionsOpen);
+              e.stopPropagation(); // Impede que o clique no botão abra o modal
+              setIsDropdownOpen(!isDropdownOpen);
             }}
-            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+            className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,38 +94,50 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
             </svg>
           </button>
 
-          {/* Menu de Ações */}
-          {isActionsOpen && (
-            <div
-              className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50"
-              onClick={(e) => e.stopPropagation()} // Impede que o clique no dropdown abra o modal
-            >
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
               <div className="py-1">
-                {/* Select de Mudança de Status */}
-                <select
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (onMudarStatus) onMudarStatus(e.target.value);
-                  }}
-                  className="w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <option value="">Mudar Status</option>
-                  <option value="Aguardando">Aguardando</option>
-                  <option value="SaiuParaEntrega">Saiu para Entrega</option>
-                  <option value="Entregue">Entregue</option>
-                </select>
+                {/* Mudar Status */}
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsStatusDropdownOpen(!isStatusDropdownOpen);
+                    }}
+                    className="flex justify-between w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Mudar Status
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
 
-                {/* Botão de Cancelar Entrega */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onCancelarEntrega) onCancelarEntrega();
-                    setIsActionsOpen(false);
-                  }}
-                  className="w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Cancelar Entrega
-                </button>
+                  {isStatusDropdownOpen && (
+                    <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
+                      {statusOrder.map((status) => (
+                        <button
+                          key={status}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onStatusChange(entrega.id, status);
+                          }}
+                          className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
