@@ -2,8 +2,8 @@ class Api::V1::EntregadoresController < ApplicationController
   before_action :set_entregador, only: %i[show update destroy]
 
   def index
-    entregadores = Entregador.all
-    render json: EntregadorSerializer.new(entregadores)
+    @entregadores = Entregador.all
+    render json: @entregadores.as_json
   end
 
   def show

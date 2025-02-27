@@ -5,4 +5,3 @@ class EntregadorSerializer
 
   has_many :entregas
 end
-
