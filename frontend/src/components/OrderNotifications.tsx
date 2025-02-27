@@ -36,7 +36,7 @@ interface Pedido {
 
 // Configuração do som de notificação
 const notificationSound = new Howl({
-  src: ['/sounds/notification.mp3'],
+  src: ['/sounds/notification-sound.mp3', '/sounds/notification-sound.ogg'], // Carrega múltiplos formatos
   preload: true,
   html5: true,
 });
@@ -47,7 +47,14 @@ const OrderNotifications: React.FC = () => {
   // Função para tocar o som
   const playNotificationSound = () => {
     console.log('Tentando tocar o som...');
-    notificationSound.play();
+
+    // Verifica se o som está carregado
+    if (notificationSound.state() === 'loaded') {
+      console.log('Som carregado com sucesso.');
+      notificationSound.play();
+    } else {
+      console.error('Som não está carregado.');
+    }
 
     // Listeners para eventos do Howler.js
     notificationSound.on('play', () => {
@@ -65,7 +72,6 @@ const OrderNotifications: React.FC = () => {
 
   // Função para exibir notificação do navegador
   const showNotification = async () => {
-    console.log('Tentando exibir a notificação...');
 
     if (Notification.permission === "granted") {
       new Notification("Novo Pedido!", {
@@ -117,19 +123,6 @@ const OrderNotifications: React.FC = () => {
         },
       }
     );
-
-    // Habilitar o som após qualquer interação do usuário
-    const enableSoundOnInteraction = () => {
-      notificationSound.play();
-      document.removeEventListener('click', enableSoundOnInteraction);
-    };
-
-    document.addEventListener('click', enableSoundOnInteraction);
-
-    return () => {
-      subscription.unsubscribe();
-      document.removeEventListener('click', enableSoundOnInteraction);
-    };
   }, []);
 
   return (
