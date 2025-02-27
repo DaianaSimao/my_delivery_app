@@ -16,7 +16,7 @@ import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosFor
 import AcompanhamentosEditForm from "./components/acompanhamentos/AcompanhamentosEditForm";
 import PedidosList from "./components/pedidos/PedidosList";
 import EntregasList from "./components/entregas/EntregasList";
-import OrderNotifications from './components/OrderNotifications';
+import OrderNotifications from './components/pedidos/PedidoNotificacao';
 
 const restaurantInfo = {
   name: "Sushi Express",

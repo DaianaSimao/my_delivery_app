@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createConsumer, Subscription } from '@rails/actioncable';
 import { Howl } from 'howler';
-import PedidoModal from './pedidos/PedidoModal';
+import PedidoModal from './PedidoModal';
 
 interface Pedido {
   id: number;
@@ -52,7 +52,7 @@ const notificationSound = new Howl({
   html5: true,
 });
 
-const OrderNotifications: React.FC = () => {
+const PedidoNotificacao: React.FC = () => {
   const [notifications, setNotifications] = useState<Pedido[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // Controla a visibilidade do modal
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null); // Armazena o pedido selecionado
@@ -140,7 +140,7 @@ const OrderNotifications: React.FC = () => {
     const consumer = createConsumer(`ws://localhost:3000/cable?token=${token}`);
 
     const subscription: Subscription = consumer.subscriptions.create(
-      { channel: 'OrderNotificationsChannel', restaurante_id: restauranteId },
+      { channel: 'PedidoNotificacaoChannel', restaurante_id: restauranteId },
       {
         received: (data: { type: string; pedido: Pedido }) => {
           console.log("Recebido:", JSON.stringify(data, null, 2));
@@ -211,4 +211,4 @@ const OrderNotifications: React.FC = () => {
   );
 };
 
-export default OrderNotifications;
+export default PedidoNotificacao;

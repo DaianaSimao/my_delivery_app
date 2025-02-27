@@ -1,5 +1,5 @@
-# app/channels/order_notifications_channel.rb
-class OrderNotificationsChannel < ApplicationCable::Channel
+# app/channels/pedido_notificacao_channel.rb
+class PedidoNotificacaoChannel < ApplicationCable::Channel
   def subscribed
     # Este método é chamado quando o cliente assina o canal
     restaurante_id = params[:restaurante_id]
