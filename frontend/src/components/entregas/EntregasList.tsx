@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
-import EntregaColumn from './EntregaColumn';
+import { EntregaColumn } from './EntregaColumn';
 import useEntregas from '../../hooks/useEntregas';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -28,7 +28,10 @@ const EntregasList: React.FC = () => {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [pedidoId, setPedidoId] = useState('');
+  const [entregadorNome, setEntregadorNome] = useState('');
 
+  // Função para filtrar as entregas
   const filterEntregas = (entregas: Entrega[], term: string) => {
     return entregas.filter((entrega) =>
       entrega.pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase())
@@ -39,19 +42,51 @@ const EntregasList: React.FC = () => {
   useEffect(() => {
     if (entregas.length > 0) {
       const filteredData = {
-        Aguardando: filterEntregas(entregas.filter((e) => e.status === 'Aguardando'), searchTerm),
-        SaiuParaEntrega: filterEntregas(entregas.filter((e) => e.status === 'Em entrega'), searchTerm),
-        Entregue: filterEntregas(entregas.filter((e) => e.status === 'Entregue'), searchTerm),
-      }; 
+        Aguardando: filterEntregas(entregas.filter((e: Entrega) => e.status === 'Aguardando'), searchTerm),
+        SaiuParaEntrega: filterEntregas(entregas.filter((e: Entrega) => e.status === 'Em entrega'), searchTerm),
+        Entregue: filterEntregas(entregas.filter((e: Entrega) => e.status === 'Entregue'), searchTerm),
+      };
       setData(filteredData);
     }
   }, [entregas, searchTerm]);
 
+  // Função para buscar entregas com filtros
+  const buscarEntregas = async () => {
+    try {
+      const response = await api.get('/api/v1/entregas', {
+        params: {
+          search: searchTerm,
+          pedido_id: pedidoId,
+          entregador_nome: entregadorNome,
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error('Erro ao buscar entregas');
+      }
+
+      setData({
+        Aguardando: response.data.filter((e: Entrega) => e.status === 'Aguardando'),
+        SaiuParaEntrega: response.data.filter((e: Entrega) => e.status === 'Em entrega'),
+        Entregue: response.data.filter((e: Entrega) => e.status === 'Entregue'),
+      });
+    } catch (error) {
+      console.error('Erro ao buscar entregas:', error);
+      toast.error('Erro ao buscar entregas.');
+    }
+  };
+
+  // Efeito para buscar entregas quando os filtros mudam
+  useEffect(() => {
+    buscarEntregas();
+  }, [searchTerm, pedidoId, entregadorNome]);
+
   // Função para designar um entregador
-  const handleDesignarEntregador = async (entregaId: number, entregadorId: number) => {
+  const handleDesignarEntregador = async (entregaId: number, selectedEntregador: number) => {
+    console.log('Designar entregador:', entregaId, selectedEntregador);
     try {
       const response = await api.put(`/api/v1/entregas/${entregaId}`, {
-        entrega: { entregador_id: entregadorId, status: 'Em entrega' },
+        entrega: { entregador_id: selectedEntregador, status: 'Em entrega' },
       });
 
       if (response.status !== 200) {
@@ -109,6 +144,7 @@ const EntregasList: React.FC = () => {
     }
   };
 
+  // Função para mudar o status da entrega
   const handleStatusChange = async (entregaId: number, newStatus: string) => {
     try {
       const formattedStatus = newStatus.replace(/ /g, '_');
@@ -122,13 +158,13 @@ const EntregasList: React.FC = () => {
       }
 
       setData((prevData) => {
-        const updatedData = { ...prevData };
+        const updatedData: typeof prevData = { ...prevData };
 
-        Object.keys(updatedData).forEach((status) => {
+        (Object.keys(updatedData) as (keyof typeof updatedData)[]).forEach((status) => {
           updatedData[status] = updatedData[status].filter((e) => e.id !== entregaId);
         });
 
-        updatedData[formattedStatus].push(response.data);
+        updatedData[formattedStatus as keyof typeof updatedData].push(response.data);
 
         return updatedData;
       });
@@ -138,15 +174,14 @@ const EntregasList: React.FC = () => {
       console.error('Erro ao atualizar o status da entrega:', error);
       toast.error('Erro ao atualizar o status da entrega.');
     }
-  }
-    
+  };
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <>
-    <div className="p-4"></div>
+      <div className="p-4"></div>
       <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
         <div className="w-full md:w-1/2">
           <form
@@ -185,30 +220,49 @@ const EntregasList: React.FC = () => {
             </div>
           </form>
         </div>
+        <div className="w-full md:w-1/4">
+          <input
+            type="text"
+            placeholder="ID do Pedido"
+            value={pedidoId}
+            onChange={(e) => setPedidoId(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          />
+        </div>
+        <div className="w-full md:w-1/4">
+          <input
+            type="text"
+            placeholder="Nome do Entregador"
+            value={entregadorNome}
+            onChange={(e) => setEntregadorNome(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          />
+        </div>
       </div>
-        <DragDropContext onDragEnd={() => {}}>
-          <div className="flex space-x-4 p-4 mt-10">
-            <EntregaColumn
-              columnId="Aguardando"
-              title="Aguardando Entrega"
-              entregas={data.Aguardando}
-              onDesignarEntregador={handleDesignarEntregador}
-              onStatusChange={handleStatusChange}
-            />
-            <EntregaColumn
-              columnId="SaiuParaEntrega"
-              title="Saiu para Entrega"
-              entregas={data.SaiuParaEntrega}
-              onMarcarComoEntregue={handleMarcarComoEntregue}
-              onStatusChange={handleStatusChange}
-            />
-            <EntregaColumn
-              columnId="Entregue"
-              title="Entregue"
-              entregas={data.Entregue}
-            />
-          </div>
-        </DragDropContext>
+      <DragDropContext onDragEnd={() => {}}>
+        <div className="flex space-x-4 p-4 mt-10">
+          <EntregaColumn
+            columnId="Aguardando"
+            title="Aguardando Entrega"
+            entregas={data.Aguardando}
+            onDesignarEntregador={handleDesignarEntregador}
+            onStatusChange={handleStatusChange}
+          />
+          <EntregaColumn
+            columnId="SaiuParaEntrega"
+            title="Saiu para Entrega"
+            entregas={data.SaiuParaEntrega}
+            onMarcarComoEntregue={handleMarcarComoEntregue}
+            onStatusChange={handleStatusChange}
+          />
+          <EntregaColumn
+            columnId="Entregue"
+            title="Entregue"
+            entregas={data.Entregue}
+            onStatusChange={handleStatusChange}
+          />
+        </div>
+      </DragDropContext>
     </>
   );
 };

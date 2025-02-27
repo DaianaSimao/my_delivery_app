@@ -35,9 +35,7 @@ interface EntregaCardProps {
   entrega: Entrega;
   onDesignarEntregador?: (entregadorId: number) => void;
   onMarcarComoEntregue?: () => void;
-  onCancelarEntrega?: () => void;
-  onMudarStatus?: (novoStatus: string) => void;
-  onStatusChange: (pedidoId: number, newStatus: string) => void;
+  onStatusChange: (entregaId: number, newStatus: string) => void;
 }
 
 const EntregaCard: React.FC<EntregaCardProps> = ({
@@ -54,7 +52,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
   const abrirModal = () => setModalAberto(true);
   const fecharModal = () => setModalAberto(false);
 
-  const statusOrder = ['Aguardando', 'Em entrega', 'Entregue']
+  const statusOrder = ['Aguardando', 'Em entrega', 'Entregue'];
 
   const handleImprimirComanda = (e: React.MouseEvent) => {
     e.stopPropagation(); // Impede que o clique abra o modal
@@ -148,11 +146,9 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
           Pedido #{entrega.pedido_id}
         </p>
 
-        {entrega.entregador && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            Entregador: {entrega.entregador.nome} ({entrega.entregador.veiculo})
-          </p>
-        )}
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+        Entregador: {entrega.entregador ? `${entrega.entregador.nome} (${entrega.entregador.veiculo})` : 'Sem entregador'}
+        </p>
 
         {/* Botões de Ação */}
         <div className="mt-4">
@@ -164,7 +160,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
               }}
               className="w-full bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition-colors"
             >
-              Designar Entregador
+              🏍️ Designar Entregador
             </button>
           )}
 
@@ -195,8 +191,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
         <ModalDesignarEntregador
           isOpen={isModalDesignarOpen}
           onClose={() => setIsModalDesignarOpen(false)}
-          onDesignar={onDesignarEntregador}
-        />
+          onDesignar={onDesignarEntregador} entregaId={0}        />
       )}
 
       {/* Modal de Informações da Entrega */}
@@ -205,6 +200,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
           isOpen={modalAberto}
           onClose={fecharModal}
           entrega={entrega}
+
         />
       )}
     </>

@@ -44,6 +44,8 @@ const ModalDesignarEntregador: React.FC<ModalDesignarEntregadorProps> = ({
     if (selectedEntregador) {
       onDesignar(selectedEntregador);
       onClose();
+    } else {
+      alert('Selecione um entregador para designar');
     }
   };
 

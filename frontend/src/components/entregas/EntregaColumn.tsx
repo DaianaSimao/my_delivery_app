@@ -26,7 +26,7 @@ interface EntregaColumnProps {
   onStatusChange: (entregaId: number, newStatus: string) => void;
 }
 
-const EntregaColumn: React.FC<EntregaColumnProps> = ({
+export const EntregaColumn: React.FC<EntregaColumnProps> = ({
   columnId,
   title,
   entregas,
@@ -39,26 +39,24 @@ const EntregaColumn: React.FC<EntregaColumnProps> = ({
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
       <ul className="space-y-4">
         {entregas.map((entrega) => (
-          <li key={entrega.id}>
+            <li key={entrega.id}>
             <EntregaCard
               entrega={entrega}
               onDesignarEntregador={
-                columnId === 'Aguardando' && onDesignarEntregador
-                  ? () => onDesignarEntregador(entrega.id, entrega.entregador?.id || 0)
-                  : undefined
+              columnId === 'Aguardando' && onDesignarEntregador
+                ? (selectedEntregador: number) => onDesignarEntregador(entrega.id, selectedEntregador)
+                : undefined
               }
               onMarcarComoEntregue={
-                columnId === 'SaiuParaEntrega' && onMarcarComoEntregue
-                  ? () => onMarcarComoEntregue(entrega.id)
-                  : undefined
+              columnId === 'SaiuParaEntrega' && onMarcarComoEntregue
+                ? () => onMarcarComoEntregue(entrega.id)
+                : undefined
               }
               onStatusChange={onStatusChange}
             />
-          </li>
+            </li>
         ))}
       </ul>
     </div>
   );
 };
-
-export default EntregaColumn;

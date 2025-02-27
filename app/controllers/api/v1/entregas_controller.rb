@@ -3,20 +3,23 @@ class Api::V1::EntregasController < ApplicationController
 
   def index
     @entregas = Entrega.includes(:pedido, :entregador)
-     if params[:entregador_id]
-      @entregas = @entregas.where(entregador_id: params[:entregador_id])
+
+    if params[:entregador_nome].present?
+      @entregas = @entregas.joins(:entregador
+      ).where(
+        "entregadores.nome ILIKE :entregador_nome",
+        entregador_nome: "%#{params[:entregador_nome]}%"
+      )
     end
 
-    if params[:pedido_id]
+
+    if params[:pedido_id].present?
       @entregas = @entregas.where(pedido_id: params[:pedido_id])
     end
 
-    if params[:search]
+    if params[:search].present?
       @entregas = @entregas.joins(pedido: :cliente
-      ).where(
-        "pedidos.id = :search OR clientes.nome ILIKE :search",
-        search: "%#{params[:search]}%"
-      )
+      ).where(pedidos: {clientes: {nome: params[:search] }})
     end
 
     render json: @entregas.as_json(
