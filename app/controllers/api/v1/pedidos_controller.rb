@@ -7,6 +7,11 @@ class Api::V1::PedidosController < ApplicationController
     if params[:search].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
     end
+
+    if params[:pedido_id].present?
+      @pedidos = @pedidos.where(id: params[:pedido_id])
+    end
+
     render json: {
       data: @pedidos.as_json(
         include: {

@@ -30,53 +30,52 @@ const PedidosList: React.FC = () => {
     Em_Preparação: [] as Pedido[],
     Expedido: [] as Pedido[],
   });
-  const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca
+  const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca (nome do cliente)
+  const [searchPedidoId, setSearchPedidoId] = useState(''); // Estado para o ID do pedido
 
-  // Filtra os pedidos com base no nome do cliente
-  const filterPedidos = (pedidos: Pedido[], term: string) => {
-    return pedidos.filter((pedido) =>
-      pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase())
-    );
+  // Filtra os pedidos com base no nome do cliente ou ID do pedido
+  const filterPedidos = (pedidos: Pedido[], term: string, pedidoId: string) => {
+    return pedidos.filter((pedido) => {
+      const matchesNome = pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase());
+      const matchesId = pedidoId ? pedido.id.toString() === pedidoId : true;
+      return matchesNome && matchesId;
+    });
   };
 
-  // Atualiza o estado `data` quando os pedidos são carregados ou o termo de busca muda
+  // Atualiza o estado `data` quando os pedidos são carregados ou os termos de busca mudam
   useEffect(() => {
     if (pedidos.length > 0) {
       const filteredPedidos = {
-        Recebido: filterPedidos(pedidos.filter((p) => p.status === 'Recebido'), searchTerm),
-        Em_Análise: filterPedidos(pedidos.filter((p) => p.status === 'Em Análise'), searchTerm),
-        Em_Preparação: filterPedidos(pedidos.filter((p) => p.status === 'Em Preparação'), searchTerm),
-        Expedido: filterPedidos(pedidos.filter((p) => p.status === 'Expedido'), searchTerm),
+        Recebido: filterPedidos(pedidos.filter((p) => p.status === 'Recebido'), searchTerm, searchPedidoId),
+        Em_Análise: filterPedidos(pedidos.filter((p) => p.status === 'Em Análise'), searchTerm, searchPedidoId),
+        Em_Preparação: filterPedidos(pedidos.filter((p) => p.status === 'Em Preparação'), searchTerm, searchPedidoId),
+        Expedido: filterPedidos(pedidos.filter((p) => p.status === 'Expedido'), searchTerm, searchPedidoId),
       };
       setData(filteredPedidos);
     }
-  }, [pedidos, searchTerm]);
+  }, [pedidos, searchTerm, searchPedidoId]);
 
   // Função para mudar o status do pedido
   const handleStatusChange = async (pedidoId: number, newStatus: string) => {
     try {
-  
       const response = await api.put(`/api/v1/pedidos/${pedidoId}`, {
         status: newStatus,
       });
-  
-      console.log('Resposta do backend:', response.data); // Verifique o conteúdo de response.data
-  
+
       if (response.status !== 200) {
         throw new Error('Erro ao atualizar o status do pedido');
       }
-  
+
       // Atualiza o estado com o pedido retornado pelo backend
       setData((prevData) => {
         const updatedData = { ...prevData };
-  
+
         // Remove o pedido da coluna atual
         Object.keys(updatedData).forEach((status) => {
           updatedData[status] = updatedData[status].filter((pedido) => pedido.id !== pedidoId);
         });
-  
+
         // Adiciona o pedido na nova coluna
-        
         if (newStatus === 'Recebido') {
           updatedData.Recebido.push(response.data.data);
         } else if (newStatus === 'Em Análise') {
@@ -88,10 +87,10 @@ const PedidosList: React.FC = () => {
         } else {
           console.error(`Status "${newStatus}" não existe no estado.`);
         }
-  
+
         return updatedData;
       });
-  
+
       toast.success('Status do pedido atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar o status do pedido:', error);
@@ -134,8 +133,8 @@ const PedidosList: React.FC = () => {
 
   return (
     <div className="p-4">
-      {/* Campo de Busca */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
+      {/* Campos de Busca */}
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
         <div className="w-full md:w-1/2">
           <form
             className="flex items-center"
@@ -172,6 +171,15 @@ const PedidosList: React.FC = () => {
               />
             </div>
           </form>
+        </div>
+        <div className="w-full md:w-1/2">
+          <input
+            type="text"
+            placeholder="ID do Pedido"
+            value={searchPedidoId}
+            onChange={(e) => setSearchPedidoId(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          />
         </div>
       </div>
 
