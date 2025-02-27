@@ -166,48 +166,48 @@ const OrderNotifications: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed top-0 right-0 p-4 z-50">  
-      {notifications.map((pedido) => (
-        <div
-          key={pedido.id}
-          className="p-3 mb-3 text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 w-100 mt-16"
-          onClick={() => openModal(pedido)}
-          role="alert"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <svg
-                className="shrink-0 w-4 h-4 me-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-              </svg>
-              <h3 className="text-sm font-medium">Novo Pedido Recebido</h3>
-            </div>
-            <button
-              type="button"
-              className="text-green-800 bg-transparent border border-green-800 hover:bg-green-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-2 py-1 dark:hover:bg-green-600 dark:border-green-600 dark:text-green-500 dark:hover:text-white dark:focus:ring-green-800"
-              onClick={(e) => {
-                e.stopPropagation(); // Evita que o clique no botão abra o modal
-                removeNotification(pedido.id);
-              }}
-            >
-              Fechar
-            </button>
-          </div>
-          <div className="mt-1 text-sm">
-            Pedido ID: {pedido.id} - {pedido.cliente?.nome}
-          </div>
+<div className="fixed top-0 right-0 p-4 z-50">
+  {notifications.map((pedido) => (
+    <div
+      key={pedido.id}
+      className="p-4 mb-4 text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 w-96 mt-16"
+      onClick={() => openModal(pedido)}
+      role="alert"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <svg
+            className="shrink-0 w-6 h-6 me-2" // Ícone maior
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+          </svg>
+          <h3 className="text-lg font-medium">Novo Pedido Recebido</h3> {/* Título maior */}
         </div>
-      ))}
-      {/* Renderiza o modal se estiver aberto */}
-      {isModalOpen && selectedPedido && (
-        <PedidoModal pedido={selectedPedido} onClose={closeModal} />
-      )}
+        <button
+          type="button"
+          className="text-green-800 bg-transparent border border-green-800 hover:bg-green-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-1.5 dark:hover:bg-green-600 dark:border-green-600 dark:text-green-500 dark:hover:text-white dark:focus:ring-green-800"
+          onClick={(e) => {
+            e.stopPropagation(); // Evita que o clique no botão abra o modal
+            removeNotification(pedido.id);
+          }}
+        >
+          Fechar
+        </button>
+      </div>
+      <div className="mt-2 text-base"> {/* Texto maior */}
+        Pedido ID: {pedido.id} - {pedido.cliente?.nome}
+      </div>
     </div>
+  ))}
+  {/* Renderiza o modal se estiver aberto */}
+  {isModalOpen && selectedPedido && (
+    <PedidoModal pedido={selectedPedido} onClose={closeModal} />
+  )}
+</div>
   );
 };
 
