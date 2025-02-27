@@ -43,7 +43,7 @@ const EntregasList: React.FC = () => {
   const handleDesignarEntregador = async (entregaId: number, entregadorId: number) => {
     try {
       const response = await api.put(`/api/v1/entregas/${entregaId}`, {
-        entrega: { entregador_id: entregadorId, status: 'SaiuParaEntrega' },
+        entrega: { entregador_id: entregadorId, status: 'Em entrega' },
       });
 
       if (response.status !== 200) {
@@ -106,7 +106,7 @@ const EntregasList: React.FC = () => {
 
   return (
     <DragDropContext onDragEnd={() => {}}>
-      <div className="flex space-x-4 p-4">
+      <div className="flex space-x-4 p-4 mt-10">
         <EntregaColumn
           columnId="Aguardando"
           title="Aguardando Entrega"
