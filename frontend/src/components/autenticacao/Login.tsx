@@ -30,12 +30,14 @@ const Login: React.FC = () => {
       console.log("Resposta do backend:", response.data);
 
       const token = response.data.status?.data?.token;
+      const restauranteId = response.data.status?.data?.user?.restaurante_id || "";
+
       if (!token) {
         throw new Error("Token não encontrado na resposta do backend");
       }
 
       toast.success("Login realizado com sucesso!");
-      login(token);
+      login(token, restauranteId);
       navigate("/dashboard");
     }
     

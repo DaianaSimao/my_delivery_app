@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios"; // Importando o axios
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const LogoutButton: React.FC = () => {
   const { logout } = useAuth();
@@ -34,9 +35,12 @@ const LogoutButton: React.FC = () => {
 
       logout();
       localStorage.removeItem("token");
+      localStorage.removeItem("restauranteId");
       navigate("/login");
+      toast.success("Logout realizado com sucesso");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
+      toast.error((error as Error).message || "Erro ao fazer logout");
       logout();
       localStorage.removeItem("token");
       navigate("/login");

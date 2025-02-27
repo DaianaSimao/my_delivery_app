@@ -172,7 +172,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
               }}
               className="w-full bg-green-500 text-white py-1 px-3 rounded-lg hover:bg-green-600 transition-colors mt-2"
             >
-              Marcar como Entregue
+              📥 Marcar como Entregue
             </button>
           )}
 
@@ -181,7 +181,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
             onClick={handleImprimirComanda}
             className="w-full bg-yellow-500 text-white py-1 px-3 rounded-lg hover:bg-yellow-600 transition-colors mt-2"
           >
-            Imprimir Comanda
+            🧾 Imprimir Comanda
           </button>
         </div>
       </div>
@@ -191,7 +191,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
         <ModalDesignarEntregador
           isOpen={isModalDesignarOpen}
           onClose={() => setIsModalDesignarOpen(false)}
-          onDesignar={onDesignarEntregador} entregaId={0}        />
+          onDesignar={onDesignarEntregador} entregaId={0} />
       )}
 
       {/* Modal de Informações da Entrega */}
