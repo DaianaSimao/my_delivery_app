@@ -10,7 +10,7 @@ interface Pedido {
     telefone: string;
   };
   valor_total: number;
-  itens_pedidos: Array<{
+  itens_pedidos?: Array<{ // Adicione "?" para indicar que pode ser undefined
     produto: {
       nome: string;
     };
@@ -46,6 +46,11 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
 
   const statusOptions = ['Recebido', 'Em Análise', 'Em Preparação', 'Expedido'];
+
+  // Verifica se o pedido está definido
+  if (!pedido) {
+    return <p className="text-red-500">Erro: Pedido não encontrado.</p>;
+  }
 
   // Formata a data do pedido
   const formatDate = (dateString: string) => {
@@ -181,13 +186,17 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
         {/* Detalhes do Pedido */}
         <div className="mt-4">
           <p className="text-sm font-medium text-gray-900 dark:text-white">Itens:</p>
-          <ul className="list-disc list-inside">
-            {pedido.itens_pedidos.map((item, index) => (
-              <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
-                {item.quantidade}x {item.produto.nome}
-              </li>
-            ))}
-          </ul>
+          {pedido.itens_pedidos && pedido.itens_pedidos.length > 0 ? (
+            <ul className="list-disc list-inside">
+              {pedido.itens_pedidos.map((item, index) => (
+                <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                  {item.quantidade}x {item.produto.nome}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-600 dark:text-gray-400">Nenhum item encontrado.</p>
+          )}
         </div>
       </div>
 

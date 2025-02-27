@@ -7,7 +7,6 @@ class Api::V1::PedidosController < ApplicationController
     if params[:search].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
     end
-
     render json: {
       data: @pedidos.as_json(
         include: {
@@ -93,7 +92,7 @@ class Api::V1::PedidosController < ApplicationController
   def update
     if @pedido.update(pedido_params)
       @pedido = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).find(@pedido.id)
-      # Renderiza o JSON seguindo o mesmo padrão do `index`
+      # Renderiza o JSON seguindo o mesmo padrão do `index
       render json: {
         data: @pedido.as_json(
           include: {

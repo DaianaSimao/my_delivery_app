@@ -9,9 +9,9 @@ interface Pedido {
   id: number;
   status: string;
   cliente?: {
-    id: number;
+    id?: number;
     nome: string;
-    telefone: string;
+    telefone?: string;
   };
   valor_total: number;
   itens_pedidos: Array<{
@@ -44,8 +44,8 @@ const PedidosList: React.FC = () => {
     if (pedidos.length > 0) {
       const filteredPedidos = {
         Recebido: filterPedidos(pedidos.filter((p) => p.status === 'Recebido'), searchTerm),
-        Em_Análise: filterPedidos(pedidos.filter((p) => p.status === 'Em_Análise'), searchTerm),
-        Em_Preparação: filterPedidos(pedidos.filter((p) => p.status === 'Em_Preparação'), searchTerm),
+        Em_Análise: filterPedidos(pedidos.filter((p) => p.status === 'Em Análise'), searchTerm),
+        Em_Preparação: filterPedidos(pedidos.filter((p) => p.status === 'Em Preparação'), searchTerm),
         Expedido: filterPedidos(pedidos.filter((p) => p.status === 'Expedido'), searchTerm),
       };
       setData(filteredPedidos);
@@ -55,32 +55,43 @@ const PedidosList: React.FC = () => {
   // Função para mudar o status do pedido
   const handleStatusChange = async (pedidoId: number, newStatus: string) => {
     try {
-      const formattedStatus = newStatus.replace(/ /g, '_');
-
-      // Envia a requisição para atualizar o status no backend
+  
       const response = await api.put(`/api/v1/pedidos/${pedidoId}`, {
-        pedido: { status: formattedStatus },
+        status: newStatus,
       });
-
+  
+      console.log('Resposta do backend:', response.data); // Verifique o conteúdo de response.data
+  
       if (response.status !== 200) {
         throw new Error('Erro ao atualizar o status do pedido');
       }
-
-      // Atualiza o estado local (frontend) com o novo status
+  
+      // Atualiza o estado com o pedido retornado pelo backend
       setData((prevData) => {
         const updatedData = { ...prevData };
-
+  
         // Remove o pedido da coluna atual
         Object.keys(updatedData).forEach((status) => {
           updatedData[status] = updatedData[status].filter((pedido) => pedido.id !== pedidoId);
         });
-
+  
         // Adiciona o pedido na nova coluna
-        updatedData[formattedStatus].push(response.data);
-
+        
+        if (newStatus === 'Recebido') {
+          updatedData.Recebido.push(response.data.data);
+        } else if (newStatus === 'Em Análise') {
+          updatedData.Em_Análise.push(response.data.data);
+        } else if (newStatus === 'Em Preparação') {
+          updatedData.Em_Preparação.push(response.data.data);
+        } else if (newStatus === 'Expedido') {
+          updatedData.Expedido.push(response.data.data);
+        } else {
+          console.error(`Status "${newStatus}" não existe no estado.`);
+        }
+  
         return updatedData;
       });
-
+  
       toast.success('Status do pedido atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar o status do pedido:', error);
