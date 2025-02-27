@@ -72,7 +72,6 @@ const OrderNotifications: React.FC = () => {
 
   // Função para exibir notificação do navegador
   const showNotification = async () => {
-
     if (Notification.permission === "granted") {
       new Notification("Novo Pedido!", {
         body: "Você recebeu um novo pedido!",
@@ -91,6 +90,11 @@ const OrderNotifications: React.FC = () => {
     } else {
       console.log("Permissão de notificação negada anteriormente.");
     }
+  };
+
+  // Função para remover uma notificação
+  const removeNotification = (id: number) => {
+    setNotifications((prev) => prev.filter((pedido) => pedido.id !== id));
   };
 
   useEffect(() => {
@@ -116,21 +120,58 @@ const OrderNotifications: React.FC = () => {
         received: (data: { type: string; pedido: Pedido }) => {
           console.log("Recebido:", JSON.stringify(data, null, 2));
           if (data.type === 'new_order') {
-            setNotifications((prev) => [...prev, data.pedido]);
+            setNotifications((prev) => {
+              // Verifica se o pedido já existe no estado
+              const pedidoExistente = prev.find((p) => p.id === data.pedido.id);
+              if (!pedidoExistente) {
+                return [...prev, data.pedido]; // Adiciona o pedido apenas se não existir
+              }
+              return prev; // Retorna o estado anterior se o pedido já existir
+            });
             showNotification();
             playNotificationSound();
           }
         },
       }
     );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4">
+    <div className="fixed top-0 right-0 p-4 z-50">
       {notifications.map((pedido) => (
-        <div key={`${pedido.id}-${pedido.created_at}`} className="bg-white p-4 rounded-lg shadow-lg mb-2">
-          <p>Novo pedido recebido: #{pedido.id}</p>
-          <p>Cliente: {pedido.cliente?.nome}</p>
+        <div
+          key={pedido.id}
+          className="p-3 mb-3 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800 w-80 mt-16"
+          role="alert"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <svg
+                className="shrink-0 w-4 h-4 me-2"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+              </svg>
+              <h3 className="text-sm font-medium">Novo Pedido Recebido</h3>
+            </div>
+            <button
+              type="button"
+              className="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-2 py-1 dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
+              onClick={() => removeNotification(pedido.id)}
+            >
+              Fechar
+            </button>
+          </div>
+          <div className="mt-1 text-sm">
+            Pedido ID: {pedido.id} - {pedido.cliente?.nome}
+          </div>
         </div>
       ))}
     </div>
