@@ -10,7 +10,6 @@ class Pedido < ApplicationRecord
   after_update :create_entrega
 
   def create_entrega
-    binding.pry
     if self.status == "Expedido"
       Entrega.create(pedido_id: self.id)
     end

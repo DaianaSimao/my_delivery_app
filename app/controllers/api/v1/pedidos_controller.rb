@@ -86,11 +86,15 @@ class Api::V1::PedidosController < ApplicationController
   end
 
   def create
-    pedido = Pedido.new(pedido_params)
-    if pedido.save
-      render json: PedidoSerializer.new(pedido), status: :created
+    @pedido = Pedido.new(pedido_params)
+    if @pedido.save
+      OrderNotificationsChannel.broadcast_to(
+        @pedido.restaurante_id,
+        { type: 'Novo pedido', pedido: @pedido }
+      )
+      render json: PedidoSerializer.new(@pedido), status: :created
     else
-      render json: { errors: pedido.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @pedido.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

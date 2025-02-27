@@ -16,6 +16,7 @@ import AcompanhamentosForm from './components/acompanhamentos/AcompanhamentosFor
 import AcompanhamentosEditForm from "./components/acompanhamentos/AcompanhamentosEditForm";
 import PedidosList from "./components/pedidos/PedidosList";
 import EntregasList from "./components/entregas/EntregasList";
+import OrderNotifications from './components/OrderNotifications';
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -42,6 +43,7 @@ const AppContent: React.FC = () => {
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
       <Toaster />
+      <OrderNotifications />
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         {/* Criação de um layout com Header */}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_24_013616) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_27_183223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -184,9 +184,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_013616) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "jti"
+    t.bigint "restaurante_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["restaurante_id"], name: "index_users_on_restaurante_id"
   end
 
   add_foreign_key "avaliacoes", "pedidos"
@@ -205,4 +207,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_24_013616) do
   add_foreign_key "produto_acompanhamentos_adicionais", "produtos", column: "produtos_id"
   add_foreign_key "produtos", "restaurantes"
   add_foreign_key "restaurantes", "enderecos"
+  add_foreign_key "users", "restaurantes"
 end
