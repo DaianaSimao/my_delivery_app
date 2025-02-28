@@ -30,10 +30,9 @@ const PedidosList: React.FC = () => {
     Em_Preparação: [] as Pedido[],
     Expedido: [] as Pedido[],
   });
-  const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca (nome do cliente)
-  const [searchPedidoId, setSearchPedidoId] = useState(''); // Estado para o ID do pedido
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchPedidoId, setSearchPedidoId] = useState('');
 
-  // Filtra os pedidos com base no nome do cliente ou ID do pedido
   const filterPedidos = (pedidos: Pedido[], term: string, pedidoId: string) => {
     return pedidos.filter((pedido) => {
       const matchesNome = pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase());
@@ -42,7 +41,6 @@ const PedidosList: React.FC = () => {
     });
   };
 
-  // Atualiza o estado `data` quando os pedidos são carregados ou os termos de busca mudam
   useEffect(() => {
     if (pedidos.length > 0) {
       const filteredPedidos = {
@@ -55,7 +53,6 @@ const PedidosList: React.FC = () => {
     }
   }, [pedidos, searchTerm, searchPedidoId]);
 
-  // Função para mudar o status do pedido
   const handleStatusChange = async (pedidoId: number, newStatus: string) => {
     try {
       const response = await api.put(`/api/v1/pedidos/${pedidoId}`, {
@@ -66,24 +63,21 @@ const PedidosList: React.FC = () => {
         throw new Error('Erro ao atualizar o status do pedido');
       }
 
-      // Atualiza o estado com o pedido retornado pelo backend
       setData((prevData) => {
         const updatedData = { ...prevData };
 
-        // Remove o pedido da coluna atual
         Object.keys(updatedData).forEach((status) => {
           updatedData[status] = updatedData[status].filter((pedido) => pedido.id !== pedidoId);
         });
 
-        // Adiciona o pedido na nova coluna
         if (newStatus === 'Recebido') {
-          updatedData.Recebido.push(response.data.data);
+          updatedData.Recebido.unshift(response.data.data);
         } else if (newStatus === 'Em Análise') {
-          updatedData.Em_Análise.push(response.data.data);
+          updatedData.Em_Análise.unshift(response.data.data);
         } else if (newStatus === 'Em Preparação') {
-          updatedData.Em_Preparação.push(response.data.data);
+          updatedData.Em_Preparação.unshift(response.data.data);
         } else if (newStatus === 'Expedido') {
-          updatedData.Expedido.push(response.data.data);
+          updatedData.Expedido.unshift(response.data.data);
         } else {
           console.error(`Status "${newStatus}" não existe no estado.`);
         }
@@ -98,7 +92,6 @@ const PedidosList: React.FC = () => {
     }
   };
 
-  // Função para cancelar o pedido
   const handleCancel = async (pedidoId: number) => {
     try {
       const response = await api.delete(`/api/v1/pedidos/${pedidoId}`);
@@ -107,7 +100,6 @@ const PedidosList: React.FC = () => {
         throw new Error('Erro ao cancelar o pedido');
       }
 
-      // Remove o pedido do estado local
       setData((prevData) => {
         const updatedData = { ...prevData };
         Object.keys(updatedData).forEach((status) => {
@@ -123,7 +115,6 @@ const PedidosList: React.FC = () => {
     }
   };
 
-  // Função para editar o pedido
   const handleEdit = (pedidoId: number) => {
     console.log(`Editar pedido ${pedidoId}`);
   };
@@ -133,13 +124,12 @@ const PedidosList: React.FC = () => {
 
   return (
     <div className="p-4">
-      {/* Campos de Busca */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
         <div className="w-full md:w-1/2">
           <form
             className="flex items-center"
             onSubmit={(e) => {
-              e.preventDefault(); // Evita o recarregamento da página
+              e.preventDefault();
             }}
           >
             <label htmlFor="simple-search" className="sr-only">
@@ -183,9 +173,8 @@ const PedidosList: React.FC = () => {
         </div>
       </div>
 
-      {/* Lista de Pedidos */}
       <DragDropContext onDragEnd={() => {}}>
-        <div className="flex space-x-4 p-4">
+        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4">
           <PedidoColumn
             columnId="Recebido"
             title="Recebido"

@@ -7,7 +7,20 @@ interface Entrega {
   pedido_id: number;
   pedido: {
     id: number;
-    descricao: string;
+    forma_pagamento: string;
+    observacoes: string;
+    cliente: {
+      nome: string;
+      telefone: string;
+    };
+    endereco: {
+      rua: string;
+      numero: string;
+      bairro: string;
+      cidade: string;
+      estado: string;
+      cep: string;
+    };
   };
   entregador?: {
     id: number;

@@ -31,14 +31,12 @@ const EntregasList: React.FC = () => {
   const [pedidoId, setPedidoId] = useState('');
   const [entregadorNome, setEntregadorNome] = useState('');
 
-  // Função para filtrar as entregas
   const filterEntregas = (entregas: Entrega[], term: string) => {
     return entregas.filter((entrega) =>
       entrega.pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase())
     );
   };
 
-  // Atualiza o estado `data` quando as entregas são carregadas
   useEffect(() => {
     if (entregas.length > 0) {
       const filteredData = {
@@ -50,7 +48,6 @@ const EntregasList: React.FC = () => {
     }
   }, [entregas, searchTerm]);
 
-  // Função para buscar entregas com filtros
   const buscarEntregas = async () => {
     try {
       const response = await api.get('/api/v1/entregas', {
@@ -76,12 +73,10 @@ const EntregasList: React.FC = () => {
     }
   };
 
-  // Efeito para buscar entregas quando os filtros mudam
   useEffect(() => {
     buscarEntregas();
   }, [searchTerm, pedidoId, entregadorNome]);
 
-  // Função para designar um entregador
   const handleDesignarEntregador = async (entregaId: number, selectedEntregador: number) => {
     console.log('Designar entregador:', entregaId, selectedEntregador);
     try {
@@ -93,15 +88,12 @@ const EntregasList: React.FC = () => {
         throw new Error('Erro ao designar entregador');
       }
 
-      // Atualiza o estado local
       setData((prevData) => {
         const updatedData = { ...prevData };
 
-        // Remove a entrega da coluna "Aguardando"
         updatedData.Aguardando = updatedData.Aguardando.filter((e) => e.id !== entregaId);
 
-        // Adiciona a entrega na coluna "SaiuParaEntrega"
-        updatedData.SaiuParaEntrega.push(response.data);
+        updatedData.SaiuParaEntrega.unshift(response.data);
 
         return updatedData;
       });
@@ -113,7 +105,6 @@ const EntregasList: React.FC = () => {
     }
   };
 
-  // Função para marcar como entregue
   const handleMarcarComoEntregue = async (entregaId: number) => {
     try {
       const response = await api.put(`/api/v1/entregas/${entregaId}`, {
@@ -124,15 +115,12 @@ const EntregasList: React.FC = () => {
         throw new Error('Erro ao marcar como entregue');
       }
 
-      // Atualiza o estado local
       setData((prevData) => {
         const updatedData = { ...prevData };
 
-        // Remove a entrega da coluna "SaiuParaEntrega"
         updatedData.SaiuParaEntrega = updatedData.SaiuParaEntrega.filter((e) => e.id !== entregaId);
 
-        // Adiciona a entrega na coluna "Entregue"
-        updatedData.Entregue.push(response.data);
+        updatedData.Entregue.unshift(response.data);
 
         return updatedData;
       });
@@ -144,7 +132,6 @@ const EntregasList: React.FC = () => {
     }
   };
 
-  // Função para mudar o status da entrega
   const handleStatusChange = async (entregaId: number, newStatus: string) => {
     try {
       const formattedStatus = newStatus.replace(/ /g, '_');
@@ -164,7 +151,7 @@ const EntregasList: React.FC = () => {
           updatedData[status] = updatedData[status].filter((e) => e.id !== entregaId);
         });
 
-        updatedData[formattedStatus as keyof typeof updatedData].push(response.data);
+        updatedData[formattedStatus as keyof typeof updatedData].unshift(response.data);
 
         return updatedData;
       });
@@ -187,7 +174,7 @@ const EntregasList: React.FC = () => {
           <form
             className="flex items-center"
             onSubmit={(e) => {
-              e.preventDefault(); // Evita o recarregamento da página
+              e.preventDefault();
             }}
           >
             <label htmlFor="simple-search" className="sr-only">
@@ -240,7 +227,7 @@ const EntregasList: React.FC = () => {
         </div>
       </div>
       <DragDropContext onDragEnd={() => {}}>
-        <div className="flex space-x-4 p-4 mt-10">
+        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 p-4 mt-10">
           <EntregaColumn
             columnId="Aguardando"
             title="Aguardando Entrega"

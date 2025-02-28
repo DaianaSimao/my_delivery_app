@@ -2,7 +2,7 @@ class Api::V1::PedidosController < ApplicationController
   before_action :set_pedido, only: %i[show update destroy]
 
   def index
-    @pedidos = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).all
+    @pedidos = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).all.order(updated_at: :desc)
 
     if params[:search].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
