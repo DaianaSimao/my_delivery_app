@@ -30,6 +30,7 @@ Rails.application.routes.draw do
       resources :produto_acompanhamentos
       resources :item_acompanhamentos
       resources :acompanhamentos
+      resources :acompanhamentos_pedidos
     end
   end
 end

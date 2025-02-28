@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_27_183223) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_28_002526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_183223) do
     t.integer "quantidade_maxima"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tipo"
   end
 
   create_table "acompanhamentos_adicionais", force: :cascade do |t|
@@ -28,6 +29,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_183223) do
     t.boolean "disponivel"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "acompanhamentos_pedidos", force: :cascade do |t|
+    t.bigint "item_acompanhamento_id", null: false
+    t.bigint "itens_pedido_id", null: false
+    t.integer "quantidade"
+    t.decimal "preco_unitario"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_acompanhamento_id"], name: "index_acompanhamentos_pedidos_on_item_acompanhamento_id"
+    t.index ["itens_pedido_id"], name: "index_acompanhamentos_pedidos_on_itens_pedido_id"
   end
 
   create_table "avaliacoes", force: :cascade do |t|
@@ -191,6 +203,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_183223) do
     t.index ["restaurante_id"], name: "index_users_on_restaurante_id"
   end
 
+  add_foreign_key "acompanhamentos_pedidos", "item_acompanhamentos"
+  add_foreign_key "acompanhamentos_pedidos", "itens_pedidos"
   add_foreign_key "avaliacoes", "pedidos"
   add_foreign_key "entregas", "entregadores"
   add_foreign_key "entregas", "pedidos"

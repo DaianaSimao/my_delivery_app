@@ -12,6 +12,7 @@ interface Pedido {
   itens_pedidos: Array<{
     produto: {
       nome: string;
+      preco: number;
       acompanhamentos?: Array<{
         id: number;
         nome: string;
@@ -23,6 +24,20 @@ interface Pedido {
         }>;
       }>;
     };
+    acompanhamentos_pedidos?: Array<{
+      item_acompanhamento: any;
+      id: number;
+      itens_acompanhamentos_pedidos?: Array<{
+        id: number;
+        acompanhamento: {
+          id: number;
+          nome: string;
+          quantidade_maxima: number;
+        };
+      }>;
+      quantidade: number;
+      preco_unitario: number;
+    }>;
     quantidade: number;
   }>;
   created_at: string;
@@ -48,6 +63,7 @@ interface PedidoModalProps {
 }
 
 const PedidoModal: React.FC<PedidoModalProps> = ({ pedido, onClose }) => {
+  console.log(pedido);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-2xl">
@@ -82,33 +98,45 @@ const PedidoModal: React.FC<PedidoModalProps> = ({ pedido, onClose }) => {
         <div className="mb-4">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">Itens do Pedido</h3>
           <ul className="list-disc list-inside">
-            {pedido.itens_pedidos.map((item, index) => (
-              <li key={index} className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                {item.quantidade}x {item.produto.nome}
+          {pedido.itens_pedidos.map((item, index) => (
+  <li key={index} className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+    {item.quantidade}x {item.produto.nome} - R$: {item.quantidade * item.produto.preco}
 
-                {/* Acompanhamentos */}
-                {item.produto.acompanhamentos && item.produto.acompanhamentos.length > 0 && (
-                  <ul className="ml-4 list-disc list-inside">
-                    {item.produto.acompanhamentos.map((acompanhamento, aIndex) => (
-                      <li key={aIndex} className="text-sm text-gray-600 dark:text-gray-400">
-                        {acompanhamento.nome} (Quantidade máxima: {acompanhamento.quantidade_maxima})
+    {/* Acompanhamentos */}
+    {item.acompanhamentos_pedidos && item.acompanhamentos_pedidos.length > 0 && (
+      <ul className="ml-4 list-disc list-inside">
+        {/* Agrupa os acompanhamentos pelo nome */}
+        {Object.entries(
+          item.acompanhamentos_pedidos.reduce((acc, acompanhamento) => {
+            const nomeAcompanhamento = acompanhamento.item_acompanhamento.acompanhamento.nome;
+            if (!acc[nomeAcompanhamento]) {
+              acc[nomeAcompanhamento] = {
+                quantidadeTotal: 0,
+                itens: [],
+              };
+            }
+            acc[nomeAcompanhamento].quantidadeTotal += acompanhamento.quantidade;
+            acc[nomeAcompanhamento].itens.push(acompanhamento);
+            return acc;
+          }, {} as Record<string, { quantidadeTotal: number; itens: typeof item.acompanhamentos_pedidos }>)
+        ).map(([nomeAcompanhamento, { quantidadeTotal, itens }], aIndex) => (
+          <li key={aIndex} className="text-sm text-gray-600 dark:text-gray-400">
+            {nomeAcompanhamento} (Quantidade: {quantidadeTotal}) - R$ {itens[0].preco_unitario * quantidadeTotal}
 
-                        {/* Itens dos Acompanhamentos */}
-                        {acompanhamento.item_acompanhamentos && acompanhamento.item_acompanhamentos.length > 0 && (
-                          <ul className="ml-4 list-disc list-inside">
-                            {acompanhamento.item_acompanhamentos.map((itemAcompanhamento, iaIndex) => (
-                              <li key={iaIndex} className="text-sm text-gray-600 dark:text-gray-400">
-                                {itemAcompanhamento.nome} - R$ {itemAcompanhamento.preco}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
+            {/* Itens dos Acompanhamentos */}
+            <ul className="ml-4 list-disc list-inside">
+              {itens.map((itemAcompanhamento, iaIndex) => (
+                <li key={iaIndex} className="text-sm text-gray-600 dark:text-gray-400">
+                  {itemAcompanhamento.item_acompanhamento.nome} - {itemAcompanhamento.quantidade}x - R$ {itemAcompanhamento.preco_unitario}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    )}
+  </li>
+))}
           </ul>
         </div>
 

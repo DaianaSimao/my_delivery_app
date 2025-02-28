@@ -143,6 +143,7 @@ const PedidoNotificacao: React.FC = () => {
       { channel: 'PedidoNotificacaoChannel', restaurante_id: restauranteId },
       {
         received: (data: { type: string; pedido: Pedido }) => {
+          console.log("📩 Notificação recebida:", data);
           console.log("Recebido:", JSON.stringify(data, null, 2));
           if (data.type === 'new_order') {
             setNotifications((prev) => {

@@ -24,6 +24,19 @@ interface Pedido {
         }>;
       }>;
     };
+    acompanhamentos_pedidos?: Array<{
+      id: number;
+      itens_acompanhamentos_pedidos?: Array<{
+        id: number;
+        acompanhamento: {
+          id: number;
+          nome: string;
+          quantidade_maxima: number;
+        };
+      }>;
+      quantidade: number;
+      preco_unitario: number;
+    }>;
     quantidade: number;
   }>;
   created_at: string;
@@ -61,7 +74,7 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
   if (!pedido) {
     return <p className="text-red-500">Erro: Pedido não encontrado.</p>;
   }
-
+  console.log(pedido);
   // Formata a data do pedido
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
