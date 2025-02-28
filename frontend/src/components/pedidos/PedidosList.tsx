@@ -67,7 +67,7 @@ const PedidosList: React.FC = () => {
         const updatedData = { ...prevData };
 
         Object.keys(updatedData).forEach((status) => {
-          updatedData[status] = updatedData[status].filter((pedido) => pedido.id !== pedidoId);
+          updatedData[status as keyof typeof updatedData] = updatedData[status as keyof typeof updatedData].filter((pedido) => pedido.id !== pedidoId);
         });
 
         if (newStatus === 'Recebido') {
@@ -102,7 +102,7 @@ const PedidosList: React.FC = () => {
 
       setData((prevData) => {
         const updatedData = { ...prevData };
-        Object.keys(updatedData).forEach((status) => {
+        (Object.keys(updatedData) as Array<keyof typeof updatedData>).forEach((status) => {
           updatedData[status] = updatedData[status].filter((pedido) => pedido.id !== pedidoId);
         });
         return updatedData;

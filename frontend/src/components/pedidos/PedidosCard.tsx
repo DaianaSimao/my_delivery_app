@@ -10,9 +10,19 @@ interface Pedido {
     telefone: string;
   };
   valor_total: number;
-  itens_pedidos?: Array<{ // Adicione "?" para indicar que pode ser undefined
+  itens_pedidos: Array<{
     produto: {
       nome: string;
+      acompanhamentos?: Array<{
+        id: number;
+        nome: string;
+        quantidade_maxima: number;
+        item_acompanhamentos?: Array<{
+          id: number;
+          nome: string;
+          preco: number;
+        }>;
+      }>;
     };
     quantidade: number;
   }>;
