@@ -26,18 +26,31 @@ const restaurantInfo = {
 };
 
 const AppContent: React.FC = () => {
+  // Estado para controlar o tema
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  // Efeito para carregar o tema salvo no localStorage ao montar o componente
   useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      // Se houver um tema salvo, aplica-o
+      setIsDarkMode(savedTheme === 'dark');
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+      // Caso contrário, usa a preferência do sistema
+      const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setIsDarkMode(prefersDarkMode);
+      document.documentElement.classList.toggle('dark', prefersDarkMode);
+      localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
     }
   }, []);
 
+  // Função para alternar o tema
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light'); // Salva a preferência no localStorage
   };
 
   return (
