@@ -3,19 +3,51 @@ import styled from "styled-components";
 import { useState } from "react";
 import Switch from "../Switch";
 import { Utensils } from "lucide-react";
-import type { RestaurantInfo } from '../../types';
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SelecionaRestaurante from "../admin/SelecionaRestaurante"; // Importe o componente
+import api from "../../services/api";
+import toast from "react-hot-toast";
 
 interface SideBarProps {
-  restaurantInfo: RestaurantInfo;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
 
-export function SideBar({ restaurantInfo, isDarkMode, onToggleDarkMode }: SideBarProps) {
+interface Restaurante {
+  id: string;
+  type: string;
+  attributes: {
+    id: number;
+    nome: string;
+    descricao: string;
+    categoria: string;
+    taxa_entrega: string;
+  }
+}
+
+export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRestaurante = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const restauranteId = localStorage.getItem("restauranteId");
+        const response = await api.get(`/api/v1/restaurantes/${restauranteId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setRestaurante(response.data.data); // Armazena o objeto diretamente
+      } catch (error) {
+        toast.error("Erro ao carregar restaurante");
+      }
+    };
+    fetchRestaurante();
+  }, []);
 
   return (
     <>
@@ -28,7 +60,7 @@ export function SideBar({ restaurantInfo, isDarkMode, onToggleDarkMode }: SideBa
             <div className="flex items-center">
               <Utensils className="h-8 w-8 text-primary-500" />
               <h1 className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">
-                {restaurantInfo.name}
+                {restaurante?.attributes.nome}
               </h1>
             </div>
             <div className="flex items-center">
