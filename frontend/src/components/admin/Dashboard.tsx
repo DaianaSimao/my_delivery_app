@@ -1,4 +1,3 @@
-import React from "react";
 import Chart from "react-apexcharts";
 import {
   Menu,
@@ -15,6 +14,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import salesIcon from "/icons/sales.svg";
 import ordersIcon from "/icons/orders.svg";
 import statsIcon from "/icons/stats.svg";
+import deliveryIcon from "/icons/delivery.svg";
 
 interface MetricCardPropsType {
   icon: string;
@@ -32,7 +32,7 @@ interface ChartCardPropsType {
 // Card de Métricas
 function MetricCard({ icon, title, value, description }: MetricCardPropsType) {
   return (
-    <Card className="shadow-md border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
       <CardBody className="p-4">
         <img src={icon} className="h-6 w-6 mb-5 dark:filter dark:invert" alt={title} />
         <Typography
@@ -41,7 +41,7 @@ function MetricCard({ icon, title, value, description }: MetricCardPropsType) {
         >
           {title}
         </Typography>
-        <Typography variant="h3" color="blue-gray" className="dark:text-white">
+        <Typography variant="h3" className="text-blue-gray-900 dark:text-white">
           {value}
         </Typography>
         <Typography variant="small" className="text-gray-500 dark:text-gray-400">
@@ -55,11 +55,11 @@ function MetricCard({ icon, title, value, description }: MetricCardPropsType) {
 // Card de Gráfico
 function ChartCard({ title, value, chart }: ChartCardPropsType) {
   return (
-    <Card className="shadow-md border border-gray-200 dark:border-gray-700 dark:bg-gray-800 w-full h-fit">
+    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800 w-full h-fit">
       <CardHeader
-        shadow={false}
         floated={false}
-        className="flex items-start justify-between rounded-none overflow-visible dark:bg-gray-800"
+        shadow={false}
+        className="flex items-start justify-between rounded-none dark:bg-gray-800"
       >
         <div>
           <Typography
@@ -68,7 +68,7 @@ function ChartCard({ title, value, chart }: ChartCardPropsType) {
           >
             {title}
           </Typography>
-          <Typography variant="h3" color="blue-gray" className="dark:text-white">
+          <Typography variant="h3" className="text-blue-gray-900 dark:text-white">
             {value}
           </Typography>
         </div>
@@ -76,9 +76,8 @@ function ChartCard({ title, value, chart }: ChartCardPropsType) {
           <MenuHandler>
             <Button
               size="sm"
-              color="gray"
               variant="outlined"
-              className="flex items-center gap-1 !border-gray-300 dark:!border-gray-600 dark:text-gray-300"
+              className="flex items-center gap-1 border-gray-300 dark:border-gray-600 dark:text-gray-300"
             >
               Últimos 7 dias
               <ChevronDownIcon
@@ -216,6 +215,44 @@ const ordersChart = {
   },
 };
 
+const dailySalesChart = {
+  type: "bar",
+  height: 220,
+  series: [
+    {
+      name: "Vendas do Dia",
+      data: [50, 40, 300, 320, 500, 350, 200],
+    },
+  ],
+  options: {
+    ...chartsConfig,
+    colors: ["#4CAF50"], // Verde para vendas do dia
+    xaxis: {
+      ...chartsConfig.xaxis,
+      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+    },
+  },
+};
+
+const dailyOrdersChart = {
+  type: "bar",
+  height: 220,
+  series: [
+    {
+      name: "Pedidos do Dia",
+      data: [30, 50, 200, 250, 400, 300, 150],
+    },
+  ],
+  options: {
+    ...chartsConfig,
+    colors: ["#2196F3"], // Azul para pedidos do dia
+    xaxis: {
+      ...chartsConfig.xaxis,
+      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+    },
+  },
+};
+
 // Dados dos cards de métricas
 const metricCardsData = [
   {
@@ -231,10 +268,16 @@ const metricCardsData = [
     description: "+8% em relação a ontem",
   },
   {
-    icon: statsIcon, // Substitua pelo ícone de ticket médio
+    icon: statsIcon,
     title: "Ticket Médio",
     value: "R$ 45",
     description: "+5% em relação a ontem",
+  },
+  {
+    icon: deliveryIcon,
+    title: "Entregas Hoje",
+    value: "90",
+    description: "+10% em relação a ontem",
   },
 ];
 
@@ -249,6 +292,16 @@ const chartCardsData = [
     title: "Pedidos Semanais",
     value: "850",
     chart: ordersChart,
+  },
+  {
+    title: "Vendas do Dia",
+    value: "R$ 2.500",
+    chart: dailySalesChart,
+  },
+  {
+    title: "Pedidos do Dia",
+    value: "120",
+    chart: dailyOrdersChart,
   },
 ];
 
