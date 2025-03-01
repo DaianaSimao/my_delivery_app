@@ -16,7 +16,8 @@ import AcompanhamentosEditForm from "./components/acompanhamentos/Acompanhamento
 import PedidosList from "./components/pedidos/PedidosList";
 import EntregasList from "./components/entregas/EntregasList";
 import OrderNotifications from './components/pedidos/PedidoNotificacao';
-import AuthenticatedLayout from "./layouts/AuthenticatedLayout"; // Importe o layout compartilhado
+import AuthenticatedLayout from "./layouts/AuthenticatedLayout";
+import BemVindo from "./components/admin/BemVindo";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -73,7 +74,7 @@ const AppContent: React.FC = () => {
               />
             }
           >
-            <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
+            <Route path="/bem_vindo" element={<BemVindo />} />
             <Route path="/produtos" element={<Produtos />} />
             <Route path="/produtos/new" element={<ProdutosForm />} />
             <Route path="/produtos/:id" element={<ProdutoDetail />} />
@@ -83,7 +84,7 @@ const AppContent: React.FC = () => {
             <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm />} />
             <Route path="/pedidos" element={<PedidosList />} />
             <Route path="/entregas" element={<EntregasList />} />
-            <Route path="/*" element={<Navigate to="/dashboard" />} />
+            <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>
       </Routes>
