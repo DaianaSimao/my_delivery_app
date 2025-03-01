@@ -10,14 +10,14 @@ const BemVindo: React.FC = () => {
             <span className="text-red-500 dark:text-red-600">Delivery Express</span>
           </h1>
           <p className="text-gray-700 dark:text-gray-300 text-xl mt-4">
-          Bem-vindo ao Painel Administrativo! Gerencie seu delivery com facilidade e eficiência, e veja seu negócio crescer a cada pedido. 🚀
+          Painel Administrativo! Gerencie seu delivery com facilidade e eficiência, e veja seu negócio crescer a cada pedido. 🚀
           </p>
         </div>
         <div className="w-full md:w-1/2 py-8">
           <svg
             viewBox="-4.63 0 393.055 393.055"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto text-gray-800 dark:text-gray-500"
+            className="w-full h-auto text-gray-800 dark:text-gray-300 fill-current"
           >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
