@@ -5,7 +5,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      binding.pry
       @token = request.env['warden-jwt_auth.token']
       headers['Authorization'] = @token
 
