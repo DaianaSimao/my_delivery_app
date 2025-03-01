@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./components/autenticacao/Login";
-import { Dashboard } from "./components/admin/Dashboard";
 import { Header } from "./components/autenticacao/Header";
 import Produtos from "./components/produtos/Produtos";
 import ProdutosForm from "./components/produtos/ProdutosForm";
@@ -17,6 +16,7 @@ import AcompanhamentosEditForm from "./components/acompanhamentos/Acompanhamento
 import PedidosList from "./components/pedidos/PedidosList";
 import EntregasList from "./components/entregas/EntregasList";
 import OrderNotifications from './components/pedidos/PedidoNotificacao';
+import AuthenticatedLayout from "./layouts/AuthenticatedLayout"; // Importe o layout compartilhado
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -26,18 +26,14 @@ const restaurantInfo = {
 };
 
 const AppContent: React.FC = () => {
-  // Estado para controlar o tema
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  // Efeito para carregar o tema salvo no localStorage ao montar o componente
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
-      // Se houver um tema salvo, aplica-o
       setIsDarkMode(savedTheme === 'dark');
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
-      // Caso contrário, usa a preferência do sistema
       const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
       setIsDarkMode(prefersDarkMode);
       document.documentElement.classList.toggle('dark', prefersDarkMode);
@@ -45,12 +41,11 @@ const AppContent: React.FC = () => {
     }
   }, []);
 
-  // Função para alternar o tema
   const toggleDarkMode = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
     document.documentElement.classList.toggle('dark', newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light'); // Salva a preferência no localStorage
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
 
   return (
@@ -59,7 +54,6 @@ const AppContent: React.FC = () => {
       <OrderNotifications />
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
-        {/* Criação de um layout com Header */}
         <Route 
           path="/login" 
           element={
@@ -72,26 +66,23 @@ const AppContent: React.FC = () => {
         <Route element={<ProtectedRoute />}>
           <Route
             element={
-              <div className="flex">
-                <Dashboard restaurantInfo={restaurantInfo} isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
-                  
-                <div className="w-full mt-5">
-                  <Routes>
-                    <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
-                    <Route path="/produtos" element={<Produtos />} />
-                    <Route path="/produtos/new" element={<ProdutosForm />} />
-                    <Route path="/produtos/:id" element={<ProdutoDetail />} />
-                    <Route path="/produtos/:id/editar" element={<ProdutosEditForm />} />
-                    <Route path="/acompanhamentos" element={<Acompanhamentos />} />
-                    <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
-                    <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm />} />
-                    <Route path="/pedidos" element={<PedidosList />} />
-                    <Route path="/entregas" element={<EntregasList />} />
-                  </Routes>
-                </div>
-              </div>
+              <AuthenticatedLayout
+                restaurantInfo={restaurantInfo}
+                isDarkMode={isDarkMode}
+                onToggleDarkMode={toggleDarkMode}
+              />
             }
           >
+            <Route path="/dashboard" element={<h1>Bem-vindo ao Dashboard</h1>} />
+            <Route path="/produtos" element={<Produtos />} />
+            <Route path="/produtos/new" element={<ProdutosForm />} />
+            <Route path="/produtos/:id" element={<ProdutoDetail />} />
+            <Route path="/produtos/:id/editar" element={<ProdutosEditForm />} />
+            <Route path="/acompanhamentos" element={<Acompanhamentos />} />
+            <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
+            <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm />} />
+            <Route path="/pedidos" element={<PedidosList />} />
+            <Route path="/entregas" element={<EntregasList />} />
             <Route path="/*" element={<Navigate to="/dashboard" />} />
           </Route>
         </Route>

@@ -74,7 +74,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
   if (!pedido) {
     return <p className="text-red-500">Erro: Pedido não encontrado.</p>;
   }
-  console.log(pedido);
   // Formata a data do pedido
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

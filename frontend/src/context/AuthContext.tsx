@@ -22,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('login', token, restauranteId)
     localStorage.setItem("token", token); // Salva o token no localStorage
     localStorage.setItem('restauranteId', restauranteId)
+    console.log("Edge - localStorage token:", token); 
     setIsAuthenticated(true); // Atualiza o estado
   };
 

@@ -110,31 +110,43 @@ const EntregasList: React.FC = () => {
       const response = await api.put(`/api/v1/entregas/${entregaId}`, {
         entrega: { status: 'Entregue' },
       });
-
+  
       if (response.status !== 200) {
         throw new Error('Erro ao marcar como entregue');
       }
-
+  
       setData((prevData) => {
-        const updatedData = { ...prevData };
-
-        updatedData.SaiuParaEntrega = updatedData.SaiuParaEntrega.filter((e) => e.id !== entregaId);
-
-        updatedData.Entregue.unshift(response.data);
-
+        const updatedData = {
+          Aguardando: prevData.Aguardando.filter((e) => e.id !== entregaId),
+          SaiuParaEntrega: prevData.SaiuParaEntrega.filter((e) => e.id !== entregaId),
+          Entregue: prevData.Entregue.some((e) => e.id === entregaId)
+            ? prevData.Entregue
+            : [response.data, ...prevData.Entregue],
+        };
+  
         return updatedData;
       });
-
+  
       toast.success('Pedido marcado como entregue!');
     } catch (error) {
       console.error('Erro ao marcar como entregue:', error);
       toast.error('Erro ao marcar como entregue.');
     }
   };
+  
 
   const handleStatusChange = async (entregaId: number, newStatus: string) => {
+    console.log('Mudar status:', entregaId, newStatus);
     try {
-      const formattedStatus = newStatus.replace(/ /g, '_');
+      const statusMap: Record<string, string> = {
+        "Aguardando": "Aguardando",
+        "Em entrega": "SaiuParaEntrega",
+        "Entregue": "Entregue",
+      };
+      
+      const formattedStatus = statusMap[newStatus] || newStatus;
+      
+      console.log(formattedStatus);
 
       const response = await api.put(`/api/v1/entregas/${entregaId}`, {
         entrega: { status: formattedStatus },
@@ -150,7 +162,7 @@ const EntregasList: React.FC = () => {
         (Object.keys(updatedData) as (keyof typeof updatedData)[]).forEach((status) => {
           updatedData[status] = updatedData[status].filter((e) => e.id !== entregaId);
         });
-
+        
         updatedData[formattedStatus as keyof typeof updatedData].unshift(response.data);
 
         return updatedData;

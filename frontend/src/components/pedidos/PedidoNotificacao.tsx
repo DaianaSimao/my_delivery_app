@@ -125,7 +125,6 @@ const PedidoNotificacao: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const restauranteId = localStorage.getItem('restauranteId');
-    console.log("Restaurante ID:", restauranteId);
 
     if (!restauranteId || restauranteId === 'undefined') {
       console.error("Restaurante ID inválido:", restauranteId);
