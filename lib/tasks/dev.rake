@@ -4,7 +4,7 @@ namespace :dev do
     require "faker"
 
     puts "Limpando banco de dados..."
-    [Avaliacao, Entrega, Pagamento, ItensPedido, Pedido, Produto, Restaurante, Endereco, Cliente, Entregador, AcompanhamentosPedido, Acompanhamento, ItemAcompanhamento, ProdutoAcompanhamento].each(&:delete_all)
+    [ Avaliacao, Entrega, Pagamento, ItensPedido, Pedido, Produto, Restaurante, Endereco, Cliente, Entregador, AcompanhamentosPedido, Acompanhamento, ItemAcompanhamento, ProdutoAcompanhamento, UserRestaurante ].each(&:delete_all)
 
     puts "Criando endereços..."
     10.times do

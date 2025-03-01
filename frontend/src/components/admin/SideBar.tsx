@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import SelecionaRestaurante from "../admin/SelecionaRestaurante"; // Importe o componente
 import api from "../../services/api";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/useAuth";
 
 interface SideBarProps {
   isDarkMode: boolean;
@@ -30,24 +31,27 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
   const navigate = useNavigate();
+  const { restauranteId } = useAuth();
 
   useEffect(() => {
     const fetchRestaurante = async () => {
       try {
         const token = localStorage.getItem("token");
-        const restauranteId = localStorage.getItem("restauranteId");
         const response = await api.get(`/api/v1/restaurantes/${restauranteId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setRestaurante(response.data.data); // Armazena o objeto diretamente
+        setRestaurante(response.data.data); // Atualiza o estado do restaurante
       } catch (error) {
         toast.error("Erro ao carregar restaurante");
       }
     };
-    fetchRestaurante();
-  }, []);
+
+    if (restauranteId) {
+      fetchRestaurante(); // Busca os dados do restaurante sempre que o restauranteId mudar
+    }
+  }, [restauranteId]); 
 
   return (
     <>
