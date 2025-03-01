@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_28_002526) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_01_224207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_002526) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tipo"
+    t.bigint "restaurante_id"
+    t.index ["restaurante_id"], name: "index_acompanhamentos_on_restaurante_id"
   end
 
   create_table "acompanhamentos_adicionais", force: :cascade do |t|
@@ -187,6 +189,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_002526) do
     t.index ["endereco_id"], name: "index_restaurantes_on_endereco_id"
   end
 
+  create_table "user_restaurantes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "restaurante_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id"], name: "index_user_restaurantes_on_restaurante_id"
+    t.index ["user_id"], name: "index_user_restaurantes_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -196,13 +207,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_002526) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "jti"
-    t.bigint "restaurante_id"
+    t.integer "restaurante_ativo"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["restaurante_id"], name: "index_users_on_restaurante_id"
   end
 
+  add_foreign_key "acompanhamentos", "restaurantes"
   add_foreign_key "acompanhamentos_pedidos", "item_acompanhamentos"
   add_foreign_key "acompanhamentos_pedidos", "itens_pedidos"
   add_foreign_key "avaliacoes", "pedidos"
@@ -221,5 +232,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_002526) do
   add_foreign_key "produto_acompanhamentos_adicionais", "produtos", column: "produtos_id"
   add_foreign_key "produtos", "restaurantes"
   add_foreign_key "restaurantes", "enderecos"
-  add_foreign_key "users", "restaurantes"
+  add_foreign_key "user_restaurantes", "restaurantes"
+  add_foreign_key "user_restaurantes", "users"
 end

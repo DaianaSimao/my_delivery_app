@@ -2,7 +2,8 @@ class Api::V1::ProdutosController < ApplicationController
   before_action :set_produto, only: %i[show update destroy]
 
   def index
-    @produtos = Produto.all
+    restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
+    @produtos = Produto.where(restaurante_id: restaurante.id)
 
     # Filtra os produtos com base no termo de busca
     if params[:search].present?

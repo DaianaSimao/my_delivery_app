@@ -3,7 +3,8 @@ class  Api::V1::AcompanhamentosController < ApplicationController
 
   # GET /acompanhamentos
   def index
-    @acompanhamentos = Acompanhamento.includes(:item_acompanhamentos) # Carrega os itens de acompanhamento
+    restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
+    @acompanhamentos = Acompanhamento.includes(:item_acompanhamentos).where(restaurante_id: restaurante.id)
     # Filtra os acompanhamentos com base no termo de busca
     if params[:search].present?
       @acompanhamentos = @acompanhamentos.where("nome ILIKE ?", "%#{params[:search]}%")
@@ -64,7 +65,7 @@ class  Api::V1::AcompanhamentosController < ApplicationController
     def acompanhamento_params
       params.require(:acompanhamento).permit(
         :nome,
-        :quantidade_maxima,
+        :quantidade_maxima, :restaurante_id,
         item_acompanhamentos_attributes: [ :id, :nome, :preco, :_destroy ]
       )
     end

@@ -7,6 +7,7 @@ const AcompanhamentosForm = () => {
   const [acompanhamento, setAcompanhamento] = useState({
     nome: '',
     quantidade_maxima: 1,
+    resturante_id: localStorage.getItem('restaurante_id'),
     itens: [{ nome: '', preco: '' }], // Preço é opcional
   });
 
@@ -56,13 +57,14 @@ const AcompanhamentosForm = () => {
         acompanhamento: {
           nome: acompanhamento.nome,
           quantidade_maxima: acompanhamento.quantidade_maxima,
+          restaurante_id: localStorage.getItem('restauranteId'),
           item_acompanhamentos_attributes: acompanhamento.itens.map((item) => ({
             nome: item.nome,
             preco: item.preco || null, // Envia null se o preço não for informado
           })),
         },
       };
-
+      console.log(payload);
       const response = await api.post('/api/v1/acompanhamentos', payload);
 
       if (response.status === 201) {

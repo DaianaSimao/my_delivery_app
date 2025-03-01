@@ -2,7 +2,8 @@ class Api::V1::EntregadoresController < ApplicationController
   before_action :set_entregador, only: %i[show update destroy]
 
   def index
-    @entregadores = Entregador.all
+    restaurante = current_user.restaurantes.find(params[:restaurante_id])
+    @entregadores = Entregador.where(restaurante_id: restaurante.id)
     render json: @entregadores.as_json
   end
 

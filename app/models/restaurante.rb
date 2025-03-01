@@ -3,4 +3,6 @@ class Restaurante < ApplicationRecord
 
   has_many :pedidos
   has_many :produtos
+  has_many :user_restaurantes
+  has_many :users, through: :user_restaurantes
 end

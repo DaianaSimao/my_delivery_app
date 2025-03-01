@@ -27,10 +27,8 @@ const Login: React.FC = () => {
         }
       );
 
-      console.log("Resposta do backend:", response.data);
-
       const token = response.data.status?.data?.token;
-      const restauranteId = response.data.status?.data?.user?.restaurante_id || "";
+      const restauranteId = response.data.status?.data?.active_restaurante.id;
 
       if (!token) {
         throw new Error("Token não encontrado na resposta do backend");
@@ -38,7 +36,7 @@ const Login: React.FC = () => {
 
       toast.success("Login realizado com sucesso!");
       login(token, restauranteId);
-      navigate("/dashboard");
+      navigate("/bem_vindo");
     }
     
     catch (error: unknown) {

@@ -4,30 +4,29 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def respond_with(resource, _opt = {})
-    @token = request.env['warden-jwt_auth.token']
-    headers['Authorization'] = @token
-    resource.update(jti: request.env['warden-jwt_auth.token']) # Atualizar o jti do usuário
-
-    request.env["restaurante_id"] = resource.restaurante_id if resource.restaurante_id.present?
+    @token = request.env["warden-jwt_auth.token"]
+    headers["Authorization"] = @token
+    resource.update(jti: request.env["warden-jwt_auth.token"]) # Atualizar o jti do usuário
+    request.env["restaurante_id"] = resource.restaurantes.first.id if resource.restaurantes.present?
 
     render json: {
       status: {
-        code: 200, message: 'Logged in successfully.',
+        code: 200, message: "Logged in successfully.",
         data: {
           token: @token,
-          user: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-
+          user: UserSerializer.new(resource).serializable_hash[:data][:attributes],
+          active_restaurante: resource.restaurantes.first
         }
       }
     }, status: :ok
   end
 
   def respond_to_on_destroy
-    if request.headers['Authorization'].present?
-      jwt_payload = JWT.decode(request.headers['Authorization'].split.last,
+    if request.headers["Authorization"].present?
+      jwt_payload = JWT.decode(request.headers["Authorization"].split.last,
                                Rails.application.credentials.devise_jwt_secret_key!).first
 
-      current_user = User.find(jwt_payload['sub'])
+      current_user = User.find(jwt_payload["sub"])
     end
 
     if current_user

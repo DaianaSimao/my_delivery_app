@@ -2,7 +2,8 @@ class Api::V1::EntregasController < ApplicationController
   before_action :set_entrega, only: %i[show update destroy]
 
   def index
-    @entregas = Entrega.includes(:pedido, :entregador)
+    restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
+    @entregas = Entrega.includes(:pedido, :entregador).where(pedidos: { restaurante_id: restaurante.id })
 
     if params[:entregador_nome].present?
       @entregas = @entregas.joins(:entregador
