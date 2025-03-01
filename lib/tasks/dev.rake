@@ -1,10 +1,10 @@
 namespace :dev do
   desc "Popula o banco de dados com dados fictícios"
   task populate: :environment do
-    require 'faker'
+    require "faker"
 
     puts "Limpando banco de dados..."
-    [Avaliacao, Entrega, Pagamento, ItensPedido, Pedido, Produto, Restaurante, Endereco, Cliente, Entregador].each(&:delete_all)
+    [Avaliacao, Entrega, Pagamento, ItensPedido, Pedido, Produto, Restaurante, Endereco, Cliente, Entregador, AcompanhamentosPedido, Acompanhamento, ItemAcompanhamento, ProdutoAcompanhamento].each(&:delete_all)
 
     puts "Criando endereços..."
     10.times do
@@ -37,7 +37,7 @@ namespace :dev do
     end
 
     puts "Criando restaurantes..."
-    5.times do
+    1.times do
       Restaurante.create!(
         nome: Faker::Restaurant.name,
         descricao: Faker::Restaurant.description,
@@ -46,6 +46,30 @@ namespace :dev do
         tempo_medio_entrega: rand(20..60),
         endereco_id: Endereco.all.sample.id
       )
+    end
+
+    puts "Criando acompanhamentos e adicionais..."
+    10.times do
+      acompanhamento = Acompanhamento.create!(
+        nome: Faker::Food.ingredient,
+        quantidade_maxima: rand(1..3),
+        tipo: %w[Adicional Acompanhamento].sample
+      )
+
+      3.times do
+        if acompanhamento.tipo == "Acompanhamento"
+          ItemAcompanhamento.create!(
+            acompanhamento_id: acompanhamento.id,
+            nome: Faker::Food.spice
+          )
+        else
+          ItemAcompanhamento.create!(
+            acompanhamento_id: acompanhamento.id,
+            nome: Faker::Food.ingredient,
+            preco: rand(1.0..5.0).round(2)
+          )
+        end
+      end
     end
 
     puts "Criando produtos..."
@@ -60,12 +84,19 @@ namespace :dev do
           disponivel: [true, false].sample
         )
       end
+
+      Produto.all.each do |produto|
+        if [true, false].sample
+          acompanhamento = Acompanhamento.all.sample
+          produto.acompanhamentos << acompanhamento
+        end
+      end
     end
 
     puts "Criando pedidos..."
-    20.times do
+    2.times do
       pedido = Pedido.create!(
-        restaurante_id: Restaurante.all.sample.id,
+        restaurante_id: Restaurante.first.id,
         cliente_id: Cliente.all.sample.id,
         endereco_id: Endereco.all.sample.id,
         forma_pagamento: %w[Cartão Dinheiro PIX].sample,
@@ -81,12 +112,23 @@ namespace :dev do
         preco_unitario = produto.preco
         total += preco_unitario * quantidade
 
-        ItensPedido.create!(
+        item_pedido = ItensPedido.create!(
           pedido_id: pedido.id,
           produto_id: produto.id,
           quantidade: quantidade,
           preco_unitario: preco_unitario
         )
+
+        if [true, false].sample
+          rand(1..3).times do
+            AcompanhamentosPedido.create!(
+              itens_pedido_id: item_pedido.id,
+              item_acompanhamento_id: ItemAcompanhamento.all.sample.id,
+              quantidade: rand(1..2),
+              preco_unitario: rand(1.0..10.0).round(2)
+            )
+          end
+        end
       end
 
       pedido.update(valor_total: total)
@@ -123,5 +165,23 @@ namespace :dev do
     end
 
     puts "Banco de dados populado com sucesso!"
+  end
+
+  desc "Popula tabela acompanhamentos pedidos"
+  task populate_acompanhamentos_pedidos: :environment do
+    itens_pedidos  = ItensPedido.all
+    itens_pedidos.each do |itens_pedido|
+      acompanhanentos = itens_pedido.produto.acompanhamentos
+      acompanhanentos.each do |acompanhamento|
+        acompanhamento.item_acompanhamentos.each do |item_acompanhamento|
+          AcompanhamentosPedido.create!(
+            itens_pedido_id: itens_pedido.id,
+            item_acompanhamento_id: item_acompanhamento.id,
+            quantidade: rand(1..3),
+            preco_unitario: item_acompanhamento.preco
+          )
+        end
+      end
+    end
   end
 end

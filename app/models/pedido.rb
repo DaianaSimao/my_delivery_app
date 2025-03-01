@@ -65,6 +65,7 @@ class Pedido < ApplicationRecord
         }
       }
     )
-    ActionCable.server.broadcast("order_notifications_channel_#{restaurante_id}", { type: 'new_order', pedido: pedido_data })
+    ActionCable.server.broadcast("order_notifications_channel_#{restaurante_id}", { type: "new_order", pedido: pedido_data })
+    ActionCable.server.broadcast("pedidos_channel_#{restaurante_id}", { type: "NEW_PEDIDO", pedido: pedido_data })
   end
 end

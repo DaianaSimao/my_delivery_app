@@ -191,7 +191,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
         <ModalDesignarEntregador
           isOpen={isModalDesignarOpen}
           onClose={() => setIsModalDesignarOpen(false)}
-          onDesignar={onDesignarEntregador} entregaId={0} />
+          onDesignar={onDesignarEntregador} />
       )}
 
       {/* Modal de Informações da Entrega */}

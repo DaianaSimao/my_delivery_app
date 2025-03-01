@@ -1,9 +1,11 @@
+// src/components/pedidos/PedidosList.tsx
 import React, { useState, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import PedidoColumn from './PedidoColumn';
 import usePedidos from '../../hooks/usePedidos';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { createConsumer } from '@rails/actioncable';
 
 interface Pedido {
   id: number;
@@ -24,15 +26,50 @@ interface Pedido {
 
 const PedidosList: React.FC = () => {
   const { pedidos, loading, error } = usePedidos();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchPedidoId, setSearchPedidoId] = useState('');
   const [data, setData] = useState({
     Recebido: [] as Pedido[],
     Em_Análise: [] as Pedido[],
     Em_Preparação: [] as Pedido[],
     Expedido: [] as Pedido[],
   });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchPedidoId, setSearchPedidoId] = useState('');
 
+  // Inscreva-se no canal de pedidos
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const restauranteId = localStorage.getItem('restauranteId');
+
+    if (!token || !restauranteId) {
+      console.error('Token ou restauranteId não encontrados no localStorage');
+      return;
+    }
+
+    const cable = createConsumer(`ws://localhost:3000/cable?token=${token}`);
+
+    const subscription = cable.subscriptions.create(
+      { channel: 'PedidosChannel', restaurante_id: restauranteId },
+      {
+        received: (message: { type: string; pedido: Pedido }) => {
+          console.log('Mensagem recebida:', message); // Log da mensagem recebida
+          if (message.type === 'NEW_PEDIDO') {
+            // Atualiza o estado da lista de pedidos
+            setData((prevData) => ({
+              ...prevData,
+              Recebido: [message.pedido, ...prevData.Recebido],
+            }));
+            toast.success(`Novo pedido recebido: #${message.pedido.id}`);
+          }
+        },
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Filtra os pedidos com base no termo de busca
   const filterPedidos = (pedidos: Pedido[], term: string, pedidoId: string) => {
     return pedidos.filter((pedido) => {
       const matchesNome = pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase());
@@ -41,6 +78,7 @@ const PedidosList: React.FC = () => {
     });
   };
 
+  // Atualiza os pedidos filtrados
   useEffect(() => {
     if (pedidos.length > 0) {
       const filteredPedidos = {
