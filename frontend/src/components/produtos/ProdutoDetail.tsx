@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
+import sushiIcon from "/icons/sushi.svg";
 
 interface Produto {
   id: number;
@@ -78,7 +79,12 @@ const ProdutoDetail = () => {
               onClick={openModal}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Ver Acompanhamentos
+              <img
+                src={sushiIcon}
+                alt="Ícone do restaurante"
+                className="h-8 w-auto mr-3 text-4xl" 
+              />
+              Acompanhamentos
             </button>
           </div>
         </div>

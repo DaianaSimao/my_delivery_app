@@ -20,7 +20,8 @@ class Api::V1::EntregasController < ApplicationController
 
     if params[:search].present?
       @entregas = @entregas.joins(pedido: :cliente
-      ).where(pedidos: {clientes: {nome: params[:search] }})
+      ).where("clientes.nome ILIKE :search ",
+              search: "%#{params[:search]}%")
     end
 
     render json: @entregas.as_json(

@@ -59,9 +59,9 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
             <Switch onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
             <div className="flex items-center">
               <Utensils className="h-8 w-8 text-primary-500" />
-              <h1 className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">
+              <a href="/bem_vindo" className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">
                 {restaurante?.nome}
-              </h1>
+              </a>
             </div>
             <div className="flex items-center">
               <div className="flex items-center ms-3">

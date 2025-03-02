@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import restauranteIcon from "/icons/restaurante.svg";
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -59,15 +60,23 @@ const Login: React.FC = () => {
           className="hidden bg-cover lg:block lg:w-2/3"
           style={{
             backgroundImage:
-              "url(https://images.unsplash.com/photo-1616763355603-9755a640a287?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80)",
+              "url(https://image.freepik.com/foto-gratis/entrega-comida-rapida-pedir-comida-concepto-linea_136595-18630.jpg)",
           }}
         >
-          <div className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40">
+          <div scope="row" className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40">
             <div>
-              <h2 className="text-4xl font-bold text-white">Brand</h2>
-              <p className="max-w-xl mt-3 text-gray-300">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. In autem ipsa, nulla
-                laboriosam dolores, repellendus perferendis libero suscipit nam temporibus molestiae.
+              <h2 className="text-4xl font-bold text-white flex items-center">
+                Delivery Express 
+                <img
+                  src={restauranteIcon}
+                  alt="Ícone do restaurante"
+                  className="h-8 w-auto mr-3 text-4xl" 
+                />
+              </h2>
+              <p className="max-w-xl mt-3 text-white">
+              Bem-vindo ao Painel de Controle 🍔🍣🍕
+
+                Gerencie seu restaurante e ofereça uma experiência incrível aos seus clientes!
               </p>
             </div>
           </div>
@@ -76,14 +85,14 @@ const Login: React.FC = () => {
         <div className="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
           <div className="flex-1">
             <div className="text-center">
-              <h2 className="text-4xl font-bold text-gray-700 dark:text-white">Brand</h2>
-              <p className="mt-3 text-gray-500 dark:text-gray-300">Sign in to access your account</p>
+              <h2 className="text-4xl font-bold text-gray-700 dark:text-white">Login</h2>
+              <p className="mt-3 text-gray-500 dark:text-gray-300">Entre para acessar seu painel de controle.</p>
             </div>
 
             <div className="mt-8">
               <form onSubmit={handleLogin}>
                 <div>
-                  <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">Email Address</label>
+                  <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">Email</label>
                   <input
                     type="email"
                     placeholder="example@example.com"
@@ -95,9 +104,9 @@ const Login: React.FC = () => {
 
                 <div className="mt-6">
                   <div className="flex justify-between mb-2">
-                    <label className="text-sm text-gray-600 dark:text-gray-200">Password</label>
+                    <label className="text-sm text-gray-600 dark:text-gray-200">Senha</label>
                     <a href="#" className="text-sm text-gray-400 focus:text-blue-500 hover:text-blue-500 hover:underline">
-                      Forgot password?
+                      Esqueceu a senha?
                     </a>
                   </div>
                   <input
@@ -114,17 +123,10 @@ const Login: React.FC = () => {
                     type="submit"
                     className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-400 focus:outline-none focus:bg-blue-400 focus:ring focus:ring-blue-300 focus:ring-opacity-50"
                   >
-                    Sign in
+                    Entrar
                   </button>
                 </div>
               </form>
-
-              <p className="mt-6 text-sm text-center text-gray-400">
-                Don't have an account yet?{" "}
-                <a href="#" className="text-blue-500 focus:outline-none focus:underline hover:underline">
-                  Sign up
-                </a>.
-              </p>
             </div>
           </div>
         </div>
