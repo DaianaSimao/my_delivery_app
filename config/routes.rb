@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       resources :acompanhamentos
       resources :acompanhamentos_pedidos
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
+      get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
     end
   end
 end

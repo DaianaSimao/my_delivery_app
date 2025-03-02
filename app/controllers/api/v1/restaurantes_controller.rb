@@ -2,8 +2,21 @@ class Api::V1::RestaurantesController < ApplicationController
   before_action :set_restaurante, only: %i[show update destroy]
 
   def index
-    restaurantes = current_user.restaurantes
-    render json: RestauranteSerializer.new(restaurantes).serializable_hash.to_json
+    @restaurantes = current_user.restaurantes
+    @restaurantes =  @restaurantes.page(params[:page]).per(params[:per_page])
+    render json: {
+      data: @restaurantes,
+      meta: {
+        total_pages: @restaurantes.total_pages,
+        total_count: @restaurantes.total_count,
+        current_page: @restaurantes.current_page
+      }
+    }
+  end
+
+  def restaurantes_ativos
+    @restaurantes = current_user.restaurantes.where(ativo: true)
+    render json: RestauranteSerializer.new(@restaurantes).serializable_hash.to_json
   end
 
   def show
@@ -12,6 +25,7 @@ class Api::V1::RestaurantesController < ApplicationController
 
   def create
     restaurante = Restaurante.new(restaurante_params)
+    binding.pry
     if restaurante.save
       render json: RestauranteSerializer.new(restaurante).serializable_hash.to_json, status: :created
     else
@@ -49,6 +63,10 @@ class Api::V1::RestaurantesController < ApplicationController
   end
 
   def restaurante_params
-    params.require(:restaurante).permit(:nome, :descricao, :categoria, :taxa_entrega, :tempo_medio_entrega, :avaliacao, :ativo, :endereco_id)
+    params.require(:restaurante).permit(:nome, :descricao, :categoria, :taxa_entrega,
+                                        :tempo_medio_entrega, :avaliacao, :ativo,
+                                        :abertura, :fechamento, :cnpj, :telefone, :email,
+                                        endereco_attributes: [:rua, :numero, :complemento, :bairro, :cidade, :estado, :cep]
+                                        )
   end
 end

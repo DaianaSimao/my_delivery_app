@@ -19,6 +19,8 @@ import OrderNotifications from './components/pedidos/PedidoNotificacao';
 import AuthenticatedLayout from "./layouts/AuthenticatedLayout";
 import BemVindo from "./components/admin/BemVindo";
 import Dashboard from "./components/admin/Dashboard";
+import Restaurantes from "./components/restaurantes/Restaurantes";
+import RestauranteForm from "./components/restaurantes/RestauranteForm";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -86,6 +88,8 @@ const AppContent: React.FC = () => {
             <Route path="/pedidos" element={<PedidosList />} />
             <Route path="/entregas" element={<EntregasList />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/restaurantes" element={<Restaurantes />} />
+            <Route path="/restaurantes/new" element={<RestauranteForm />} />
             <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>

@@ -2,7 +2,7 @@ import React from 'react';
 import { MenuCard } from './MenuCard';
 import { PopularItemsCarousel } from './PopularItemsCarousel';
 import { ListItemCard } from './ListItemCard';
-import type { MenuItem, MenuSection as MenuSectionType } from '../types';
+import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 
 interface MenuSectionProps {
   section: MenuSectionType;

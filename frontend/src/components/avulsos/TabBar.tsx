@@ -1,4 +1,4 @@
-import type { MenuSection } from '../types';
+import type { MenuSection } from '../../types';
 
 interface TabBarProps {
   sections: MenuSection[];

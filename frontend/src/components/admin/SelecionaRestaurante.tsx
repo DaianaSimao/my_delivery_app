@@ -30,7 +30,7 @@ const SelecionaRestaurante: React.FC = () => {
     const fetchRestaurantes = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await api.get("/api/v1/restaurantes", {
+        const response = await api.get("/api/v1/restaurantes_ativos", {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Ajuste aqui: A API retorna um objeto com a propriedade `data`

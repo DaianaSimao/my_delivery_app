@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MenuCard } from './MenuCard';
-import type { MenuItem } from '../types';
+import type { MenuItem } from '../../types';
 
 interface PopularItemsCarouselProps {
   items: MenuItem[];

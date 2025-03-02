@@ -1,5 +1,5 @@
 import React from 'react';
-import type { MenuItem } from '../types';
+import type { MenuItem } from '../../types';
 
 interface ListItemCardProps {
   item: MenuItem;
