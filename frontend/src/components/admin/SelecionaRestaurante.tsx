@@ -10,12 +10,15 @@ import { useNavigate } from "react-router-dom";
 
 interface Restaurante {
   id: string;
-  nome: string;
-  descricao: string;
-  endereco: string;
-  telefone: string;
-  created_at: string;
-  updated_at: string;
+  attributes: {
+    id: string;
+    nome: string;
+    descricao: string;
+    endereco: string;
+    telefone: string;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 const SelecionaRestaurante: React.FC = () => {
@@ -86,7 +89,7 @@ const SelecionaRestaurante: React.FC = () => {
         </option>
         {restaurantes.map((restaurante) => (
           <option className=" text-gray-800 dark:text-gray-200" key={restaurante.id} value={restaurante.id}>
-            {restaurante.nome}
+            {restaurante?.attributes.nome}
           </option>
         ))}
       </Select>
