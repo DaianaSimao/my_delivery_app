@@ -21,6 +21,7 @@ import BemVindo from "./components/admin/BemVindo";
 import Dashboard from "./components/admin/Dashboard";
 import Restaurantes from "./components/restaurantes/Restaurantes";
 import RestauranteForm from "./components/restaurantes/RestauranteForm";
+import RestauranteEditForm from "./components/restaurantes/RestauranteEditForm";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -90,6 +91,7 @@ const AppContent: React.FC = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/restaurantes" element={<Restaurantes />} />
             <Route path="/restaurantes/new" element={<RestauranteForm />} />
+            <Route path="/restaurantes/:id/editar" element={<RestauranteEditForm />} />
             <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>

@@ -17,14 +17,10 @@ interface SideBarProps {
 
 interface Restaurante {
   id: string;
-  type: string;
-  attributes: {
-    id: number;
-    nome: string;
-    descricao: string;
-    categoria: string;
-    taxa_entrega: string;
-  }
+  nome: string;
+  descricao: string;
+  categoria: string;
+  taxa_entrega: string;
 }
 
 export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
@@ -64,7 +60,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
             <div className="flex items-center">
               <Utensils className="h-8 w-8 text-primary-500" />
               <h1 className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">
-                {restaurante?.attributes.nome}
+                {restaurante?.nome}
               </h1>
             </div>
             <div className="flex items-center">

@@ -9,7 +9,6 @@ import { Label, Select } from "flowbite-react"; // Importe os componentes do Flo
 import { useNavigate } from "react-router-dom";
 
 interface Restaurante {
-  attributes: any;
   id: string;
   nome: string;
   descricao: string;
@@ -87,7 +86,7 @@ const SelecionaRestaurante: React.FC = () => {
         </option>
         {restaurantes.map((restaurante) => (
           <option className=" text-gray-800 dark:text-gray-200" key={restaurante.id} value={restaurante.id}>
-            {restaurante.attributes.nome}
+            {restaurante.nome}
           </option>
         ))}
       </Select>

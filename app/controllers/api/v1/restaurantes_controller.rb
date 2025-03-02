@@ -15,17 +15,19 @@ class Api::V1::RestaurantesController < ApplicationController
   end
 
   def restaurantes_ativos
-    @restaurantes = current_user.restaurantes.where(ativo: true)
+    @restaurantes = current_user.restaurantes.where(ativo: true).includes(:endereco)
     render json: RestauranteSerializer.new(@restaurantes).serializable_hash.to_json
   end
 
   def show
-    render json: RestauranteSerializer.new(@restaurante).serializable_hash.to_json
+    @restaurante = Restaurante.includes(:endereco).find(params[:id])
+    render json: {
+      data: @restaurante.as_json(include: :endereco)}
   end
 
   def create
     restaurante = Restaurante.new(restaurante_params)
-    binding.pry
+
     if restaurante.save
       render json: RestauranteSerializer.new(restaurante).serializable_hash.to_json, status: :created
     else
@@ -63,10 +65,10 @@ class Api::V1::RestaurantesController < ApplicationController
   end
 
   def restaurante_params
-    params.require(:restaurante).permit(:nome, :descricao, :categoria, :taxa_entrega,
+    params.require(:restaurante).permit(:id, :nome, :descricao, :categoria, :taxa_entrega,
                                         :tempo_medio_entrega, :avaliacao, :ativo,
                                         :abertura, :fechamento, :cnpj, :telefone, :email,
-                                        endereco_attributes: [:rua, :numero, :complemento, :bairro, :cidade, :estado, :cep]
+                                        endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :created_at, :updated_at]
                                         )
   end
 end
