@@ -1,32 +1,27 @@
+// src/components/cardapio/MenuPage.tsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
-import { MenuSection as MenuSectionComponent } from '../../components/MenuSection';
-import { Header } from '../../components/Header';
-import { Footer } from '../../components/Footer';
-import { TabBar } from '../../components/TabBar';
-import { Cart } from '../../components/Cart';
+import { useParams } from 'react-router-dom';
 import { fetchMenu } from '../../services/api';
-import type { MenuItem, MenuSection, RestaurantInfo, CartItem } from '../../types';
+import { MenuSection as MenuSectionComponent } from '../../components/MenuSection';
+import { TabBar } from '../../components/TabBar';
+import type { MenuSection, MenuItem } from '../../types';
 
-const restaurantInfo: RestaurantInfo = {
-  name: "Sushi Express",
-  openingHours: "Seg-Dom: 11:30 - 23:00",
-  minimumOrder: 30,
-  profileUrl: "#"
-};
+interface MenuPageProps {
+  onItemClick: (item: MenuItem) => void;
+  onCartClick: () => void;
+}
 
-function MenuPage() {
-  const { restauranteId } = useParams<{ restauranteId: string }>(); // Obtém o ID do restaurante da URL
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showCart, setShowCart] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+const MenuPage: React.FC<MenuPageProps> = ({ onItemClick }) => {
+  const { restauranteId } = useParams<{ restauranteId: string }>();
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
 
   useEffect(() => {
     const loadMenu = async () => {
       try {
+        if (!restauranteId) {
+          console.error('restauranteId is undefined');
+          return;
+        }
         const data = await fetchMenu(restauranteId);
         console.log('Data:', data);
         if (Array.isArray(data)) {
@@ -56,85 +51,22 @@ function MenuPage() {
     }
   }, [restauranteId]);
 
-  // Configura o modo escuro com base nas preferências do sistema
-  useEffect(() => {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
-
-  const handleItemClick = (item: MenuItem) => {
-    setSelectedItem(item);
-    const cartItem: CartItem = {
-      ...item,
-      quantity: 1
-    };
-    setCartItems([...cartItems, cartItem]);
-  };
-
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
-    if (quantity < 1) return;
-    setCartItems(
-      cartItems.map(item => 
-        item.id === itemId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (itemId: string) => {
-    setCartItems(cartItems.filter(item => item.id !== itemId));
-  };
-
-  const handleClearCart = () => {
-    setCartItems([]);
-  };
-
-  if (showCart) {
-    return (
-      <Cart
-        items={cartItems}
-        onBack={() => setShowCart(false)}
-        onClearCart={handleClearCart}
-        onEditItem={(item) => console.log('Edit item:', item)}
-        onRemoveItem={handleRemoveItem}
-        onUpdateQuantity={handleUpdateQuantity}
-        onAddMore={() => setShowCart(false)}
-        onCheckout={() => console.log('Proceed to checkout')}
-      />
-    );
-  }
-
   return (
-    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
-      <Header 
-        restaurantInfo={restaurantInfo}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
-      />
-      
+    <>
       <TabBar 
         sections={menuSections}
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
+        activeSection={menuSections[0]?.id || ''}
+        onSectionChange={(sectionId) => console.log('Section changed:', sectionId)}
       />
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         {menuSections.map((section) => (
           <section key={section.id} data-section-id={section.id}>
-            <MenuSectionComponent section={section} onItemClick={handleItemClick} />
+            <MenuSectionComponent section={section} onItemClick={onItemClick} />
           </section>
         ))}
       </main>
-
-      <Footer onCartClick={() => setShowCart(true)} />
-    </div>
+    </>
   );
-}
+};
 
 export default MenuPage;
