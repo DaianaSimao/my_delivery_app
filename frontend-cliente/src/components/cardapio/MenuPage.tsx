@@ -2,16 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchMenu } from '../../services/api';
-import { MenuSection as MenuSectionComponent } from '../../components/MenuSection';
+import { MenuSection as MenuSectionComponent } from './MenuSection';
 import { TabBar } from '../../components/TabBar';
-import type { MenuSection, MenuItem } from '../../types';
+import type { MenuSection} from '../../types';
 
 interface MenuPageProps {
-  onItemClick: (item: MenuItem) => void;
   onCartClick: () => void;
 }
 
-const MenuPage: React.FC<MenuPageProps> = ({ onItemClick }) => {
+const MenuPage: React.FC<MenuPageProps> = () => {
   const { restauranteId } = useParams<{ restauranteId: string }>();
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
 
@@ -61,7 +60,7 @@ const MenuPage: React.FC<MenuPageProps> = ({ onItemClick }) => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         {menuSections.map((section) => (
           <section key={section.id} data-section-id={section.id}>
-            <MenuSectionComponent section={section} onItemClick={onItemClick} />
+            <MenuSectionComponent section={section} />
           </section>
         ))}
       </main>

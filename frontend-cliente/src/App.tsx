@@ -1,17 +1,31 @@
 // src/App.tsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Cart } from './components/Cart';
 import { Toaster } from 'react-hot-toast';
 import MenuPage from './components/cardapio/MenuPage';
 import type { MenuItem, CartItem } from './types';
+import ItemDetails from './components/itens/ItemDetail';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showCart, setShowCart] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const navigate = useNavigate();
+
+  const handleItemClick = (item: MenuItem) => {
+    navigate(`/item/${item.id}`); // Navega para a tela de detalhes do item
+  };
+
+  const handleAddToCartClick = (item: MenuItem) => {
+    const cartItem: CartItem = {
+      ...item,
+      quantity: 1
+    };
+    setCartItems([...cartItems, cartItem]);
+  };
 
   // Configura o modo escuro com base nas preferências do sistema
   useEffect(() => {
@@ -32,14 +46,6 @@ const App: React.FC = () => {
     setIsDarkMode(newTheme);
     document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-  };
-
-  const handleItemClick = (item: MenuItem) => {
-    const cartItem: CartItem = {
-      ...item,
-      quantity: 1
-    };
-    setCartItems([...cartItems, cartItem]);
   };
 
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
@@ -75,7 +81,6 @@ const App: React.FC = () => {
   }
 
   return (
-    <Router>
       <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
         <Toaster />
         <Header 
@@ -88,15 +93,31 @@ const App: React.FC = () => {
             path="/cardapio/:restauranteId"
             element={
               <MenuPage
-                onItemClick={handleItemClick}
                 onCartClick={() => setShowCart(true)}
               />
             }
           />
           <Route path="*" element={<Navigate to="/cardapio/1" />} />
+          <Route
+            path="/item/:itemId"
+            element={
+              <ItemDetails
+                item={{ id: 1, name: 'Combo Sushi Especial', price: 89.90, description: '12 peças de sushi variado', image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1000' }} // Substitua por dados da API
+                onBack={() => navigate(-1)}
+                onAddToCart={handleAddToCartClick}
+              />
+            }
+          />
         </Routes>
         <Footer onCartClick={() => setShowCart(true)} />
       </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 };

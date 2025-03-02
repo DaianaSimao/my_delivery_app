@@ -1,14 +1,13 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MenuCard } from './MenuCard';
-import type { MenuItem } from '../types';
+import type { MenuItem } from '../../types';
 
 interface PopularItemsCarouselProps {
   items: MenuItem[];
-  onItemClick: (item: MenuItem) => void;
 }
 
-export function PopularItemsCarousel({ items, onItemClick }: PopularItemsCarouselProps) {
+export function PopularItemsCarousel({ items}: PopularItemsCarouselProps) {
   const scrollContainer = React.useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -33,7 +32,7 @@ export function PopularItemsCarousel({ items, onItemClick }: PopularItemsCarouse
       >
         {items.map((item) => (
           <div key={item.id} className="flex-none w-80">
-            <MenuCard item={item} onClick={onItemClick} />
+            <MenuCard item={item} />
           </div>
         ))}
       </div>

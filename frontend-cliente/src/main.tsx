@@ -8,3 +8,9 @@ root.render(
     <App />
   </StrictMode>
 );
+
+const originalError = console.error;
+console.error = (...args) => {
+  if (/defaultProps/.test(args[0])) return;
+  originalError(...args);
+};
