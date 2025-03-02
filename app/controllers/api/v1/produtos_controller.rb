@@ -1,5 +1,6 @@
 class Api::V1::ProdutosController < ApplicationController
   before_action :set_produto, only: %i[show update destroy]
+  skip_before_action :authenticate_user!, only: %i[cardapio show]
 
   def index
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
@@ -21,9 +22,33 @@ class Api::V1::ProdutosController < ApplicationController
     }
   end
 
+  def cardapio
+    restaurante = Restaurante.find(params[:restaurante_id])
+    @produtos = Produto.includes(produto_acompanhamentos: { acompanhamento: :item_acompanhamentos }).where(restaurante_id: restaurante.id, disponivel: true)
+
+    # Filtra os produtos com base no termo de busca
+    if params[:search].present?
+      @produtos = @produtos.where("nome ILIKE ?", "%#{params[:search]}%")
+    end
+
+    render json: {
+      data: @produtos.as_json(
+      include: {
+          produto_acompanhamentos: {
+            include: {
+              acompanhamento: {
+                include: :item_acompanhamentos
+              }
+            }
+          }
+        }
+      )
+    }
+  end
+
   def show
     produto = Produto.includes(produto_acompanhamentos: { acompanhamento: :item_acompanhamentos }).find(params[:id])
-    render json: { 
+    render json: {
       data: produto.as_json(
         include: {
           produto_acompanhamentos: {
