@@ -13,11 +13,13 @@ export interface MenuSection {
   id: string;
 }
 
-export interface RestaurantInfo {
-  name: string;
-  openingHours: string;
-  minimumOrder: number;
-  profileUrl: string;
+export interface Restaurante {
+  nome: string;
+  abertura: string;
+  fechamento: string;
+  pedido_minimo: number;
+  taxa_entrega: number;
+  tempo_medio_entrega: number;
 }
 
 export interface CartItem extends MenuItem {

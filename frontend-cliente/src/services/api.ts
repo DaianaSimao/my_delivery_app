@@ -15,3 +15,8 @@ export const fetchProductDetails = async (id: number) => {
   const response = await api.get(`/api/v1/produtos/${id}`);
   return response.data.data;
 };
+
+export const fetchRestaurantInfo = async (restauranteId: string | number) => {
+  const response = await api.get(`/api/v1/restaurantes/${restauranteId}`);
+  return response.data.data; // Retorna as informações do restaurante
+};
