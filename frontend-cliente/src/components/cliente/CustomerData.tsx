@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Edit2, MapPin, CreditCard, Wallet, QrCode, DollarSign, Home, Briefcase, Users, Sun, Moon } from 'lucide-react';
-import { fetchClienteByWhatsApp, fetchEnderecoById } from '../../services/api'; // Importe a função de busca de endereço
+import { fetchClienteByWhatsApp, fetchEnderecoById } from '../../services/api';
 
 interface DeliveryOption {
   id: string;
@@ -45,11 +45,10 @@ interface Endereco {
   cidade: string;
   estado: string;
   cep: string;
-  tipo: string;
 }
 
 function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: () => void }) {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [step, setStep] = useState<'data' | 'address' | 'payment'>('data');
   const [showEditModal, setShowEditModal] = useState(false);
   const [showChangeModal, setShowChangeModal] = useState(false);
@@ -91,28 +90,25 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
     document.documentElement.classList.toggle('dark');
   };
 
+  // Função para buscar cliente pelo WhatsApp
   const buscarCliente = async (whatsapp: string) => {
-    // if (whatsapp.length === 11) { // Verifica se o WhatsApp está completo
-      const cliente = await fetchClienteByWhatsApp(whatsapp);
-      if (cliente) {
-        setClienteEncontrado(cliente);
-        // Busca o endereço do cliente
-        const endereco = await fetchEnderecoById(cliente.endereco_id);
-        if (endereco) {
-          setEnderecoCliente(endereco);
-          // Preenche o formulário com os dados do endereço
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            street: endereco.rua,
-            number: endereco.numero,
-            complement: endereco.complemento,
-            neighborhood: endereco.bairro,
-            city: endereco.cidade,
-          }));
-        }
-        setShowClienteModal(true);
+    const cliente = await fetchClienteByWhatsApp(whatsapp);
+    if (cliente) {
+      setClienteEncontrado(cliente);
+      const endereco = await fetchEnderecoById(cliente.endereco_id);
+      if (endereco) {
+        setEnderecoCliente(endereco);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          street: endereco.rua,
+          number: endereco.numero,
+          complement: endereco.complemento,
+          neighborhood: endereco.bairro,
+          city: endereco.cidade,
+        }));
       }
-    // }
+      setShowClienteModal(true);
+    }
   };
 
   // Atualiza o WhatsApp e busca o cliente
@@ -133,9 +129,8 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
         lastName,
         whatsapp: clienteEncontrado.telefone
       });
-      setStep('address'); // Redireciona para a tela de endereço
+      setStep('address');
     } else if (clienteEncontrado && editar) {
-      // Preenche o formulário com os dados do cliente
       const [firstName, ...lastNameArray] = clienteEncontrado.nome.split(' ');
       const lastName = lastNameArray.join(' ');
       setFormData({
@@ -151,7 +146,7 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
   // Função para lidar com o envio do formulário
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep('address'); // Redireciona para a tela de endereço
+    setStep('address');
   };
 
   const renderCustomerDataForm = () => (
@@ -307,13 +302,7 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
               <button
                 key={type.id}
                 type="button"
-                onClick={() => {
-                  // Atualiza o estado com o tipo de endereço selecionado
-                  setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    addressType: type.id,
-                  }));
-                }}
+                onClick={() => setFormData({ ...formData, addressType: type.id })}
                 className={`p-4 rounded-lg border ${
                   formData.addressType === type.id
                     ? 'border-red-600 dark:border-red-400 bg-red-50 dark:bg-red-900/20'
@@ -347,13 +336,195 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
     </div>
   );
 
+  const renderOrderSummary = () => (
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+      <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Resumo do Pedido</h3>
+      <div className="space-y-3">
+        {cartItems.map((item, index) => (
+          <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {item.quantity}x {item.name}
+                </p>
+                {item.options && item.options.length > 0 && (
+                  <ul className="mt-1 space-y-1">
+                    {item.options.map((option, optIndex) => (
+                      <li key={optIndex} className="text-sm text-gray-600 dark:text-gray-400">
+                        • {option}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <p className="font-medium text-red-600 dark:text-red-400">
+                R$ {(item.price * item.quantity).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        ))}
+        <div className="pt-3 space-y-2">
+          <div className="flex justify-between text-gray-600 dark:text-gray-400">
+            <span>Subtotal</span>
+            <span>R$ {subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-gray-600 dark:text-gray-400">
+            <span>Taxa de entrega</span>
+            <span>R$ {deliveryFee.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-gray-900 dark:text-white text-lg">
+            <span>Total</span>
+            <span className="text-red-600 dark:text-red-400">R$ {total.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDeliveryOptions = () => {
+    const deliveryOptions: DeliveryOption[] = [
+      {
+        id: 'delivery',
+        title: 'Entrega',
+        description: 'Receba em casa',
+        icon: <MapPin className="w-6 h-6" />,
+      },
+      {
+        id: 'pickup',
+        title: 'Retirada',
+        description: 'Retire no local',
+        icon: <Home className="w-6 h-6" />,
+      },
+    ];
+
+    const paymentMethods: PaymentMethod[] = [
+      { id: 'credit', title: 'Cartão de Crédito', icon: <CreditCard className="w-6 h-6" /> },
+      { id: 'debit', title: 'Cartão de Débito', icon: <Wallet className="w-6 h-6" /> },
+      { id: 'pix', title: 'PIX', icon: <QrCode className="w-6 h-6" /> },
+      { id: 'cash', title: 'Dinheiro', icon: <DollarSign className="w-6 h-6" /> }
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-medium text-gray-900 dark:text-white">
+                {formData.firstName} {formData.lastName}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{formData.whatsapp}</p>
+            </div>
+            <button
+              onClick={() => setStep('data')}
+              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+            >
+              <Edit2 className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="font-semibold text-gray-900 dark:text-white">Escolha a Forma de Entrega</h3>
+          {deliveryOptions.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => {
+                setSelectedDelivery(option.id);
+                if (option.id === 'delivery') {
+                  setShowChangeModal(true);
+                }
+              }}
+              className={`w-full p-4 rounded-lg border ${
+                selectedDelivery === option.id
+                  ? 'border-red-600 dark:border-red-400'
+                  : 'border-gray-300 dark:border-gray-700'
+              } flex items-center space-x-4`}
+            >
+              <div className={`${
+                selectedDelivery === option.id
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`}>
+                {option.icon}
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-medium text-gray-900 dark:text-white">{option.title}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{option.description}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {selectedDelivery && (
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Escolha a Forma de Pagamento</h3>
+            {paymentMethods.map((method) => (
+              <button
+                key={method.id}
+                onClick={() => {
+                  setSelectedPayment(method.id);
+                  if (method.id === 'cash') {
+                    setShowTrocoModal(true);
+                  }
+                }}
+                className={`w-full p-4 rounded-lg border ${
+                  selectedPayment === method.id
+                    ? 'border-red-600 dark:border-red-400'
+                    : 'border-gray-300 dark:border-gray-700'
+                } flex items-center space-x-4`}
+              >
+                <div className={`${
+                  selectedPayment === method.id
+                    ? 'text-red-600 dark:text-red-400'
+                    : 'text-gray-600 dark:text-gray-400'
+                }`}>
+                  {method.icon}
+                </div>
+                <p className="flex-1 text-left font-medium text-gray-900 dark:text-white">{method.title}</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label htmlFor="observations" className="block font-medium text-gray-900 dark:text-white">
+            Observações do Pedido
+          </label>
+          <textarea
+            id="observations"
+            value={formData.observations}
+            onChange={(e) => setFormData({ ...formData, observations: e.target.value })}
+            placeholder="Alguma observação sobre a entrega?"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
+                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                     focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent"
+            rows={3}
+          />
+        </div>
+
+        {selectedDelivery && selectedPayment && (
+          <button
+            onClick={() => {/* Handle order submission */}}
+            className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Finalizar Pedido
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="px-4 py-6">
           <div className="flex justify-between items-center mb-6">
             <button
-              onClick={onBack}
+              onClick={() => {
+                if (step === 'address') setStep('data');
+                else if (step === 'payment') setStep('address');
+                else onBack();
+              }}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <ArrowLeft className="w-6 h-6 text-gray-900 dark:text-white" />

@@ -68,10 +68,12 @@ class Api::V1::PedidosController < ApplicationController
       data: pedido.as_json(
         include: {
           cliente: {
-            only: %i[id nome telefone]
-          },
-          endereco: {
-            only: %i[id rua numero bairro cidade estado cep]
+            only: %i[id nome telefone],
+            include: {
+              endereco: {
+                only: %i[id rua numero bairro cidade estado cep]
+              }
+            }
           },
           itens_pedidos: {
             only: %i[id quantidade preco_total],

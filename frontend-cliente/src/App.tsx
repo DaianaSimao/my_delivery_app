@@ -73,7 +73,41 @@ const CardapioLayout: React.FC = () => {
 const AppContent: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const restauranteId = localStorage.getItem('restauranteId');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === 'dark');
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
+        .matches;
+      setIsDarkMode(prefersDarkMode);
+      document.documentElement.classList.toggle('dark', prefersDarkMode);
+      localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+  };  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === 'dark');
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    } else {
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
+        .matches;
+      setIsDarkMode(prefersDarkMode);
+      document.documentElement.classList.toggle('dark', prefersDarkMode);
+      localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
+    }
+  }, []);
 
   // Função para adicionar item ao carrinho
   const handleAddToCart = (item: CartItem) => {
@@ -135,9 +169,8 @@ const AppContent: React.FC = () => {
       />
       <Route
         path="/dados"
-        element={<ClienteDados cartItems={[]} onBack={function (): void {
-          throw new Error('Function not implemented.');
-        } } />}
+        element={<ClienteDados cartItems={cartItems} onBack={() => navigate(-1)} isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode} />}
       />
       <Route path="*" element={<Navigate to="/cardapio/1" />} />
       </Routes>
