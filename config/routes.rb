@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
       get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
       get "cardapio/:restaurante_id", to: "produtos#cardapio"
+      get "clientes/endereco/:endereco_id", to: "clientes#endereco"
     end
   end
 end

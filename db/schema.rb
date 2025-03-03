@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_03_184039) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_03_190455) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_184039) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "sobrenome"
+    t.bigint "endereco_id"
+    t.index ["endereco_id"], name: "index_clientes_on_endereco_id"
   end
 
   create_table "enderecos", force: :cascade do |t|
@@ -144,9 +146,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_184039) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "cliente_id", null: false
-    t.bigint "endereco_id"
     t.index ["cliente_id"], name: "index_pedidos_on_cliente_id"
-    t.index ["endereco_id"], name: "index_pedidos_on_endereco_id"
     t.index ["restaurante_id"], name: "index_pedidos_on_restaurante_id"
   end
 
@@ -229,6 +229,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_184039) do
   add_foreign_key "acompanhamentos_pedidos", "item_acompanhamentos"
   add_foreign_key "acompanhamentos_pedidos", "itens_pedidos"
   add_foreign_key "avaliacoes", "pedidos"
+  add_foreign_key "clientes", "enderecos"
   add_foreign_key "entregadores", "restaurantes"
   add_foreign_key "entregas", "entregadores"
   add_foreign_key "entregas", "pedidos"
@@ -237,7 +238,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_184039) do
   add_foreign_key "itens_pedidos", "produtos"
   add_foreign_key "pagamentos", "pedidos"
   add_foreign_key "pedidos", "clientes"
-  add_foreign_key "pedidos", "enderecos"
   add_foreign_key "pedidos", "restaurantes"
   add_foreign_key "produto_acompanhamentos", "acompanhamentos"
   add_foreign_key "produto_acompanhamentos", "produtos"

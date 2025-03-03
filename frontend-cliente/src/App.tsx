@@ -135,7 +135,9 @@ const AppContent: React.FC = () => {
       />
       <Route
         path="/dados"
-        element={<ClienteDados />}
+        element={<ClienteDados cartItems={[]} onBack={function (): void {
+          throw new Error('Function not implemented.');
+        } } />}
       />
       <Route path="*" element={<Navigate to="/cardapio/1" />} />
       </Routes>
