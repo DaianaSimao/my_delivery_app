@@ -2,11 +2,12 @@ class Pedido < ApplicationRecord
   has_one :entrega
   belongs_to :restaurante
   belongs_to :cliente
-  belongs_to :endereco
 
   has_many :itens_pedidos
   has_many :produtos, through: :itens_pedidos # Associação correta
   has_one :pagamento
+
+  accepts_nested_attributes_for :cliente
 
   after_update :create_entrega
   after_create :broadcast_new_order
@@ -19,15 +20,17 @@ class Pedido < ApplicationRecord
 
   def broadcast_new_order
     restaurante_id = self.restaurante_id
-    pedido_completo = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).find(self.id)
+    pedido_completo = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(self.id)
 
     pedido_data = pedido_completo.as_json(
       include: {
         cliente: {
-          only: %i[id nome telefone]
-        },
-        endereco: {
-          only: %i[id rua numero bairro cidade estado cep]
+          only: %i[id nome telefone endereco_id],
+          include: {
+            endereco: {
+              only: %i[id rua numero bairro cidade estado cep]
+            }
+          }
         },
         itens_pedidos: {
           only: %i[id quantidade preco_total],

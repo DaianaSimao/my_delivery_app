@@ -1,9 +1,10 @@
 class Api::V1::PedidosController < ApplicationController
   before_action :set_pedido, only: %i[show update destroy]
+  skip_before_action :authenticate_user!, only: %i[create]
 
   def index
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
-    @pedidos = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).all.order(updated_at: :desc).where(restaurante_id: restaurante.id)
+    @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).all.order(updated_at: :desc).where(restaurante_id: restaurante.id)
 
     if params[:search].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
@@ -107,6 +108,7 @@ class Api::V1::PedidosController < ApplicationController
 
   def create
     @pedido = Pedido.new(pedido_params)
+
     if @pedido.save
       render json: PedidoSerializer.new(@pedido), status: :created
     else
@@ -116,15 +118,15 @@ class Api::V1::PedidosController < ApplicationController
 
   def update
     if @pedido.update(pedido_params)
-      @pedido = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).find(@pedido.id)
+      @pedido = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(@pedido.id)
       render json: {
         data: @pedido.as_json(
           include: {
             cliente: {
-              only: %i[id nome telefone]
-            },
-            endereco: {
-              only: %i[id rua numero bairro cidade estado cep]
+              only: %i[id nome telefone],
+              endereco: {
+                only: %i[id rua numero bairro cidade estado cep]
+              }
             },
             itens_pedidos: {
               only: %i[id quantidade preco_total],
@@ -180,6 +182,6 @@ class Api::V1::PedidosController < ApplicationController
   end
 
   def pedido_params
-    params.require(:pedido).permit(:restaurante_id, :cliente_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :endereco_id)
+    params.require(:pedido).permit(:restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id)
   end
 end
