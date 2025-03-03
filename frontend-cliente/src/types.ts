@@ -1,5 +1,6 @@
 export interface MenuItem {
-  id: string;
+  [x: string]: any;
+  id: number;
   nome: string;
   descricao: string;
   preco: number;

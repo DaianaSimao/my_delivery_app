@@ -1,18 +1,13 @@
-// src/components/cardapio/MenuPage.tsx
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMenu } from '../../services/api';
-import { MenuSection as MenuSectionComponent } from './MenuSection';
-import { TabBar } from '../../components/TabBar';
-import type { MenuSection} from '../../types';
+import { MenuSection } from './MenuSection';
+import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 
-interface MenuPageProps {
-  onCartClick: () => void;
-}
-
-const MenuPage: React.FC<MenuPageProps> = () => {
+const MenuPage: React.FC = () => {
   const { restauranteId } = useParams<{ restauranteId: string }>();
-  const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
+  const [menuSections, setMenuSections] = useState<MenuSectionType[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadMenu = async () => {
@@ -22,9 +17,8 @@ const MenuPage: React.FC<MenuPageProps> = () => {
           return;
         }
         const data = await fetchMenu(restauranteId);
-        console.log('Data:', data);
         if (Array.isArray(data)) {
-          const sections: MenuSection[] = [
+          const sections: MenuSectionType[] = [
             {
               id: 'popular',
               title: 'Os Mais Pedidos',
@@ -50,21 +44,20 @@ const MenuPage: React.FC<MenuPageProps> = () => {
     }
   }, [restauranteId]);
 
+  const handleItemClick = (item: MenuItem) => {
+    navigate(`/item/${item.id}`);
+  };
+
   return (
-    <>
-      <TabBar 
-        sections={menuSections}
-        activeSection={menuSections[0]?.id || ''}
-        onSectionChange={(sectionId) => console.log('Section changed:', sectionId)}
-      />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-        {menuSections.map((section) => (
-          <section key={section.id} data-section-id={section.id}>
-            <MenuSectionComponent section={section} />
-          </section>
-        ))}
-      </main>
-    </>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {menuSections.map((section) => (
+        <MenuSection 
+          key={section.id} 
+          section={section} 
+          onItemClick={handleItemClick} 
+        />
+      ))}
+    </div>
   );
 };
 

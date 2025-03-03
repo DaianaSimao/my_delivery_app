@@ -1,3 +1,4 @@
+// src/components/cardapio/MenuCard.tsx
 import React from 'react';
 import type { MenuItem } from '../../types';
 
@@ -7,9 +8,7 @@ interface MenuCardProps {
 }
 
 export function MenuCard({ item, onClick }: MenuCardProps) {
-  const displayPrice = item.promotion 
-    ? (item.promotion.originalPrice * (1 - item.promotion.discountPercentage / 100))
-    : item.price;
+  const displayPrice = item.preco;
 
   return (
     <div 

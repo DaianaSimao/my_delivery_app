@@ -1,5 +1,4 @@
-import React from 'react';
-import type { MenuItem } from '../types';
+import type { MenuItem } from '../../types';
 
 interface ListItemCardProps {
   item: MenuItem;
@@ -7,9 +6,7 @@ interface ListItemCardProps {
 }
 
 export function ListItemCard({ item, onClick }: ListItemCardProps) {
-  const displayPrice = item.promotion 
-    ? (item.promotion.originalPrice * (1 - item.promotion.discountPercentage / 100))
-    : item.price
+  const displayPrice = item.preco
 
   return (
     <div 
@@ -26,7 +23,7 @@ export function ListItemCard({ item, onClick }: ListItemCardProps) {
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{item.descricao}</p>
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-gray-900 dark:text-white">
-            R$ {item.preco}
+            R$ {displayPrice}
           </span>
             <>
               <span className="text-sm text-gray-500 dark:text-gray-500 line-through">

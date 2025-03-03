@@ -4,10 +4,11 @@ import { MenuCard } from './MenuCard';
 import type { MenuItem } from '../../types';
 
 interface PopularItemsCarouselProps {
-  items: MenuItem[];
+  items: MenuItem;
+  onClick: (item: MenuItem) => void;
 }
 
-export function PopularItemsCarousel({ items}: PopularItemsCarouselProps) {
+export function PopularItemsCarousel({ items, onClick}: PopularItemsCarouselProps) {
   const scrollContainer = React.useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -32,7 +33,7 @@ export function PopularItemsCarousel({ items}: PopularItemsCarouselProps) {
       >
         {items.map((item) => (
           <div key={item.id} className="flex-none w-80">
-            <MenuCard item={item} />
+            <MenuCard item={item} onClick={() => onClick(item)} />
           </div>
         ))}
       </div>

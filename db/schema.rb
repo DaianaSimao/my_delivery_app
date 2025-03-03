@@ -193,6 +193,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_02_222701) do
     t.string "cnpj"
     t.string "telefone"
     t.string "email"
+    t.string "dias_funcionamento"
+    t.decimal "pedido_minimo"
     t.index ["endereco_id"], name: "index_restaurantes_on_endereco_id"
   end
 

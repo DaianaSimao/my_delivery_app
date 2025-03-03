@@ -15,10 +15,6 @@ const AppContent: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const navigate = useNavigate();
 
-  const handleItemClick = (item: MenuItem) => {
-    navigate(`/item/${item.id}`); // Navega para a tela de detalhes do item
-  };
-
   const handleAddToCartClick = (item: MenuItem) => {
     const cartItem: CartItem = {
       ...item,
@@ -98,16 +94,7 @@ const AppContent: React.FC = () => {
             }
           />
           <Route path="*" element={<Navigate to="/cardapio/1" />} />
-          <Route
-            path="/item/:itemId"
-            element={
-              <ItemDetails
-                item={{ id: 1, name: 'Combo Sushi Especial', price: 89.90, description: '12 peças de sushi variado', image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1000' }} // Substitua por dados da API
-                onBack={() => navigate(-1)}
-                onAddToCart={handleAddToCartClick}
-              />
-            }
-          />
+          <Route path="/item/:itemId" element={<ItemDetails />} />
         </Routes>
         <Footer onCartClick={() => setShowCart(true)} />
       </div>
