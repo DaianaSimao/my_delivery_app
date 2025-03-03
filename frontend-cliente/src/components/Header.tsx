@@ -27,7 +27,6 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
     const loadRestaurantInfo = async () => {
       try {
         const data = await fetchRestaurantInfo(restauranteId);
-        console.log('Informações do restaurante:', data);
         setRestaurantInfo(data);
       } catch (error) {
         console.error('Erro ao carregar informações do restaurante:', error);

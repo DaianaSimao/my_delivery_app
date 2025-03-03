@@ -1,6 +1,6 @@
 export interface MenuItem {
   [x: string]: any;
-  id: number;
+  id: string;
   nome: string;
   descricao: string;
   preco: number;
