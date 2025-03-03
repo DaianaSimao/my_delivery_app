@@ -4,7 +4,7 @@ import { fetchMenu } from '../../services/api';
 import { MenuSection } from './MenuSection';
 import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 import { Footer } from '../Footer';
-import { Cart } from '../Cart';
+import { Cart } from '../carrinho/Cart';
 import type { CartItem } from '../../types';
 
 const MenuPage: React.FC = () => {

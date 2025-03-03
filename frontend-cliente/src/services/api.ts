@@ -20,3 +20,14 @@ export const fetchRestaurantInfo = async (restauranteId: string | number) => {
   const response = await api.get(`/api/v1/restaurantes/${restauranteId}`);
   return response.data.data; // Retorna as informações do restaurante
 };
+
+export const fetchClienteByWhatsApp = async (whatsapp: string) => {
+  try {
+    const response = await api.get(`/api/v1/clientes/?whatsapp=${whatsapp}`);
+    console.log('Cliente encontrado axios:', response.data);
+    return response.data; // Retorna os dados do client
+  } catch (error) {
+    console.error("Erro ao buscar cliente:", error);
+    return null;
+  }
+};

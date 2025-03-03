@@ -10,10 +10,11 @@ import {
 import { Toaster } from 'react-hot-toast';
 import MenuPage from './components/cardapio/MenuPage';
 import ItemDetails from './components/itens/ItemDetail';
-import { Cart } from './components/Cart';
+import { Cart } from './components/carrinho/Cart';
 import type { CartItem } from './types';
 import {Header} from './components/Header';
 import { CartProvider } from './contexts/CartContext';
+import ClienteDados from './components/cliente/CustomerData';
 
 const CardapioLayout: React.FC = () => {
   // Agora o restauranteId é extraído dentro de uma rota que o define
@@ -131,6 +132,10 @@ const AppContent: React.FC = () => {
           onCheckout={handleCheckout}
         />
         }
+      />
+      <Route
+        path="/dados"
+        element={<ClienteDados />}
       />
       <Route path="*" element={<Navigate to="/cardapio/1" />} />
       </Routes>

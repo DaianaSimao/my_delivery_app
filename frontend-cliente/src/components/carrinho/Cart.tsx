@@ -1,5 +1,7 @@
+import React, { useState } from 'react';
 import { ArrowLeft, Trash2, Pencil, Plus, Minus } from 'lucide-react';
-import type { CartItem } from '../types';
+import CustomerData  from '../cliente/CustomerData';
+import type { CartItem } from '../../types';
 
 interface CartProps {
   items: CartItem[];
@@ -9,7 +11,6 @@ interface CartProps {
   onRemoveItem: (itemId: string) => void;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onAddMore: () => void;
-  onCheckout: () => void;
 }
 
 export function Cart({
@@ -20,9 +21,17 @@ export function Cart({
   onRemoveItem,
   onUpdateQuantity,
   onAddMore,
-  onCheckout,
 }: CartProps) {
+  const [showCustomerDataForm, setShowCustomerDataForm] = useState(false);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleCheckout = () => {
+    setShowCustomerDataForm(true);
+  };
+
+  if (showCustomerDataForm) {
+    return <CustomerData cartItems={items} onBack={() => setShowCustomerDataForm(false)} />;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
@@ -138,7 +147,7 @@ export function Cart({
               </p>
             </div>
             <button
-              onClick={onCheckout}
+              onClick={handleCheckout}
               className="px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors"
             >
               Avançar
