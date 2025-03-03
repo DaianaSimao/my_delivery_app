@@ -6,12 +6,26 @@ export interface MenuItem {
   preco: number;
   imagem_url: string;
   disponivel: string;
+  produto_acompanhamentos: {
+    id: number;
+    acompanhamento: {
+      [x: string]: any;
+      id: number;
+      nome: string;
+      item_acompanhamentos: {
+        preco: number;
+        id: number;
+        nome: string;
+      }[];
+    };
+  }[]
 }
 
 export interface MenuSection {
   title: string;
   items: MenuItem[];
   id: string;
+  
 }
 
 export interface Restaurante {

@@ -15,13 +15,6 @@ const AppContent: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const navigate = useNavigate();
 
-  const handleAddToCartClick = (item: MenuItem) => {
-    const cartItem: CartItem = {
-      ...item,
-      quantity: 1
-    };
-    setCartItems([...cartItems, cartItem]);
-  };
 
   // Configura o modo escuro com base nas preferências do sistema
   useEffect(() => {
@@ -44,38 +37,6 @@ const AppContent: React.FC = () => {
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
 
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
-    if (quantity < 1) return;
-    setCartItems(
-      cartItems.map(item => 
-        item.id === itemId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (itemId: string) => {
-    setCartItems(cartItems.filter(item => item.id !== itemId));
-  };
-
-  const handleClearCart = () => {
-    setCartItems([]);
-  };
-
-  if (showCart) {
-    return (
-      <Cart
-        items={cartItems}
-        onBack={() => setShowCart(false)}
-        onClearCart={handleClearCart}
-        onEditItem={(item) => console.log('Edit item:', item)}
-        onRemoveItem={handleRemoveItem}
-        onUpdateQuantity={handleUpdateQuantity}
-        onAddMore={() => setShowCart(false)}
-        onCheckout={() => console.log('Proceed to checkout')}
-      />
-    );
-  }
-
   return (
       <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
         <Toaster />
@@ -88,15 +49,12 @@ const AppContent: React.FC = () => {
           <Route
             path="/cardapio/:restauranteId"
             element={
-              <MenuPage
-                onCartClick={() => setShowCart(true)}
-              />
+              <MenuPage  />
             }
           />
           <Route path="*" element={<Navigate to="/cardapio/1" />} />
           <Route path="/item/:itemId" element={<ItemDetails />} />
         </Routes>
-        <Footer onCartClick={() => setShowCart(true)} />
       </div>
   );
 };

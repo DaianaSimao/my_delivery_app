@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_02_222701) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_03_011655) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_02_222701) do
     t.decimal "preco_unitario", precision: 10, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "observacao"
     t.index ["pedido_id"], name: "index_itens_pedidos_on_pedido_id"
     t.index ["produto_id"], name: "index_itens_pedidos_on_produto_id"
   end

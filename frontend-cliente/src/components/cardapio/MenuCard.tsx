@@ -1,6 +1,7 @@
 // src/components/cardapio/MenuCard.tsx
-import React from 'react';
 import type { MenuItem } from '../../types';
+import { Footer } from '../Footer';
+import { useState } from 'react';
 
 interface MenuCardProps {
   item: MenuItem;
@@ -9,6 +10,7 @@ interface MenuCardProps {
 
 export function MenuCard({ item, onClick }: MenuCardProps) {
   const displayPrice = item.preco;
+  const [showCart, setShowCart] = useState(false);
 
   return (
     <div 
@@ -40,6 +42,7 @@ export function MenuCard({ item, onClick }: MenuCardProps) {
             </span>
         </div>
       </div>
+      <Footer onCartClick={() => setShowCart(true)} />
     </div>
   );
 }
