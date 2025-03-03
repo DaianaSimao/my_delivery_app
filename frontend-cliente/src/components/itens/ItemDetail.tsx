@@ -61,12 +61,6 @@ const ItemDetails: React.FC = () => {
               <ArrowLeft className="w-6 h-6 text-gray-800 dark:text-white" />
             </button>
             <div className="flex gap-2">
-              <button 
-                onClick={toggleDarkMode} 
-                className="p-2 bg-white/80 dark:bg-gray-800/80 rounded-full"
-              >
-                {darkMode ? <Sun className="w-6 h-6 text-gray-800 dark:text-white" /> : <Moon className="w-6 h-6 text-gray-800 dark:text-white" />}
-              </button>
               <button className="p-2 bg-white/80 dark:bg-gray-800/80 rounded-full">
                 <Share2 className="w-6 h-6 text-gray-800 dark:text-white" />
               </button>

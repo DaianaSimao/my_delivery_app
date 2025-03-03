@@ -91,7 +91,7 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
             {formatTime(restaurantInfo.abertura)}- {formatTime(restaurantInfo.fechamento)}
             </span>
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Pedido mínimo: R$ {restaurantInfo.taxa_entrega}
+              Pedido mínimo: R$ {restaurantInfo.pedido_minimo}
             </span>
           </div>
         </div>

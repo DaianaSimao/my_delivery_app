@@ -31,7 +31,7 @@ export function PopularItemsCarousel({ items, onClick}: PopularItemsCarouselProp
         ref={scrollContainer}
         className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
       >
-        {items.map((item) => (
+        {items.map((item: MenuItem) => (
           <div key={item.id} className="flex-none w-80">
             <MenuCard item={item} onClick={() => onClick(item)} />
           </div>
