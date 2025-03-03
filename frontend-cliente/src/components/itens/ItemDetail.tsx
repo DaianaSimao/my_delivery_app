@@ -27,8 +27,8 @@ const ItemDetails: React.FC = () => {
 
     loadProductDetails();
   }, [itemId]);
+  
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleGroup = (groupId: number) => {
     setExpandedGroups(prev => 
       prev.includes(groupId) 
@@ -86,12 +86,16 @@ const ItemDetails: React.FC = () => {
 
             <div className="space-y-6 mt-6">
               {item.produto_acompanhamentos.map(({ acompanhamento }) => (
-                <div key={acompanhamento.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <div key={acompanhamento.id} className="border border-gray-200 dark:border-gray-700 rounded-lg">
                   <button 
                     onClick={() => toggleGroup(acompanhamento.id)} 
-                    className="w-full px-4 py-3 flex justify-between bg-gray-50 dark:bg-gray-800"
+                    className="w-full px-4 py-3 flex  bg-gray-50 dark:bg-gray-800"
                   >
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{acompanhamento.nome}</h3>
+                  <div className="flex flex-col">
+                    <h3 className="font-semibold text-gray-900 dark:text-white m-0">{acompanhamento.nome}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 ml-6">{`Escolha ${acompanhamento.quantidade_maxima} opção(ões)`}</p>
+                  </div>
+
                     {expandedGroups.includes(acompanhamento.id) ? <ChevronUp /> : <ChevronDown />}
                   </button>
 
