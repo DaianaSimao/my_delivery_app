@@ -7,6 +7,16 @@ interface Pedido {
     id: number;
     nome: string;
     telefone: string;
+    endereco?: {
+      rua: string;
+      numero: string;
+      bairro: string;
+      cidade: string;
+      estado: string;
+      cep: string;
+      complemento: string;
+      tipo: string;
+    };
   };
   valor_total: number;
   itens_pedidos: Array<{
@@ -42,14 +52,6 @@ interface Pedido {
   }>;
   created_at: string;
   forma_pagamento: string;
-  endereco?: {
-    rua: string;
-    numero: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-  };
   pagamento?: {
     metodo: string;
     status: string;
@@ -63,6 +65,7 @@ interface PedidoModalProps {
 }
 
 const PedidoModal: React.FC<PedidoModalProps> = ({ pedido, onClose }) => {
+  console.log(pedido);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-2xl">
@@ -85,12 +88,12 @@ const PedidoModal: React.FC<PedidoModalProps> = ({ pedido, onClose }) => {
         <div className="mb-4">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">Endereço de Entrega</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {pedido.endereco?.rua}, {pedido.endereco?.numero}
+            {pedido.cliente?.endereco?.rua}, {pedido.cliente?.endereco?.numero}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {pedido.endereco?.bairro}, {pedido.endereco?.cidade} - {pedido.endereco?.estado}
+            {pedido.cliente?.endereco?.bairro}, {pedido.cliente?.endereco?.cidade} - {pedido.cliente?.endereco?.estado}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">CEP: {pedido.endereco?.cep}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">CEP: {pedido.cliente?.endereco?.cep}</p>
         </div>
 
         {/* Itens do Pedido */}

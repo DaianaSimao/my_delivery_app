@@ -17,10 +17,12 @@ class Api::V1::PedidosController < ApplicationController
       data: @pedidos.as_json(
         include: {
           cliente: {
-            only: %i[id nome telefone]
-          },
-          endereco: {
-            only: %i[id rua numero bairro cidade estado cep]
+            only: %i[id nome telefone endereco_id],
+            include: {
+              endereco: {
+                only: %i[id rua numero bairro cidade estado cep]
+              }
+            }
           },
           itens_pedidos: {
             only: %i[id quantidade preco_total],
@@ -62,7 +64,7 @@ class Api::V1::PedidosController < ApplicationController
   end
 
   def show
-    pedido = Pedido.includes(:cliente, :endereco, :itens_pedidos, :produtos, :pagamento).find(params[:id])
+    pedido = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(params[:id])
 
     render json: {
       data: pedido.as_json(
@@ -79,18 +81,7 @@ class Api::V1::PedidosController < ApplicationController
             only: %i[id quantidade preco_total],
             include: {
               produto: {
-                only: %i[id nome preco],
-                include: {
-                  acompanhamentos: {
-                    only: %i[id nome quantidade_maxima],
-                    include: {
-                      itens_acompanhamentos: {
-                        only: %i[id nome preco]
-                      }
-                    }
-                  }
-                }
-              },
+                only: %i[id nome preco]},
               acompanhamentos_pedidos: {
                 only: %i[quantidade preco_unitario],
                 include: {

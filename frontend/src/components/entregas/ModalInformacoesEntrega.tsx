@@ -11,14 +11,14 @@ interface Entrega {
     cliente: {
       nome: string;
       telefone: string;
-    };
-    endereco: {
-      rua: string;
-      numero: string;
-      bairro: string;
-      cidade: string;
-      estado: string;
-      cep: string;
+      endereco: {
+        rua: string;
+        numero: string;
+        bairro: string;
+        cidade: string;
+        estado: string;
+        cep: string;
+      };
     };
   };
   entregador?: {
@@ -41,7 +41,7 @@ const ModalInformacoesEntrega: React.FC<ModalInformacoesEntregaProps> = ({
   entrega,
 }) => {
   if (!isOpen) return null;
-
+  console.log(entrega.pedido.cliente.endereco);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -61,7 +61,7 @@ const ModalInformacoesEntrega: React.FC<ModalInformacoesEntregaProps> = ({
             Cliente: {entrega.pedido.cliente.nome} ({entrega.pedido.cliente.telefone})
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Endereço: {entrega.pedido.endereco.rua}, {entrega.pedido.endereco.numero} - {entrega.pedido.endereco.bairro}, {entrega.pedido.endereco.cidade}/{entrega.pedido.endereco.estado} - {entrega.pedido.endereco.cep}
+            Endereço: {entrega.pedido.cliente.endereco.rua}, {entrega.pedido.cliente.endereco.numero} - {entrega.pedido.cliente.endereco.bairro}, {entrega.pedido.cliente.endereco.cidade}/{entrega.pedido.cliente.endereco.estado} - {entrega.pedido.cliente.endereco.cep}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Forma de Pagamento: {entrega.pedido.forma_pagamento}
