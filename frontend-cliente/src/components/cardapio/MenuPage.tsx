@@ -58,7 +58,7 @@ const MenuPage: React.FC = () => {
   };
 
   const handleRemoveItem = (itemId: string) => {
-    setCartItems(cartItems.filter(item => item.id !== Number(itemId)));
+    setCartItems(cartItems.filter(item => item.id.toString() !== itemId));
   };
 
   const handleClearCart = () => {
@@ -95,7 +95,7 @@ const MenuPage: React.FC = () => {
           />
         ))}
       </div>
-      <Footer onCartClick={() => setShowCart(true)} />
+      <Footer onCartClick={() => navigate('/cart')} />
     </>
   );
 };

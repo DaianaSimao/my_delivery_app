@@ -5,7 +5,7 @@ import { fetchRestaurantInfo } from '../services/api';
 import type { Restaurante } from '../types';
 
 interface HeaderProps {
-  restauranteId: string | number; // Recebe o ID do restaurante como prop
+  restauranteId: string | undefined// Recebe o ID do restaurante como prop
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
@@ -26,8 +26,12 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
   useEffect(() => {
     const loadRestaurantInfo = async () => {
       try {
-        const data = await fetchRestaurantInfo(restauranteId);
-        setRestaurantInfo(data);
+        if (restauranteId) {
+          const data = await fetchRestaurantInfo(restauranteId);
+          setRestaurantInfo(data);
+        } else {
+          throw new Error('Restaurante ID não fornecido.');
+        }
       } catch (error) {
         console.error('Erro ao carregar informações do restaurante:', error);
         setError('Erro ao carregar informações do restaurante.');

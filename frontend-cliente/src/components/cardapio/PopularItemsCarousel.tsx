@@ -4,7 +4,7 @@ import { MenuCard } from './MenuCard';
 import type { MenuItem } from '../../types';
 
 interface PopularItemsCarouselProps {
-  items: MenuItem;
+  items: MenuItem[];
   onClick: (item: MenuItem) => void;
 }
 

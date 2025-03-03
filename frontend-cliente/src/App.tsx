@@ -13,6 +13,7 @@ import ItemDetails from './components/itens/ItemDetail';
 import { Cart } from './components/Cart';
 import type { CartItem } from './types';
 import {Header} from './components/Header';
+import { CartProvider } from './contexts/CartContext';
 
 const CardapioLayout: React.FC = () => {
   // Agora o restauranteId é extraído dentro de uma rota que o define
@@ -140,7 +141,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Router>
-      <AppContent />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </Router>
   );
 };
