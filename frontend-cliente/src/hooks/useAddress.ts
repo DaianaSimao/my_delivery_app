@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchEnderecoById } from '../services/api';
 
-const useAddress = () => {
+const useAddress = (enderecoId?: number) => {
   const [formData, setFormData] = useState({
     street: '',
     number: '',
@@ -10,6 +11,31 @@ const useAddress = () => {
     city: 'São Paulo',
     addressType: 'home',
   });
+
+  useEffect(() => {
+    if (enderecoId) {
+      const buscarEndereco = async () => {
+        try {
+          const endereco = await fetchEnderecoById(enderecoId);
+          if (endereco) {
+            setFormData({
+              street: endereco.rua,
+              number: endereco.numero,
+              complement: endereco.complemento || '',
+              reference: endereco.ponto_referencia || '',
+              neighborhood: endereco.bairro,
+              city: endereco.cidade,
+              addressType: endereco.tipo || 'home',
+            });
+          }
+        } catch (error) {
+          console.error('Erro ao buscar endereço:', error);
+        }
+      };
+
+      buscarEndereco();
+    }
+  }, [enderecoId]);
 
   const handleStreetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, street: e.target.value });

@@ -52,7 +52,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     handleNeighborhoodChange,
     handleCityChange,
     handleAddressTypeChange,
-  } = useAddress();
+  } = useAddress(clienteEncontrado?.endereco_id);
 
   const {
     selectedDelivery,
