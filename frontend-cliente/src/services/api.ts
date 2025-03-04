@@ -71,3 +71,13 @@ export const criarPedido = async (pedidoData: any) => {
     return null;
   }
 };
+
+export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; telefone: string }) => {
+  try {
+    const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
+    return response.data; // Retorna o cliente atualizado
+  } catch (error) {
+    console.error("Erro ao atualizar cliente:", error);
+    throw error; // Lança o erro para ser tratado no componente
+  }
+};

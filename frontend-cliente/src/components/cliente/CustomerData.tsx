@@ -1,31 +1,17 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Edit2, MapPin, CreditCard, Wallet, QrCode, DollarSign, Home, Briefcase, Users, Sun, Moon } from 'lucide-react';
-import {
-  fetchClienteByWhatsApp,
-  fetchEnderecoById,
-  criarCliente,
-  criarEndereco,
-  criarPedido,
-} from "../../services/api";
-
-interface DeliveryOption {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}
-
-interface PaymentMethod {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-}
-
-interface AddressType {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-}
+import { ArrowLeft, Sun, Moon } from 'lucide-react';
+import CustomerForm from './CustomerForm';
+import AddressForm from './AddressForm';
+import OrderSummary from './OrderSummary';
+import DeliveryOptions from './DeliveryOptions';
+import ConfirmationModal from './modals/ConfirmationModal';
+import NeighborhoodModal from './modals/NeighborhoodModal';
+import ChangeModal from './modals/ChangeModal';
+import useCustomerData from '../../hooks/useCustomerData';
+import useAddress from '../../hooks/useAddress';
+import useOrder from '../../hooks/useOrder';
+import { atualizarCliente } from '../../services/api';
+import toast from 'react-hot-toast';
 
 interface OrderItem {
   id: any;
@@ -35,633 +21,95 @@ interface OrderItem {
   options?: string[];
 }
 
-interface Cliente {
-  id: string;
-  nome: string;
-  telefone: string;
-  endereco_id: number;
-  sobrenome: string;
+interface CustomerDataProps {
+  cartItems: OrderItem[];
+  onBack: () => void;
 }
 
-interface Endereco {
-  id: number;
-  rua: string;
-  numero: string;
-  complemento: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-}
-
-function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: () => void }) {
+const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const [darkMode, setDarkMode] = useState(true);
   const [step, setStep] = useState<'data' | 'address' | 'payment'>('data');
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showChangeModal, setShowChangeModal] = useState(false);
-  const [selectedDelivery, setSelectedDelivery] = useState<string | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+  const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [showTrocoModal, setShowTrocoModal] = useState(false);
-  const [trocoValue, setTrocoValue] = useState('');
-  const [clienteEncontrado, setClienteEncontrado] = useState<Cliente | null>(null);
-  const [endereco, setEnderecoCliente] = useState<Endereco | null>(null);
-  const [showClienteModal, setShowClienteModal] = useState(false);
+
+  const {
+    formData: customerFormData,
+    clienteEncontrado,
+    showClienteModal,
+    setShowClienteModal,
+    handleWhatsappChange,
+    handleFirstNameChange,
+    handleLastNameChange,
+  } = useCustomerData();
+
+  const {
+    formData: addressFormData,
+    handleStreetChange,
+    handleNumberChange,
+    handleComplementChange,
+    handleReferenceChange,
+    handleNeighborhoodChange,
+    handleCityChange,
+    handleAddressTypeChange,
+  } = useAddress();
+
+  const {
+    selectedDelivery,
+    selectedPayment,
+    trocoValue,
+    handleDeliveryChange,
+    handlePaymentChange,
+    handleTrocoChange,
+  } = useOrder();
 
   const deliveryFee = 5.00;
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const total = subtotal + deliveryFee;
-
-  const [formData, setFormData] = useState({
-    whatsapp: '',
-    firstName: '',
-    lastName: '',
-    street: '',
-    number: '',
-    complement: '',
-    reference: '',
-    neighborhood: 'Centro',
-    city: 'São Paulo',
-    addressType: 'home',
-    observations: ''
-  });
-
-  // Definindo os tipos de endereço
-  const addressTypes: AddressType[] = [
-    { id: 'home', title: 'Casa', icon: <Home className="w-6 h-6" /> },
-    { id: 'work', title: 'Trabalho', icon: <Briefcase className="w-6 h-6" /> },
-    { id: 'friends', title: 'Amigos', icon: <Users className="w-6 h-6" /> }
-  ];
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle('dark');
   };
 
-  // Função para buscar cliente pelo WhatsApp
-  const buscarCliente = async (whatsapp: string) => {
-    const cliente = await fetchClienteByWhatsApp(whatsapp);
-    if (cliente) {
-      setClienteEncontrado(cliente);
-      const endereco = await fetchEnderecoById(cliente.endereco_id);
-      if (endereco) {
-        setEnderecoCliente(endereco);
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-          street: endereco.rua,
-          number: endereco.numero,
-          complement: endereco.complemento,
-          neighborhood: endereco.bairro,
-          city: endereco.cidade,
-        }));
-      }
-      setShowClienteModal(true);
-    }
-  };
-
-  // Atualiza o WhatsApp e busca o cliente
-  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormData({ ...formData, whatsapp: value });
-    buscarCliente(value);
-  };
-
-  // Confirma os dados do cliente
   const handleConfirmarDadosCliente = (editar: boolean) => {
-    if (clienteEncontrado && !editar) {
-      const [firstName, ...lastNameArray] = clienteEncontrado.nome.split(' ');
-      const lastName = lastNameArray.join(' ');
-      setFormData({
-        ...formData,
-        firstName,
-        lastName,
-        whatsapp: clienteEncontrado.telefone
-      });
+    if (editar) {
+      // Entra no modo de edição
+      setIsEditing(true);
+    } else {
+      // Confirma sem editar, avança para o próximo passo
       setStep('address');
-    } else if (clienteEncontrado && editar) {
-      const [firstName, ...lastNameArray] = clienteEncontrado.nome.split(' ');
-      const lastName = lastNameArray.join(' ');
-      setFormData({
-        ...formData,
-        firstName,
-        lastName,
-        whatsapp: clienteEncontrado.telefone
-      });
     }
-    setShowClienteModal(false);
+    setShowClienteModal(false); // Fecha o modal
   };
-
-  // Função para lidar com o envio do formulário
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Verifica se o cliente foi encontrado e se está no modo de edição
+    if (clienteEncontrado && isEditing) {
+      try {
+        // Atualiza os dados no backend
+        await atualizarCliente(clienteEncontrado.id, {
+          nome: `${customerFormData.firstName} ${customerFormData.lastName}`,
+          telefone: customerFormData.whatsapp,
+        });
+        toast.success('Cliente atualizado com sucesso!');
+      } catch (error) {
+        console.error('Erro ao atualizar cliente:', error);
+        // Mostra o erro no toast
+        toast.error('Erro ao atualizar cliente. Tente novamente.');
+        return; // Sai da função para evitar avançar para o próximo passo
+      }
+    }
+  
+    // Avança para o próximo passo apenas se não houve erro
     setStep('address');
   };
 
-
   const handleFinalizarPedido = async () => {
-    // Verifica se todos os campos obrigatórios estão preenchidos
-    if (!formData.firstName || !formData.lastName || !formData.whatsapp || !formData.street || !formData.number || !formData.neighborhood || !formData.city) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
-  
-    // Verifica se a forma de pagamento foi selecionada
-    if (!selectedPayment) {
-      alert('Por favor, selecione uma forma de pagamento.');
-      return;
-    }
-  
-    // Verifica se a forma de entrega foi selecionada
-    if (!selectedDelivery) {
-      alert('Por favor, selecione uma forma de entrega.');
-      return;
-    }
-  
-    // Verifica se o cliente já existe
-    let cliente = await fetchClienteByWhatsApp(formData.whatsapp);
-    if (!cliente) {
-      // Cria um novo endereço
-      const enderecoData = {
-        rua: formData.street,
-        numero: formData.number,
-        complemento: formData.complement || null,
-        bairro: formData.neighborhood,
-        cidade: formData.city,
-        estado: "SP", // Defina o estado conforme necessário
-        cep: "00000-000", // Defina o CEP conforme necessário
-        tipo: formData.addressType,
-      };
-
-      const endereco = await criarEndereco(enderecoData);
-      if (!endereco) {
-        alert("Erro ao criar endereço.");
-        return;
-      }
-
-      // Cria um novo cliente
-      const clienteData = {
-        nome: `${formData.firstName} ${formData.lastName}`,
-        telefone: formData.whatsapp,
-        endereco_id: endereco.id, // Associa o endereço ao cliente
-      };
-
-      cliente = await criarCliente(clienteData);
-      if (!cliente) {
-        alert("Erro ao criar cliente.");
-        return;
-      }
-    }
-
-    // Estrutura os itens do pedido
-    const itensPedidos = cartItems.map((item) => ({
-      produto_id: item.id, // Supondo que cada item tenha um ID de produto
-      quantidade: item.quantity,
-      preco_unitario: item.price,
-      observacao: item.options ? item.options.join(", ") : null, // Junta as opções em uma string
-    }));
-
-    // Estrutura o pagamento
-    const pagamento = {
-      metodo: selectedPayment,
-      status: "Pendente",
-      valor: total,
-      troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0, // Troco só é aplicável para pagamento em dinheiro
-    };
-
-    // Estrutura o pedido completo
-    const pedido = {
-      restaurante_id: 1, // Defina o ID do restaurante conforme necessário
-      status: "Recebido",
-      forma_pagamento: selectedPayment,
-      troco: pagamento.troco,
-      cliente_id: cliente.id, // Usa o ID do cliente
-      endereco_id: cliente.endereco_id, // Usa o ID do endereço
-      itens_pedidos: itensPedidos,
-      pagamento,
-      valor_total: total,
-    };
-
-    try {
-      // Envia os dados para o backend
-      const pedidoCriado = await criarPedido(pedido);
-      if (!pedidoCriado) {
-        throw new Error("Erro ao enviar o pedido.");
-      }
-
-      console.log("Pedido enviado com sucesso:", pedidoCriado);
-
-      // Limpa o carrinho e redireciona o usuário
-      onBack(); // Volta para a tela anterior
-    } catch (error) {
-      console.error("Erro ao enviar o pedido:", error);
-      alert("Erro ao enviar o pedido. Tente novamente.");
-    }
-  };
-
-  const renderCustomerDataForm = () => (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Número de WhatsApp
-        </label>
-        <input
-          type="tel"
-          id="whatsapp"
-          value={formData.whatsapp}
-          onChange={handleWhatsappChange}
-          className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                    focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                    px-4 py-2"
-          required
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Nome
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            value={formData.firstName}
-            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                      px-4 py-2"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Sobrenome
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            value={formData.lastName}
-            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                      px-4 py-2"
-            required
-          />
-        </div>
-      </div>
-      <button
-        type="submit"
-        className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-      >
-        Avançar
-      </button>
-    </form>
-  );
-
-  const renderAddressForm = () => (
-    <div className="space-y-6">
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex justify-between items-center">
-        <div>
-          <h3 className="font-medium text-gray-900 dark:text-white">Região de Entrega</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{formData.neighborhood}</p>
-        </div>
-        <button
-          onClick={() => setShowChangeModal(true)}
-          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-        >
-          Ver Opções
-        </button>
-      </div>
-
-      <form className="space-y-4">
-        <div>
-          <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Rua
-          </label>
-          <input
-            type="text"
-            id="street"
-            value={formData.street}
-            onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                      px-4 py-2"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="number" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Número
-            </label>
-            <input
-              type="text"
-              id="number"
-              value={formData.number}
-              onChange={(e) => setFormData({ ...formData, number: e.target.value })}
-              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                        focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                        px-4 py-2"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="complement" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Complemento
-            </label>
-            <input
-              type="text"
-              id="complement"
-              value={formData.complement}
-              onChange={(e) => setFormData({ ...formData, complement: e.target.value })}
-              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                        focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                        px-4 py-2"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="reference" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Ponto de Referência
-          </label>
-          <input
-            type="text"
-            id="reference"
-            value={formData.reference}
-            onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                      px-4 py-2"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Nome do Endereço
-          </label>
-          <div className="grid grid-cols-3 gap-4">
-            {addressTypes.map((type) => (
-              <button
-                key={type.id}
-                type="button"
-                onClick={() => setFormData({ ...formData, addressType: type.id })}
-                className={`p-4 rounded-lg border ${
-                  formData.addressType === type.id
-                    ? 'border-red-600 dark:border-red-400 bg-red-50 dark:bg-red-900/20'
-                    : 'border-gray-300 dark:border-gray-700'
-                } flex flex-col items-center justify-center space-y-2`}
-              >
-                <div className={`${
-                  formData.addressType === type.id
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}>
-                  {type.icon}
-                </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">{type.title}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          onClick={(e) => {
-            e.preventDefault();
-            setStep('payment');
-          }}
-          className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-        >
-          Salvar Endereço
-        </button>
-      </form>
-    </div>
-  );
-  const renderOrderSummary = () => (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
-      <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Resumo do Pedido</h3>
-  
-      {/* Dados do Cliente */}
-      <div className="mb-6">
-        <h4 className="font-medium text-gray-900 dark:text-white mb-2">Dados do Cliente</h4>
-        <div className="space-y-1">
-          <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Nome:</span> {formData.firstName} {formData.lastName}
-          </p>
-          <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-medium">WhatsApp:</span> {formData.whatsapp}
-          </p>
-        </div>
-      </div>
-  
-      {/* Endereço de Entrega */}
-      <div className="mb-6">
-        <h4 className="font-medium text-gray-900 dark:text-white mb-2">Endereço de Entrega</h4>
-        <div className="space-y-1">
-          <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Rua:</span> {formData.street}, {formData.number}
-          </p>
-          {formData.complement && (
-            <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Complemento:</span> {formData.complement}
-            </p>
-          )}
-          <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Bairro:</span> {formData.neighborhood}
-          </p>
-          <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Cidade:</span> {formData.city}
-          </p>
-          {formData.reference && (
-            <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Ponto de Referência:</span> {formData.reference}
-            </p>
-          )}
-        </div>
-      </div>
-  
-      {/* Itens do Pedido */}
-      <div className="space-y-3">
-        {cartItems.map((item, index) => (
-          <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-3">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {item.quantity}x {item.name}
-                </p>
-                {item.options && item.options.length > 0 && (
-                  <ul className="mt-1 space-y-1">
-                    {item.options.map((option, optIndex) => (
-                      <li key={optIndex} className="text-sm text-gray-600 dark:text-gray-400">
-                        • {option}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <p className="font-medium text-red-600 dark:text-red-400">
-                R$ {(item.price * item.quantity).toFixed(2)}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-  
-      {/* Resumo Financeiro */}
-      <div className="pt-3 space-y-2">
-        <div className="flex justify-between text-gray-600 dark:text-gray-400">
-          <span>Subtotal</span>
-          <span>R$ {subtotal.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between text-gray-600 dark:text-gray-400">
-          <span>Taxa de entrega</span>
-          <span>R$ {deliveryFee.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between font-semibold text-gray-900 dark:text-white text-lg">
-          <span>Total</span>
-          <span className="text-red-600 dark:text-red-400">R$ {total.toFixed(2)}</span>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderDeliveryOptions = () => {
-    const deliveryOptions: DeliveryOption[] = [
-      {
-        id: 'delivery',
-        title: 'Entrega',
-        description: 'Receba em casa',
-        icon: <MapPin className="w-6 h-6" />,
-      },
-      {
-        id: 'pickup',
-        title: 'Retirada',
-        description: 'Retire no local',
-        icon: <Home className="w-6 h-6" />,
-      },
-    ];
-
-    const paymentMethods: PaymentMethod[] = [
-      { id: 'credit', title: 'Cartão de Crédito', icon: <CreditCard className="w-6 h-6" /> },
-      { id: 'debit', title: 'Cartão de Débito', icon: <Wallet className="w-6 h-6" /> },
-      { id: 'pix', title: 'PIX', icon: <QrCode className="w-6 h-6" /> },
-      { id: 'cash', title: 'Dinheiro', icon: <DollarSign className="w-6 h-6" /> }
-    ];
-
-    return (
-      <div className="space-y-6">
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-medium text-gray-900 dark:text-white">
-                {formData.firstName} {formData.lastName}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{formData.whatsapp}</p>
-            </div>
-            <button
-              onClick={() => setStep('data')}
-              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-            >
-              <Edit2 className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900 dark:text-white">Escolha a Forma de Entrega</h3>
-          {deliveryOptions.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => {
-                setSelectedDelivery(option.id);
-                if (option.id === 'delivery') {
-                  setShowChangeModal(true);
-                }
-              }}
-              className={`w-full p-4 rounded-lg border ${
-                selectedDelivery === option.id
-                  ? 'border-red-600 dark:border-red-400'
-                  : 'border-gray-300 dark:border-gray-700'
-              } flex items-center space-x-4`}
-            >
-              <div className={`${
-                selectedDelivery === option.id
-                  ? 'text-red-600 dark:text-red-400'
-                  : 'text-gray-600 dark:text-gray-400'
-              }`}>
-                {option.icon}
-              </div>
-              <div className="flex-1 text-left">
-                <p className="font-medium text-gray-900 dark:text-white">{option.title}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{option.description}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {selectedDelivery && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Escolha a Forma de Pagamento</h3>
-            {paymentMethods.map((method) => (
-              <button
-                key={method.id}
-                onClick={() => {
-                  setSelectedPayment(method.id);
-                  if (method.id === 'cash') {
-                    setShowTrocoModal(true);
-                  }
-                }}
-                className={`w-full p-4 rounded-lg border ${
-                  selectedPayment === method.id
-                    ? 'border-red-600 dark:border-red-400'
-                    : 'border-gray-300 dark:border-gray-700'
-                } flex items-center space-x-4`}
-              >
-                <div className={`${
-                  selectedPayment === method.id
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}>
-                  {method.icon}
-                </div>
-                <p className="flex-1 text-left font-medium text-gray-900 dark:text-white">{method.title}</p>
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <label htmlFor="observations" className="block font-medium text-gray-900 dark:text-white">
-            Observações do Pedido
-          </label>
-          <textarea
-            id="observations"
-            value={formData.observations}
-            onChange={(e) => setFormData({ ...formData, observations: e.target.value })}
-            placeholder="Alguma observação sobre a entrega?"
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                     focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent"
-            rows={3}
-          />
-        </div>
-
-        {selectedDelivery && selectedPayment && (
-          <button
-          onClick={handleFinalizarPedido}
-          className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-        >
-          Finalizar Pedido
-        </button>
-        )}
-      </div>
-    );
+    // Lógica para finalizar o pedido
+    console.log('Pedido finalizado');
   };
 
   return (
@@ -697,108 +145,78 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
             {step === 'payment' && 'Finalizar Pedido'}
           </h1>
 
-          {step === 'data' && renderCustomerDataForm()}
-          {step === 'address' && renderAddressForm()}
+          {step === 'data' && (
+            <CustomerForm
+              formData={customerFormData}
+              onWhatsappChange={handleWhatsappChange}
+              onFirstNameChange={handleFirstNameChange}
+              onLastNameChange={handleLastNameChange}
+              onSubmit={handleSubmit}
+            />
+          )}
+
+          {step === 'address' && (
+            <AddressForm
+              formData={addressFormData}
+              onStreetChange={handleStreetChange}
+              onNumberChange={handleNumberChange}
+              onComplementChange={handleComplementChange}
+              onReferenceChange={handleReferenceChange}
+              onNeighborhoodChange={(neighborhood) => {
+                handleNeighborhoodChange(neighborhood);
+                setShowNeighborhoodModal(false);
+              }}
+              onCityChange={handleCityChange}
+              onAddressTypeChange={handleAddressTypeChange}
+              onSubmit={() => setStep('payment')}
+            />
+          )}
+
           {step === 'payment' && (
             <>
-              {renderOrderSummary()}
-              {renderDeliveryOptions()}
+              <OrderSummary
+                cartItems={cartItems}
+                subtotal={subtotal}
+                deliveryFee={deliveryFee}
+                total={total}
+                formData={{ ...customerFormData, ...addressFormData }}
+              />
+              <DeliveryOptions
+                selectedDelivery={selectedDelivery}
+                selectedPayment={selectedPayment}
+                onDeliveryChange={handleDeliveryChange}
+                onPaymentChange={handlePaymentChange}
+                onTrocoChange={handleTrocoChange}
+                onSubmit={handleFinalizarPedido}
+              />
             </>
           )}
         </div>
-
-        {/* Modal de Confirmação de Dados do Cliente */}
         {showClienteModal && clienteEncontrado && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dados Encontrados</h3>
-              <div className="space-y-2 mb-6">
-                <p className="text-gray-600 dark:text-gray-300">
-                  Nome: {clienteEncontrado.nome}
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  WhatsApp: {clienteEncontrado.telefone}
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => handleConfirmarDadosCliente(true)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
-                           text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Editar Informações
-                </button>
-                <button
-                  onClick={() => handleConfirmarDadosCliente(false)}
-                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-                >
-                  Confirmar
-                </button>
-              </div>
-            </div>
-          </div>
+          <ConfirmationModal
+            clienteEncontrado={clienteEncontrado}
+            onEdit={() => handleConfirmarDadosCliente(true)} // Entra no modo de edição
+            onConfirm={() => handleConfirmarDadosCliente(false)} // Confirma sem editar
+          />
         )}
 
-        {/* Modal de Escolha do Bairro */}
-        {showChangeModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Escolha o Bairro</h3>
-              <div className="space-y-2 mb-6">
-                {['Centro', 'Jardins', 'Pinheiros', 'Vila Madalena'].map((bairro) => (
-                  <button
-                    key={bairro}
-                    onClick={() => {
-                      setFormData({ ...formData, neighborhood: bairro });
-                      setShowChangeModal(false);
-                    }}
-                    className="w-full p-3 text-left rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700
-                             text-gray-900 dark:text-white"
-                  >
-                    {bairro}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+        {showNeighborhoodModal && (
+          <NeighborhoodModal
+            onNeighborhoodChange={handleNeighborhoodChange}
+            onClose={() => setShowNeighborhoodModal(false)}
+          />
         )}
 
-        {/* Modal de Troco */}
         {showTrocoModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Precisa de Troco?</h3>
-              <input
-                type="number"
-                value={trocoValue}
-                onChange={(e) => setTrocoValue(e.target.value)}
-                placeholder="Valor para troco"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 
-                         bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                         focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                         mb-4"
-              />
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setShowTrocoModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
-                           text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Não Preciso
-                </button>
-                <button
-                  onClick={() => setShowTrocoModal(false)}
-                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-                >
-                  Confirmar
-                </button>
-              </div>
-            </div>
-          </div>
+          <ChangeModal
+            trocoValue={trocoValue}
+            onTrocoChange={handleTrocoChange}
+            onClose={() => setShowTrocoModal(false)}
+          />
         )}
       </div>
     </div>
   );
-}
+};
 
 export default CustomerData;

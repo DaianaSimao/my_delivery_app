@@ -11,6 +11,8 @@ interface Cliente {
 
 const useCustomerData = () => {
   const [clienteEncontrado, setClienteEncontrado] = useState<Cliente | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showClienteModal, setShowClienteModal] = useState(false);
   const [formData, setFormData] = useState({
     whatsapp: '',
     firstName: '',
@@ -21,6 +23,7 @@ const useCustomerData = () => {
     const cliente = await fetchClienteByWhatsApp(whatsapp);
     if (cliente) {
       setClienteEncontrado(cliente);
+      setShowClienteModal(true);
       const [firstName, ...lastNameArray] = cliente.nome.split(' ');
       const lastName = lastNameArray.join(' ');
       setFormData({
@@ -48,9 +51,13 @@ const useCustomerData = () => {
   return {
     formData,
     clienteEncontrado,
+    isEditing,
+    setIsEditing,
     handleWhatsappChange,
     handleFirstNameChange,
     handleLastNameChange,
+    showClienteModal, // Retorne o estado do modal
+    setShowClienteModal, // Retorne a função para controlar o modal
   };
 };
 

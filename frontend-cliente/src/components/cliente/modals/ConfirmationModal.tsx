@@ -27,7 +27,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </p>
         </div>
         <div className="flex gap-4">
-          <button
+        <button
             onClick={onEdit}
             className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
                       text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
