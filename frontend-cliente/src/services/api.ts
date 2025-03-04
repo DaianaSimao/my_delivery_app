@@ -40,3 +40,34 @@ export const fetchEnderecoById = async (enderecoId: number) => {
     return null;
   }
 };
+
+// Novas funções
+export const criarCliente = async (clienteData: any) => {
+  try {
+    const response = await api.post("/api/v1/clientes", clienteData);
+    return response.data; // Retorna o cliente criado
+  } catch (error) {
+    console.error("Erro ao criar cliente:", error);
+    return null;
+  }
+};
+
+export const criarEndereco = async (enderecoData: any) => {
+  try {
+    const response = await api.post("/api/v1/enderecos", enderecoData);
+    return response.data; // Retorna o endereço criado
+  } catch (error) {
+    console.error("Erro ao criar endereço:", error);
+    return null;
+  }
+};
+
+export const criarPedido = async (pedidoData: any) => {
+  try {
+    const response = await api.post("/api/v1/pedidos", pedidoData);
+    return response.data; // Retorna o pedido criado
+  } catch (error) {
+    console.error("Erro ao criar pedido:", error);
+    return null;
+  }
+};

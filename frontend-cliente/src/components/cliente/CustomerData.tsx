@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Edit2, MapPin, CreditCard, Wallet, QrCode, DollarSign, Home, Briefcase, Users, Sun, Moon } from 'lucide-react';
-import { fetchClienteByWhatsApp, fetchEnderecoById } from '../../services/api';
+import {
+  fetchClienteByWhatsApp,
+  fetchEnderecoById,
+  criarCliente,
+  criarEndereco,
+  criarPedido,
+} from "../../services/api";
 
 interface DeliveryOption {
   id: string;
@@ -22,6 +28,7 @@ interface AddressType {
 }
 
 interface OrderItem {
+  id: any;
   name: string;
   quantity: number;
   price: number;
@@ -57,7 +64,7 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
   const [showTrocoModal, setShowTrocoModal] = useState(false);
   const [trocoValue, setTrocoValue] = useState('');
   const [clienteEncontrado, setClienteEncontrado] = useState<Cliente | null>(null);
-  const [enderecoCliente, setEnderecoCliente] = useState<Endereco | null>(null);
+  const [endereco, setEnderecoCliente] = useState<Endereco | null>(null);
   const [showClienteModal, setShowClienteModal] = useState(false);
 
   const deliveryFee = 5.00;
@@ -149,43 +156,6 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
     setStep('address');
   };
 
-  const criarCliente = async (clienteData: any) => {
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/clientes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(clienteData),
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao criar cliente.');
-      }
-      return await response.json(); // Retorna o cliente criado
-    } catch (error) {
-      console.error('Erro ao criar cliente:', error);
-      return null;
-    }
-  };
-  
-  const criarEndereco = async (enderecoData: any) => {
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/enderecos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(enderecoData),
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao criar endereço.');
-      }
-      return await response.json(); // Retorna o endereço criado
-    } catch (error) {
-      console.error('Erro ao criar endereço:', error);
-      return null;
-    }
-  };
 
   const handleFinalizarPedido = async () => {
     // Verifica se todos os campos obrigatórios estão preenchidos
@@ -208,7 +178,6 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
   
     // Verifica se o cliente já existe
     let cliente = await fetchClienteByWhatsApp(formData.whatsapp);
-  
     if (!cliente) {
       // Cria um novo endereço
       const enderecoData = {
@@ -217,51 +186,51 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
         complemento: formData.complement || null,
         bairro: formData.neighborhood,
         cidade: formData.city,
-        estado: 'SP', // Defina o estado conforme necessário
-        cep: '00000-000', // Defina o CEP conforme necessário
+        estado: "SP", // Defina o estado conforme necessário
+        cep: "00000-000", // Defina o CEP conforme necessário
         tipo: formData.addressType,
       };
-  
+
       const endereco = await criarEndereco(enderecoData);
       if (!endereco) {
-        alert('Erro ao criar endereço.');
+        alert("Erro ao criar endereço.");
         return;
       }
-  
+
       // Cria um novo cliente
       const clienteData = {
         nome: `${formData.firstName} ${formData.lastName}`,
         telefone: formData.whatsapp,
         endereco_id: endereco.id, // Associa o endereço ao cliente
       };
-  
+
       cliente = await criarCliente(clienteData);
       if (!cliente) {
-        alert('Erro ao criar cliente.');
+        alert("Erro ao criar cliente.");
         return;
       }
     }
-  
+
     // Estrutura os itens do pedido
     const itensPedidos = cartItems.map((item) => ({
       produto_id: item.id, // Supondo que cada item tenha um ID de produto
       quantidade: item.quantity,
       preco_unitario: item.price,
-      observacao: item.options ? item.options.join(', ') : null, // Junta as opções em uma string
+      observacao: item.options ? item.options.join(", ") : null, // Junta as opções em uma string
     }));
-  
+
     // Estrutura o pagamento
     const pagamento = {
       metodo: selectedPayment,
-      status: 'Pendente',
+      status: "Pendente",
       valor: total,
-      troco: selectedPayment === 'cash' ? parseFloat(trocoValue) || 0 : 0, // Troco só é aplicável para pagamento em dinheiro
+      troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0, // Troco só é aplicável para pagamento em dinheiro
     };
-  
+
     // Estrutura o pedido completo
     const pedido = {
       restaurante_id: 1, // Defina o ID do restaurante conforme necessário
-      status: 'Recebido',
+      status: "Recebido",
       forma_pagamento: selectedPayment,
       troco: pagamento.troco,
       cliente_id: cliente.id, // Usa o ID do cliente
@@ -270,29 +239,21 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
       pagamento,
       valor_total: total,
     };
-  
+
     try {
       // Envia os dados para o backend
-      const response = await fetch('http://localhost:3000/api/v1/pedidos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(pedido),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Erro ao enviar o pedido.');
+      const pedidoCriado = await criarPedido(pedido);
+      if (!pedidoCriado) {
+        throw new Error("Erro ao enviar o pedido.");
       }
-  
-      const data = await response.json();
-      console.log('Pedido enviado com sucesso:', data);
-  
+
+      console.log("Pedido enviado com sucesso:", pedidoCriado);
+
       // Limpa o carrinho e redireciona o usuário
       onBack(); // Volta para a tela anterior
     } catch (error) {
-      console.error('Erro ao enviar o pedido:', error);
-      alert('Erro ao enviar o pedido. Tente novamente.');
+      console.error("Erro ao enviar o pedido:", error);
+      alert("Erro ao enviar o pedido. Tente novamente.");
     }
   };
 
@@ -308,9 +269,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
           value={formData.whatsapp}
           onChange={handleWhatsappChange}
           className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                   focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                   px-4 py-2"
+                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                    focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                    px-4 py-2"
           required
         />
       </div>
@@ -325,9 +286,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
             value={formData.firstName}
             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
             className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                     focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                     px-4 py-2"
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                      px-4 py-2"
             required
           />
         </div>
@@ -341,9 +302,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
             value={formData.lastName}
             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
             className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                     focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                     px-4 py-2"
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                      px-4 py-2"
             required
           />
         </div>
@@ -383,9 +344,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
             value={formData.street}
             onChange={(e) => setFormData({ ...formData, street: e.target.value })}
             className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                     focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                     px-4 py-2"
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                      px-4 py-2"
             required
           />
         </div>
@@ -401,9 +362,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
               value={formData.number}
               onChange={(e) => setFormData({ ...formData, number: e.target.value })}
               className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                       px-4 py-2"
+                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                        focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                        px-4 py-2"
               required
             />
           </div>
@@ -417,9 +378,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
               value={formData.complement}
               onChange={(e) => setFormData({ ...formData, complement: e.target.value })}
               className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                       px-4 py-2"
+                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                        focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                        px-4 py-2"
             />
           </div>
         </div>
@@ -434,9 +395,9 @@ function CustomerData({ cartItems, onBack }: { cartItems: OrderItem[]; onBack: (
             value={formData.reference}
             onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
             className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                     focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                     px-4 py-2"
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+                      px-4 py-2"
           />
         </div>
 
