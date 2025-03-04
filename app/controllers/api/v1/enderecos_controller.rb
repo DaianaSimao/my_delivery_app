@@ -20,7 +20,6 @@ class Api::V1::EnderecosController < ApplicationController
   end
 
   def update
-    binding.pry
     if @endereco.update(endereco_params)
       render json: @endereco.as_json
     else

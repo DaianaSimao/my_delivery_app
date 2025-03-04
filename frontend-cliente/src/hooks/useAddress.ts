@@ -12,21 +12,26 @@ const useAddress = (enderecoId?: number) => {
     addressType: 'home',
   });
 
+  const [originalData, setOriginalData] = useState({ ...formData });
+
   useEffect(() => {
     if (enderecoId) {
       const buscarEndereco = async () => {
         try {
           const endereco = await fetchEnderecoById(enderecoId);
           if (endereco) {
-            setFormData({
+            const dadosEndereco = {
               street: endereco.rua,
               number: endereco.numero,
               complement: endereco.complemento || '',
               reference: endereco.ponto_referencia || '',
               neighborhood: endereco.bairro,
               city: endereco.cidade,
-              addressType: endereco.tipo || 'Casa',
-            });
+              addressType: endereco.tipo || 'home',
+
+            };
+            setFormData(dadosEndereco);
+            setOriginalData(dadosEndereco); // Armazena os dados originais
           }
         } catch (error) {
           console.error('Erro ao buscar endereço:', error);
@@ -37,6 +42,7 @@ const useAddress = (enderecoId?: number) => {
     }
   }, [enderecoId]);
 
+  // Funções para atualizar o estado do formulário
   const handleStreetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, street: e.target.value });
   };
@@ -67,6 +73,7 @@ const useAddress = (enderecoId?: number) => {
 
   return {
     formData,
+    originalData, // Retorna os dados originais
     handleStreetChange,
     handleNumberChange,
     handleComplementChange,

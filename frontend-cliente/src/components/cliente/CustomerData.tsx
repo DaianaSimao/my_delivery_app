@@ -10,7 +10,7 @@ import ChangeModal from './modals/ChangeModal';
 import useCustomerData from '../../hooks/useCustomerData';
 import useAddress from '../../hooks/useAddress';
 import useOrder from '../../hooks/useOrder';
-import { atualizarCliente, atualizarEndereco, criarEndereco } from '../../services/api';
+import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface OrderItem {
@@ -153,8 +153,57 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   };
 
   const handleFinalizarPedido = async () => {
-    // Lógica para finalizar o pedido
-    console.log('Pedido finalizado');
+    // Verifica se todos os campos obrigatórios estão preenchidos
+    if (!clienteEncontrado || !selectedPayment || !selectedDelivery) {
+      toast.error('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+  
+    // Estrutura os itens do pedido
+    const itensPedidos = cartItems.map((item) => ({
+      produto_id: item.id, // Supondo que cada item tenha um ID de produto
+      quantidade: item.quantity,
+      preco_unitario: item.price,
+      observacao: item.options ? item.options.join(", ") : null, // Junta as opções em uma string
+    }));
+  
+    // Estrutura o pagamento
+    const pagamento = {
+      metodo: selectedPayment,
+      status: "Pendente",
+      valor: total,
+      troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0, // Troco só é aplicável para pagamento em dinheiro
+    };
+  
+    // Estrutura o pedido completo
+    const pedido = {
+      restaurante_id: 1, // Defina o ID do restaurante conforme necessário
+      status: "Recebido",
+      forma_pagamento: selectedPayment,
+      troco: pagamento.troco,
+      cliente_id: clienteEncontrado.id, // Usa o ID do cliente
+      endereco_id: clienteEncontrado.endereco_id, // Usa o ID do endereço
+      itens_pedidos: itensPedidos,
+      pagamento,
+      valor_total: total,
+    };
+  
+    try {
+      // Envia os dados para o backend
+      const pedidoCriado = await criarPedido(pedido);
+      if (!pedidoCriado) {
+        throw new Error("Erro ao enviar o pedido.");
+      }
+  
+      console.log("Pedido enviado com sucesso:", pedidoCriado);
+      toast.success('Pedido finalizado com sucesso!');
+  
+      // Limpa o carrinho e redireciona o usuário
+      onBack(); // Volta para a tela anterior
+    } catch (error) {
+      console.error("Erro ao enviar o pedido:", error);
+      toast.error("Erro ao enviar o pedido. Tente novamente.");
+    }
   };
 
   return (
