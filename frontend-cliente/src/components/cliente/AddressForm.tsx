@@ -38,6 +38,11 @@ const AddressForm: React.FC<AddressFormProps> = ({
     { id: 'Amigos', title: 'Amigos', icon: <Users className="w-6 h-6" /> },
   ];
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Evita o comportamento padrão do formulário
+    onSubmit(e); // Chama a função onSubmit passada como prop
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex justify-between items-center">
@@ -53,7 +58,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4"> {/* onSubmit no formulário */}
+      <form onSubmit={handleFormSubmit} className="space-y-4"> {/* onSubmit no formulário */}
         <div>
           <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Rua
@@ -149,9 +154,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
             ))}
           </div>
         </div>
-
+        {/* Campos do formulário */}
         <button
-          type="submit" // Botão do tipo "submit" para enviar o formulário
+          type="submit"
           className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
         >
           Salvar Endereço

@@ -53,12 +53,12 @@ export const criarCliente = async (clienteData: any) => {
   }
 };
 
-export const criarEndereco = async (enderecoData: any) => {
+export const criarEndereco = async (dadosEndereco: any) => {
   try {
-    const response = await api.post("/api/v1/enderecos", enderecoData);
+    const response = await api.post('/api/v1/enderecos', dadosEndereco);
     return response.data; // Retorna o endereço criado
   } catch (error) {
-    console.error("Erro ao criar endereço:", error);
+    console.error('Erro ao criar endereço:', error);
     throw error;
   }
 };
@@ -80,5 +80,15 @@ export const atualizarCliente = async (clienteId: string, dadosAtualizados: { no
   } catch (error) {
     console.error("Erro ao atualizar cliente:", error);
     throw error; // Lança o erro para ser tratado no componente
+  }
+};
+
+export const atualizarEndereco = async (enderecoId: number, dadosAtualizados: any) => {
+  try {
+    const response = await api.put(`/api/v1/enderecos/${enderecoId}`, dadosAtualizados);
+    return response.data; // Retorna o endereço atualizado
+  } catch (error) {
+    console.error('Erro ao atualizar endereço:', error);
+    throw error;
   }
 };

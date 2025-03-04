@@ -20,8 +20,9 @@ class Api::V1::EnderecosController < ApplicationController
   end
 
   def update
+    binding.pry
     if @endereco.update(endereco_params)
-      render json: EnderecoSerializer.new(@endereco)
+      render json: @endereco.as_json
     else
       render json: { errors: @endereco.errors.full_messages }, status: :unprocessable_entity
     end
@@ -39,6 +40,6 @@ class Api::V1::EnderecosController < ApplicationController
   end
 
   def endereco_params
-    params.require(:endereco).permit(:logradouro, :numero, :complemento, :bairro, :cidade, :estado, :cep)
+    params.require(:endereco).permit(:rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :tipo, :ponto_referencia)
   end
 end

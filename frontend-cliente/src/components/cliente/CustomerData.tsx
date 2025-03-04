@@ -10,7 +10,7 @@ import ChangeModal from './modals/ChangeModal';
 import useCustomerData from '../../hooks/useCustomerData';
 import useAddress from '../../hooks/useAddress';
 import useOrder from '../../hooks/useOrder';
-import { atualizarCliente } from '../../services/api';
+import { atualizarCliente, atualizarEndereco, criarEndereco } from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface OrderItem {
@@ -107,6 +107,51 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     setStep('address');
   };
 
+  const handleSubmitAddress = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    // Verifica se o cliente foi encontrado
+    if (!clienteEncontrado) {
+      toast.error('Cliente não encontrado.');
+      return;
+    }
+  
+    // Dados do endereço
+    const enderecoData = {
+      rua: addressFormData.street,
+      numero: addressFormData.number,
+      complemento: addressFormData.complement,
+      referencia: addressFormData.reference,
+      bairro: addressFormData.neighborhood,
+      cidade: addressFormData.city,
+      tipo: addressFormData.addressType,
+    };
+  
+    try {
+      // Se o cliente já tem um endereço_id, atualiza o endereço
+      if (clienteEncontrado.endereco_id) {
+        await atualizarEndereco(clienteEncontrado.endereco_id, enderecoData);
+        toast.success('Endereço atualizado com sucesso!');
+      } else {
+        // Se o cliente não tem um endereço_id, cria um novo endereço
+        const endereco = await criarEndereco(enderecoData);
+        if (endereco) {
+          // Atualiza o cliente com o novo endereco_id
+          await atualizarCliente(clienteEncontrado.id, {
+            endereco_id: endereco.id,
+          });
+          toast.success('Endereço salvo com sucesso!');
+        }
+      }
+  
+      // Avança para o próximo passo
+      setStep('payment');
+    } catch (error) {
+      console.error('Erro ao salvar endereço:', error);
+      toast.error('Erro ao salvar endereço. Tente novamente.');
+    }
+  };
+
   const handleFinalizarPedido = async () => {
     // Lógica para finalizar o pedido
     console.log('Pedido finalizado');
@@ -168,7 +213,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
               }}
               onCityChange={handleCityChange}
               onAddressTypeChange={handleAddressTypeChange}
-              onSubmit={() => setStep('payment')}
+              onSubmit={handleSubmitAddress}
             />
           )}
 
