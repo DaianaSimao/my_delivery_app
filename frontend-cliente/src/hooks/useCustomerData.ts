@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { fetchClienteByWhatsApp } from '../services/api';
+import { fetchClienteByWhatsApp, criarCliente } from '../services/api';
 
 interface Cliente {
   id: string;
@@ -23,7 +23,7 @@ const useCustomerData = () => {
     const cliente = await fetchClienteByWhatsApp(whatsapp);
     if (cliente) {
       setClienteEncontrado(cliente);
-      setShowClienteModal(true);
+      setShowClienteModal(true); // Abre o modal apenas se o cliente for encontrado
       const [firstName, ...lastNameArray] = cliente.nome.split(' ');
       const lastName = lastNameArray.join(' ');
       setFormData({
@@ -31,6 +31,8 @@ const useCustomerData = () => {
         firstName,
         lastName,
       });
+    } else {
+      setClienteEncontrado(null); // Garante que o estado seja limpo se o cliente não for encontrado
     }
   };
 
@@ -58,6 +60,7 @@ const useCustomerData = () => {
     handleLastNameChange,
     showClienteModal, // Retorne o estado do modal
     setShowClienteModal, // Retorne a função para controlar o modal
+    setClienteEncontrado
   };
 };
 

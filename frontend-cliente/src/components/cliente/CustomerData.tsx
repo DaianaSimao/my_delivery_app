@@ -10,7 +10,7 @@ import ChangeModal from './modals/ChangeModal';
 import useCustomerData from '../../hooks/useCustomerData';
 import useAddress from '../../hooks/useAddress';
 import useOrder from '../../hooks/useOrder';
-import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido } from '../../services/api';
+import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente} from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface OrderItem {
@@ -85,8 +85,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Verifica se o cliente foi encontrado e se está no modo de edição
+
     if (clienteEncontrado && isEditing) {
       try {
         // Atualiza os dados no backend
@@ -101,8 +100,21 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
         toast.error('Erro ao atualizar cliente. Tente novamente.');
         return; // Sai da função para evitar avançar para o próximo passo
       }
+    } else if(!clienteEncontrado) {
+      try {
+        const cliente = await criarCliente({
+          nome: `${customerFormData.firstName} ${customerFormData.lastName}`,
+          telefone: customerFormData.whatsapp,
+        });
+        c
+        toast.success('Cliente criado com sucesso!'); 
+      } catch (error) {
+        console.error('Erro ao criar cliente:', error);
+        // Mostra o erro no toast
+        toast.error('Erro ao criar cliente. Tente novamente.');
+        return; // Sai da função para evitar avançar para o próximo passo
+      }
     }
-  
     // Avança para o próximo passo apenas se não houve erro
     setStep('address');
   };
@@ -135,11 +147,11 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       } else {
         // Se o cliente não tem um endereço_id, cria um novo endereço
         const endereco = await criarEndereco(enderecoData);
-        if (endereco) {
-          // Atualiza o cliente com o novo endereco_id
-          await atualizarCliente(clienteEncontrado.id, {
-            endereco_id: endereco.id,
-          });
+        if (!endereco) {
+          throw new Error('Erro ao salvar endereço.');
+        } else {
+          // Atualiza o cliente com o ID do endereço
+          await atualizarEnderecoCliente(clienteEncontrado.id, { endereco_id: endereco.id });
           toast.success('Endereço salvo com sucesso!');
         }
       }
@@ -182,7 +194,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       forma_pagamento: selectedPayment,
       troco: pagamento.troco,
       cliente_id: clienteEncontrado.id, // Usa o ID do cliente
-      endereco_id: clienteEncontrado.endereco_id, // Usa o ID do endereço
       itens_pedidos: itensPedidos,
       pagamento,
       valor_total: total,
@@ -195,7 +206,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
         throw new Error("Erro ao enviar o pedido.");
       }
   
-      console.log("Pedido enviado com sucesso:", pedidoCriado);
       toast.success('Pedido finalizado com sucesso!');
   
       // Limpa o carrinho e redireciona o usuário

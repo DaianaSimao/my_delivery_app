@@ -18,7 +18,16 @@ class Api::V1::ClientesController < ApplicationController
 
   def update
     if @cliente.update(cliente_params)
-      render json: @cliente
+      render json: @cliente.as_json
+    else
+      render json: @cliente.errors, status: :unprocessable_entity
+    end
+  end
+
+  def create
+    @cliente = Cliente.new(cliente_params)
+    if @cliente.save
+      render json: @cliente, status: :created
     else
       render json: @cliente.errors, status: :unprocessable_entity
     end
@@ -31,6 +40,6 @@ class Api::V1::ClientesController < ApplicationController
   end
 
   def cliente_params
-    params.require(:cliente).permit(:nome, :telefone, :sobrenome)
+    params.require(:cliente).permit(:nome, :telefone, :sobrenome, :endereco_id)
   end
 end

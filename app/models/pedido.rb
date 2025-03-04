@@ -7,8 +7,6 @@ class Pedido < ApplicationRecord
   has_many :produtos, through: :itens_pedidos # Associação correta
   has_one :pagamento
 
-  accepts_nested_attributes_for :cliente
-
   after_update :create_entrega
   after_create :broadcast_new_order
 

@@ -108,7 +108,6 @@ class Api::V1::PedidosController < ApplicationController
 
   def create
     @pedido = Pedido.new(pedido_params)
-
     if @pedido.save
       render json: PedidoSerializer.new(@pedido), status: :created
     else

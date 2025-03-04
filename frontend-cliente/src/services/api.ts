@@ -73,8 +73,20 @@ export const criarPedido = async (pedidoData: any) => {
   }
 };
 
-export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; telefone: string }) => {
+export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; telefone: string; }) => {
   try {
+    console.log(dadosAtualizados);
+    const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
+    return response.data; // Retorna o cliente atualizado
+  } catch (error) {
+    console.error("Erro ao atualizar cliente:", error);
+    throw error; // Lança o erro para ser tratado no componente
+  }
+};
+
+export const atualizarEnderecoCliente = async (clienteId: string, dadosAtualizados: { endereco_id: string; }) => {
+  try {
+    console.log("dados atualizados", dadosAtualizados);
     const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
     return response.data; // Retorna o cliente atualizado
   } catch (error) {

@@ -1,6 +1,6 @@
 class Api::V1::EnderecosController < ApplicationController
   before_action :set_endereco, only: %i[show update]
-  skip_before_action :authenticate_user!, only: %i[update index show]
+  skip_before_action :authenticate_user!, only: %i[update index show create]
   def index
     @enderecos = Endereco.where(cliente_id: params[:cliente_id])
     render json: @enderecos.as_json
@@ -13,7 +13,7 @@ class Api::V1::EnderecosController < ApplicationController
   def create
     endereco = Endereco.new(endereco_params)
     if endereco.save
-      render json: EnderecoSerializer.new(endereco), status: :created
+      render json: endereco.as_json, status: :created
     else
       render json: { errors: endereco.errors.full_messages }, status: :unprocessable_entity
     end
