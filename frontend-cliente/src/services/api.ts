@@ -27,17 +27,18 @@ export const fetchClienteByWhatsApp = async (whatsapp: string) => {
     return response.data; // Retorna os dados do client
   } catch (error) {
     console.error("Erro ao buscar cliente:", error);
-    return null;
+    throw error;
   }
 };
 
 export const fetchEnderecoById = async (enderecoId: number) => {
   try {
-    const response = await api.get(`/api/v1/clientes/endereco/${enderecoId}`);
+    const response = await api.get(`/api/v1/enderecos/${enderecoId}`);
+    console.log(response.data);
     return response.data; // Retorna os dados do endereço
   } catch (error) {
     console.error("Erro ao buscar endereço:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -58,7 +59,7 @@ export const criarEndereco = async (enderecoData: any) => {
     return response.data; // Retorna o endereço criado
   } catch (error) {
     console.error("Erro ao criar endereço:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -68,7 +69,7 @@ export const criarPedido = async (pedidoData: any) => {
     return response.data; // Retorna o pedido criado
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
-    return null;
+    throw error;
   }
 };
 

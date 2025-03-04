@@ -33,9 +33,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
   onSubmit,
 }) => {
   const addressTypes = [
-    { id: 'home', title: 'Casa', icon: <Home className="w-6 h-6" /> },
-    { id: 'work', title: 'Trabalho', icon: <Briefcase className="w-6 h-6" /> },
-    { id: 'friends', title: 'Amigos', icon: <Users className="w-6 h-6" /> },
+    { id: 'Casa', title: 'Casa', icon: <Home className="w-6 h-6" /> },
+    { id: 'Trabalho', title: 'Trabalho', icon: <Briefcase className="w-6 h-6" /> },
+    { id: 'Amigos', title: 'Amigos', icon: <Users className="w-6 h-6" /> },
   ];
 
   return (
@@ -53,7 +53,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         </button>
       </div>
 
-      <form className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4"> {/* onSubmit no formulário */}
         <div>
           <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Rua
@@ -129,7 +129,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             {addressTypes.map((type) => (
               <button
                 key={type.id}
-                type="button"
+                type="button" // Botão do tipo "button" para evitar submissão do formulário
                 onClick={() => onAddressTypeChange(type.id)}
                 className={`p-4 rounded-lg border ${
                   formData.addressType === type.id
@@ -151,8 +151,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         </div>
 
         <button
-          type="submit"
-          onClick={onSubmit}
+          type="submit" // Botão do tipo "submit" para enviar o formulário
           className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
         >
           Salvar Endereço

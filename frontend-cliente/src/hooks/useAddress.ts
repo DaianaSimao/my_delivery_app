@@ -25,7 +25,7 @@ const useAddress = (enderecoId?: number) => {
               reference: endereco.ponto_referencia || '',
               neighborhood: endereco.bairro,
               city: endereco.cidade,
-              addressType: endereco.tipo || 'home',
+              addressType: endereco.tipo || 'Casa',
             });
           }
         } catch (error) {
