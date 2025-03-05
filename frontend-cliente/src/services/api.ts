@@ -86,7 +86,6 @@ export const atualizarCliente = async (clienteId: string, dadosAtualizados: { no
 
 export const atualizarEnderecoCliente = async (clienteId: string, dadosAtualizados: { endereco_id: string; }) => {
   try {
-    console.log("dados atualizados", dadosAtualizados);
     const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
     return response.data; // Retorna o cliente atualizado
   } catch (error) {
