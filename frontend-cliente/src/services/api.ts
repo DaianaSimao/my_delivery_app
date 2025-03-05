@@ -34,7 +34,6 @@ export const fetchClienteByWhatsApp = async (whatsapp: string) => {
 export const fetchEnderecoById = async (enderecoId: number) => {
   try {
     const response = await api.get(`/api/v1/enderecos/${enderecoId}`);
-    console.log(response.data);
     return response.data; // Retorna os dados do endereço
   } catch (error) {
     console.error("Erro ao buscar endereço:", error);
@@ -75,7 +74,6 @@ export const criarPedido = async (pedidoData: any) => {
 
 export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; telefone: string; }) => {
   try {
-    console.log(dadosAtualizados);
     const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
     return response.data; // Retorna o cliente atualizado
   } catch (error) {

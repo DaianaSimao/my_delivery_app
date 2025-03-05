@@ -171,7 +171,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const handleFinalizarPedido = async () => {
     // Verifica se todos os campos obrigatórios estão preenchidos
     const cliente = localStorage.getItem('clienteId') || clienteEncontrado;
-    const restauranteId  = localStorage.getItem('restauranteId');
+    const restauranteId = localStorage.getItem('restauranteId');
     if (!cliente || !selectedPayment || !selectedDelivery) {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
