@@ -1,11 +1,14 @@
 class Pedido < ApplicationRecord
-  has_one :entrega
   belongs_to :restaurante
   belongs_to :cliente
 
   has_many :itens_pedidos
-  has_many :produtos, through: :itens_pedidos # Associação correta
+  has_many :produtos, through: :itens_pedidos
   has_one :pagamento
+  has_one :entrega
+
+  accepts_nested_attributes_for :pagamento
+  accepts_nested_attributes_for :itens_pedidos, allow_destroy: true
 
   after_update :create_entrega
   after_create :broadcast_new_order
@@ -34,22 +37,12 @@ class Pedido < ApplicationRecord
           only: %i[id quantidade preco_total],
           include: {
             produto: {
-              only: %i[id nome preco],
-              include: {
-                acompanhamentos: {
-                  only: %i[id nome quantidade_maxima],
-                  include: {
-                    itens_acompanhamentos: {
-                      only: %i[id nome preco]
-                    }
-                  }
-                }
-              }
+              only: %i[id nome preco]
             },
             acompanhamentos_pedidos: {
               only: %i[quantidade preco_unitario],
               include: {
-                item_acompanhamento: {
+                item_acompanhamentos: {
                   only: %i[id nome quantidade_maxima],
                   include: {
                     acompanhamento: {

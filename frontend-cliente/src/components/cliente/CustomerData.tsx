@@ -180,11 +180,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const handleFinalizarPedido = async () => {
     // Verifica se todos os campos obrigatórios estão preenchidos
     const cliente = localStorage.getItem('clienteId') || clienteEncontrado;
-    console.log(cliente);
-    console.log(clienteEncontrado);
-    console.log(selectedPayment);
-    console.log(selectedDelivery);
-    
+    const restauranteId  = localStorage.getItem('restauranteId');
     if (!cliente || !selectedPayment || !selectedDelivery) {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
@@ -197,7 +193,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       preco_unitario: item.price,
       observacao: item.options ? item.options.join(", ") : null, // Junta as opções em uma string
     }));
-  
+    console.log(cartItems);
+    console.log(itensPedidos);
     // Estrutura o pagamento
     const pagamento = {
       metodo: selectedPayment,
@@ -208,13 +205,13 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   
     // Estrutura o pedido completo
     const pedido = {
-      restaurante_id: 1, // Defina o ID do restaurante conforme necessário
+      restaurante_id: restauranteId,
       status: "Recebido",
       forma_pagamento: selectedPayment,
       troco: pagamento.troco,
-      cliente_id: cliente, // Usa o ID do cliente
-      itens_pedidos: itensPedidos,
-      pagamento,
+      cliente_id: cliente,
+      itens_pedidos_attributes: itensPedidos,
+      pagamento_attributes: pagamento,
       valor_total: total,
     };
   

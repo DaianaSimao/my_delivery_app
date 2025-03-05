@@ -108,6 +108,7 @@ class Api::V1::PedidosController < ApplicationController
 
   def create
     @pedido = Pedido.new(pedido_params)
+
     if @pedido.save
       render json: PedidoSerializer.new(@pedido), status: :created
     else
@@ -181,6 +182,10 @@ class Api::V1::PedidosController < ApplicationController
   end
 
   def pedido_params
-    params.require(:pedido).permit(:restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id)
+    params.require(:pedido).permit(
+      :restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id,
+      pagamento_attributes: [:metodo, :status, :valor, :troco],
+      itens_pedidos_attributes: [:id, :quantidade, :preco_unitario, :produto_id, :observacao, :_destroy]
+    )
   end
 end

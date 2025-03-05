@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_04_184503) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_05_200959) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,6 +134,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_184503) do
     t.decimal "valor", precision: 10, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "troco", precision: 10, scale: 2
     t.index ["pedido_id"], name: "index_pagamentos_on_pedido_id"
   end
 
