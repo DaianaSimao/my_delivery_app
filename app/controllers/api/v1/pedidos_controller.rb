@@ -184,8 +184,7 @@ class Api::V1::PedidosController < ApplicationController
   def pedido_params
     params.require(:pedido).permit(
       :restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id,
-      pagamento_attributes: [:metodo, :status, :valor, :troco],
-      itens_pedidos_attributes: [:id, :quantidade, :preco_unitario, :produto_id, :observacao, :_destroy]
-    )
+      pagamento_attributes: [ :metodo, :status, :valor, :troco ],
+      itens_pedidos_attributes: [ :id, :quantidade, :preco_unitario, :produto_id, :observacao, :_destroy, acompanhamentos_pedidos_attributes: [ :id, :quantidade, :preco_unitario, :item_acompanhamento_id, :_destroy ] ])
   end
 end

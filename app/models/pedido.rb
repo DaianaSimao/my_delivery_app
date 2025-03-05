@@ -42,7 +42,7 @@ class Pedido < ApplicationRecord
             acompanhamentos_pedidos: {
               only: %i[quantidade preco_unitario],
               include: {
-                item_acompanhamentos: {
+                item_acompanhamento: {
                   only: %i[id nome quantidade_maxima],
                   include: {
                     acompanhamento: {

@@ -39,5 +39,11 @@ export interface Restaurante {
 
 export interface CartItem extends MenuItem {
   quantity: number;
-  options?: string[];
+  options?: {
+    id: number; // ID do acompanhamento
+    nome: string; // Nome do acompanhamento
+    preco: number; // Preço do acompanhamento
+    quantidade: number; // Quantidade selecionada
+  }[];
+  observation?: string;
 }

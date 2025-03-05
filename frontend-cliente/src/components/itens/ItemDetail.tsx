@@ -83,7 +83,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
             const option = item.produto_acompanhamentos
               .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
               .find((opt) => opt.id === Number(optionId));
-            return `${option?.nome} (${quantity}x)`;
+            return `${option?.nome} (${quantity}x) - R$ ${option?.preco}`;
           }),
         observation: observation,
         nome: '',
@@ -91,7 +91,19 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
         preco: 0,
         imagem_url: '',
         disponivel: '',
-        produto_acompanhamentos: []
+        acompanhamentos: Object.entries(selectedOptions)
+          .filter(([_, quantity]) => quantity > 0)
+          .map(([optionId, quantity]) => {
+            const option = item.produto_acompanhamentos
+              .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
+              .find((opt) => opt.id === Number(optionId));
+            return {
+              id: optionId,
+              nome: option?.nome || '',
+              preco: option?.preco || 0,
+              quantidade: quantity,
+            };
+          }),
       };
       onAddToCart(cartItem);
       navigate('/cart');

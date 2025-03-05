@@ -19,6 +19,8 @@ interface OrderItem {
   quantity: number;
   price: number;
   options?: string[];
+  observation?: string;
+  acompanhamentos: any[];
 }
 
 interface CustomerDataProps {
@@ -178,13 +180,25 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     }
   
     // Estrutura os itens do pedido
-    const itensPedidos = cartItems.map((item) => ({
-      produto_id: item.id, // Supondo que cada item tenha um ID de produto
-      quantidade: item.quantity,
-      preco_unitario: item.price,
-      observacao: item.options ? item.options.join(", ") : null, // Junta as opções em uma string
-    }));
-    console.log(cartItems);
+    const itensPedidos = cartItems.map((item) => {
+      // Extrai o ID do produto (parte antes do hífen)
+      const produtoId = item.id.split('-')[0];
+    
+      // Mapeia os acompanhamentos a partir das options
+      const acompanhamentos = item.acompanhamentos.map((option) => ({
+        item_acompanhamento_id: option.id, // ID do acompanhamento
+        quantidade: option.quantidade, // Quantidade selecionada
+        preco_unitario: option.preco || 0, // Preço do acompanhamento (ou 0 se não houver preço)
+      }));
+    
+      return {
+        produto_id: produtoId, // ID do produto (apenas a parte antes do hífen)
+        quantidade: item.quantity, // Quantidade do item
+        preco_unitario: item.price, // Preço unitário do item
+        observacao: item.observation, // Observações (opcional)
+        acompanhamentos_pedidos_attributes: acompanhamentos || [], // Acompanhamentos (ou array vazio se não houver)
+      };
+    });
     // Estrutura o pagamento
     const pagamento = {
       metodo: selectedPayment,
