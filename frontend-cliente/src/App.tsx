@@ -15,6 +15,7 @@ import type { CartItem } from './types';
 import { Header } from './components/Header';
 import { CartProvider } from './contexts/CartContext';
 import CustomerData from './components/cliente/CustomerData';
+import OrderTracking from './components/pedidos/OrderTracking';
 
 const CART_STORAGE_KEY = 'cartItems'; // Chave para salvar os itens do carrinho no localStorage
 
@@ -167,6 +168,10 @@ const AppContent: React.FC = () => {
               isDarkMode={isDarkMode}
               onToggleDarkMode={toggleDarkMode}
             />}
+        />
+        <Route
+          path="/order-tracking"
+          element={<OrderTracking />}
         />
         <Route path="*" element={<Navigate to="/cardapio/1" />} />
       </Routes>
