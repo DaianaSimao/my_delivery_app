@@ -12,6 +12,7 @@ import useAddress from '../../hooks/useAddress';
 import useOrder from '../../hooks/useOrder';
 import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente} from '../../services/api';
 import toast from 'react-hot-toast';
+import { useCart } from '../../contexts/CartContext';
 
 interface OrderItem {
   id: any;
@@ -29,6 +30,7 @@ interface CustomerDataProps {
 }
 
 const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
+  const { onCheckout } = useCart();
   const [darkMode, setDarkMode] = useState(true);
   const [step, setStep] = useState<'data' | 'address' | 'payment'>('data');
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
@@ -225,11 +227,9 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       if (!pedidoCriado) {
         throw new Error("Erro ao enviar o pedido.");
       }
-  
       toast.success('Pedido finalizado com sucesso!');
-  
-      // Limpa o carrinho e redireciona o usuário
-      onBack(); // Volta para a tela anterior
+
+      onCheckout(); // Limpa o carrinho e redireciona
     } catch (error) {
       console.error("Erro ao enviar o pedido:", error);
       toast.error("Erro ao enviar o pedido. Tente novamente.");
@@ -343,4 +343,5 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   );
 };
 
-export default CustomerData;
+export default CustomerData
+

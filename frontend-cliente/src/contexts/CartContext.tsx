@@ -5,6 +5,7 @@ import type { CartItem } from '../types';
 interface CartContextType {
   cartItems: CartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  onCheckout: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -19,12 +20,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const onCheckout = () => {
+    console.log("Limpando carrinho e redirecionando...");
+    setCartItems([]); // Limpa o carrinho
+    localStorage.removeItem('cartItems'); // Limpa o localStorage
+  };
+
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems }}>
+    <CartContext.Provider value={{ cartItems, setCartItems, onCheckout }}>
       {children}
     </CartContext.Provider>
   );

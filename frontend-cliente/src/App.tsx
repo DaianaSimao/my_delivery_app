@@ -12,27 +12,27 @@ import MenuPage from './components/cardapio/MenuPage';
 import ItemDetails from './components/itens/ItemDetail';
 import { Cart } from './components/carrinho/Cart';
 import type { CartItem } from './types';
-import {Header} from './components/Header';
+import { Header } from './components/Header';
 import { CartProvider } from './contexts/CartContext';
-import ClienteDados from './components/cliente/CustomerData';
+import CustomerData from './components/cliente/CustomerData';
+
+const CART_STORAGE_KEY = 'cartItems'; // Chave para salvar os itens do carrinho no localStorage
 
 const CardapioLayout: React.FC = () => {
-  // Agora o restauranteId é extraído dentro de uma rota que o define
   const { restauranteId } = useParams<{ restauranteId: string }>();
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   if (restauranteId) {
     localStorage.setItem('restauranteId', restauranteId);
   }
-  
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches;
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDarkMode(prefersDarkMode);
       document.documentElement.classList.toggle('dark', prefersDarkMode);
       localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
@@ -44,24 +44,12 @@ const CardapioLayout: React.FC = () => {
     setIsDarkMode(newTheme);
     document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-  };  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    } else {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches;
-      setIsDarkMode(prefersDarkMode);
-      document.documentElement.classList.toggle('dark', prefersDarkMode);
-      localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
-    }
-  }, []);
+  };
 
   return (
     <>
-      <Header 
-        restauranteId={restauranteId} 
+      <Header
+        restauranteId={restauranteId}
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
       />
@@ -76,14 +64,26 @@ const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const restauranteId = localStorage.getItem('restauranteId');
 
+  // Recuperar itens do carrinho do localStorage ao carregar o componente
+  useEffect(() => {
+    const savedCartItems = localStorage.getItem(CART_STORAGE_KEY);
+    if (savedCartItems) {
+      setCartItems(JSON.parse(savedCartItems));
+    }
+  }, []);
+
+  // Salvar itens do carrinho no localStorage sempre que houver uma mudança
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches;
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDarkMode(prefersDarkMode);
       document.documentElement.classList.toggle('dark', prefersDarkMode);
       localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
@@ -95,31 +95,30 @@ const AppContent: React.FC = () => {
     setIsDarkMode(newTheme);
     document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-  };  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    } else {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches;
-      setIsDarkMode(prefersDarkMode);
-      document.documentElement.classList.toggle('dark', prefersDarkMode);
-      localStorage.setItem('theme', prefersDarkMode ? 'dark' : 'light');
-    }
-  }, []);
+  };
 
   // Função para adicionar item ao carrinho
   const handleAddToCart = (item: CartItem) => {
     setCartItems((prev) => {
-      // Se desejar consolidar itens iguais, adicione uma lógica para atualizar a quantidade
+      const existingItem = prev.find((i) => i.id === item.id);
+      if (existingItem) {
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+        );
+      }
       return [...prev, item];
     });
   };
 
-  const handleClearCart = () => setCartItems([]);
-  const handleRemoveItem = (itemId: string) =>
+  const handleClearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem(CART_STORAGE_KEY); // Limpar o localStorage ao limpar o carrinho
+  };
+
+  const handleRemoveItem = (itemId: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -127,52 +126,49 @@ const AppContent: React.FC = () => {
       )
     );
   };
+
   const handleEditItem = (item: CartItem) => {
-    // Exemplo: redireciona para a tela de detalhes para edição
     navigate(`/item/${item.id}`);
   };
+
   const handleAddMore = () => navigate(`/cardapio/${restauranteId}`);
-  const handleCheckout = () => {
-    alert('Checkout realizado com sucesso!');
-    setCartItems([]);
-    navigate(`/cardapio/${restauranteId}`);
-  };
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
       <Toaster />
       <Routes>
-      <Route
-        path="/cardapio/:restauranteId/*"
-        element={
-        <CardapioLayout />
-        }
-      />
-      <Route
-        path="/item/:itemId"
-        element={<ItemDetails onAddToCart={handleAddToCart} />}
-      />
-      <Route
-        path="/cart"
-        element={
-        <Cart
-          items={cartItems}
-          onBack={() => navigate(-1)}
-          onClearCart={handleClearCart}
-          onEditItem={handleEditItem}
-          onRemoveItem={handleRemoveItem}
-          onUpdateQuantity={handleUpdateQuantity}
-          onAddMore={handleAddMore}
-          onCheckout={handleCheckout}
+        <Route
+          path="/cardapio/:restauranteId/*"
+          element={<CardapioLayout />}
         />
-        }
-      />
-      <Route
-        path="/dados"
-        element={<ClienteDados cartItems={cartItems} onBack={() => navigate(-1)} isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode} />}
-      />
-      <Route path="*" element={<Navigate to="/cardapio/1" />} />
+        <Route
+          path="/item/:itemId"
+          element={<ItemDetails onAddToCart={handleAddToCart} />}
+        />
+        <Route
+          path="/cart"
+          element={
+            <Cart
+              items={cartItems}
+              onBack={() => navigate(-1)}
+              onClearCart={handleClearCart}
+              onEditItem={handleEditItem}
+              onRemoveItem={handleRemoveItem}
+              onUpdateQuantity={handleUpdateQuantity}
+              onAddMore={handleAddMore}
+            />
+          }
+        />
+        <Route
+          path="/dados"
+          element={
+            <CustomerData cartItems={cartItems}
+              onBack={() => navigate(-1)}
+              isDarkMode={isDarkMode}
+              onToggleDarkMode={toggleDarkMode}
+            />}
+        />
+        <Route path="*" element={<Navigate to="/cardapio/1" />} />
       </Routes>
     </div>
   );
