@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Sun, Moon } from 'lucide-react';
 import CustomerForm from './CustomerForm';
 import AddressForm from './AddressForm';
@@ -10,7 +10,7 @@ import ChangeModal from './modals/ChangeModal';
 import useCustomerData from '../../hooks/useCustomerData';
 import useAddress from '../../hooks/useAddress';
 import useOrder from '../../hooks/useOrder';
-import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente} from '../../services/api';
+import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useCart } from '../../contexts/CartContext';
 
@@ -31,7 +31,11 @@ interface CustomerDataProps {
 
 const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const { onCheckout } = useCart();
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Obtém a preferência do tema do localStorage
+    const savedTheme = localStorage.getItem('darkMode');
+    return savedTheme ? JSON.parse(savedTheme) : true;
+  });
   const [step, setStep] = useState<'data' | 'address' | 'payment'>('data');
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -71,9 +75,22 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const total = subtotal + deliveryFee;
 
+  useEffect(() => {
+    // Aplica o tema armazenado no localStorage
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
+    setDarkMode((prevMode) => {
+      const newMode = !prevMode;
+      // Armazena a preferência do tema no localStorage
+      localStorage.setItem('darkMode', JSON.stringify(newMode));
+      return newMode;
+    });
   };
 
   const handleConfirmarDadosCliente = (editar: boolean) => {
@@ -86,7 +103,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     }
     setShowClienteModal(false); // Fecha o modal
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -104,7 +121,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
         toast.error('Erro ao atualizar cliente. Tente novamente.');
         return; // Sai da função para evitar avançar para o próximo passo
       }
-    } else if(!clienteEncontrado) {
+    } else if (!clienteEncontrado) {
       try {
         const cliente = await criarCliente({
           nome: `${customerFormData.firstName} ${customerFormData.lastName}`,
@@ -112,7 +129,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
         });
         localStorage.setItem('cliente', cliente);
         localStorage.setItem('clienteId', cliente.id);
-        toast.success('Cliente criado com sucesso!'); 
+        toast.success('Cliente criado com sucesso!');
       } catch (error) {
         console.error('Erro ao criar cliente:', error);
         // Mostra o erro no toast
@@ -126,16 +143,16 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
   const handleSubmitAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const clienteId = localStorage.getItem('clienteId');
     const cliente = clienteEncontrado || (clienteId ? { id: clienteId } : null);
-  
+
     // Verifica se o cliente foi encontrado ou criado
     if (!cliente) {
       toast.error('Cliente não encontrado. Por favor, preencha os dados do cliente.');
       return; // Interrompe a execução se não houver cliente
     }
-  
+
     // Dados do endereço
     const enderecoData = {
       rua: addressFormData.street,
@@ -146,14 +163,14 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       cidade: addressFormData.city,
       tipo: addressFormData.addressType,
     };
-  
+
     try {
-      // Se o cliente já tem um endereço_id, atualiza o endereço
+      // Se o cliente já tem um endereco_id, atualiza o endereço
       if ('endereco_id' in cliente) {
         await atualizarEndereco(cliente.endereco_id, enderecoData);
         toast.success('Endereço atualizado com sucesso!');
       } else {
-        // Se o cliente não tem um endereço_id, cria um novo endereço
+        // Se o cliente não tem um endereco_id, cria um novo endereço
         const endereco = await criarEndereco(enderecoData);
         if (!endereco) {
           throw new Error('Erro ao salvar endereço.');
@@ -163,7 +180,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
           toast.success('Endereço salvo com sucesso!');
         }
       }
-  
+
       // Avança para o próximo passo
       setStep('payment');
     } catch (error) {
@@ -180,19 +197,19 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
-  
+
     // Estrutura os itens do pedido
     const itensPedidos = cartItems.map((item) => {
       // Extrai o ID do produto (parte antes do hífen)
       const produtoId = item.id.split('-')[0];
-    
+
       // Mapeia os acompanhamentos a partir das options
       const acompanhamentos = item.acompanhamentos.map((option) => ({
         item_acompanhamento_id: option.id, // ID do acompanhamento
         quantidade: option.quantidade, // Quantidade selecionada
         preco_unitario: option.preco || 0, // Preço do acompanhamento (ou 0 se não houver preço)
       }));
-    
+
       return {
         produto_id: produtoId, // ID do produto (apenas a parte antes do hífen)
         quantidade: item.quantity, // Quantidade do item
@@ -208,7 +225,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       valor: total,
       troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0, // Troco só é aplicável para pagamento em dinheiro
     };
-  
+
     // Estrutura o pedido completo
     const pedido = {
       restaurante_id: restauranteId,
@@ -220,7 +237,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       pagamento_attributes: pagamento,
       valor_total: total,
     };
-  
+
     try {
       // Envia os dados para o backend
       const pedidoCriado = await criarPedido(pedido);
@@ -343,5 +360,4 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   );
 };
 
-export default CustomerData
-
+export default CustomerData;
