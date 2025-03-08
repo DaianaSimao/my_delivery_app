@@ -69,10 +69,12 @@ class Api::V1::EntregasController < ApplicationController
             only: %i[id status forma_pagamento valor_total observacoes],
             include: {
               cliente: {
-                only: %i[id nome email telefone]
-              },
-              endereco: {
-                only: %i[id rua numero bairro cidade estado cep]
+                only: %i[id nome email telefone endereco_id],
+                include: {
+                  endereco: {
+                    only: %i[id rua numero bairro cidade estado cep]
+                  }
+                }
               }
             }
           },
