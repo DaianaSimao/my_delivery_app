@@ -72,7 +72,7 @@ const OrderTracking: React.FC = () => {
   }
 
   if (!restaurantInfo) {
-    return <div>Nenhuma informação do restaurante encontrada.</div>;
+    return <div className='dark:text-white'>Nenhuma informação do restaurante encontrada.</div>;
   }
 
   // Ajuste os passos do status para refletir os status do backend

@@ -34,7 +34,7 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
         }
       } catch (error) {
         console.error('Erro ao carregar informações do restaurante:', error);
-        setError('Erro ao carregar informações do restaurante.');
+        setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -48,11 +48,11 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
   }
 
   if (error) {
-    return <div>{error}</div>; // Exibe uma mensagem de erro se ocorrer um problema
+    return <div className='dark:text-white'>{error}</div>; // Exibe uma mensagem de erro se ocorrer um problema
   }
 
   if (!restaurantInfo) {
-    return <div>Nenhuma informação do restaurante encontrada.</div>; // Exibe uma mensagem se não houver dados
+    return <div className='dark:text-white'>Nenhuma informação do restaurante encontrada.</div>; // Exibe uma mensagem se não houver dados
   }
 
   return (
