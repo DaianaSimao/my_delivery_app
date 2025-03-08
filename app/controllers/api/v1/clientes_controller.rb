@@ -1,5 +1,5 @@
 class Api::V1::ClientesController < ApplicationController
-  before_action :set_cliente, only: %i[show update]
+  before_action :set_cliente, only: %i[show update buscar_cliente]
   skip_before_action :authenticate_user!
   def index
     @cliente = Cliente.find_by(telefone: params[:whatsapp])
@@ -13,7 +13,11 @@ class Api::V1::ClientesController < ApplicationController
 
   def show
     @cliente = Cliente.find_by(telefone: params[:telefone])
-    render json: @cliente
+    render json: @cliente.as_json
+  end
+
+  def buscar_cliente
+    render json: @cliente.as_json
   end
 
   def update

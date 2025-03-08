@@ -110,7 +110,53 @@ class Api::V1::PedidosController < ApplicationController
     @pedido = Pedido.new(pedido_params)
 
     if @pedido.save
-      render json: PedidoSerializer.new(@pedido), status: :created
+      @pedido = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(@pedido.id)
+      render json: {
+        data: @pedido.as_json(
+          include: {
+            cliente: {
+              only: %i[id nome telefone],
+              endereco: {
+                only: %i[id rua numero bairro cidade estado cep]
+              }
+            },
+            itens_pedidos: {
+              only: %i[id quantidade preco_total],
+              include: {
+                produto: {
+                  only: %i[id nome preco],
+                  include: {
+                    acompanhamentos: {
+                      only: %i[id nome quantidade_maxima],
+                      include: {
+                        item_acompanhamentos: {
+                          only: %i[id nome preco]
+                        }
+                      }
+                    }
+                  }
+                },
+                acompanhamentos_pedidos: {
+                  only: %i[quantidade preco_unitario],
+                  include: {
+                    item_acompanhamento: {
+                      only: %i[id nome quantidade_maxima],
+                      include: {
+                        acompanhamento: {
+                          only: %i[id nome quantidade_maxima]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            pagamento: {
+              only: %i[id metodo status valor]
+            }
+          }
+        )
+      }
     else
       render json: { errors: @pedido.errors.full_messages }, status: :unprocessable_entity
     end
@@ -183,7 +229,7 @@ class Api::V1::PedidosController < ApplicationController
 
   def pedido_params
     params.require(:pedido).permit(
-      :restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id,
+      :restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id, :forma_entrega,
       pagamento_attributes: [ :metodo, :status, :valor, :troco ],
       itens_pedidos_attributes: [ :id, :quantidade, :preco_unitario, :produto_id, :observacao, :_destroy, acompanhamentos_pedidos_attributes: [ :id, :quantidade, :preco_unitario, :item_acompanhamento_id, :_destroy ] ])
   end
