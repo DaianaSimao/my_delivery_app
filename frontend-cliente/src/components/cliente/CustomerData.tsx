@@ -13,6 +13,7 @@ import useOrder from '../../hooks/useOrder';
 import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useCart } from '../../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 interface OrderItem {
   id: any;
@@ -40,6 +41,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showTrocoModal, setShowTrocoModal] = useState(false);
+  const navigate = useNavigate();
 
   const {
     formData: customerFormData,
@@ -76,7 +78,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const total = subtotal + deliveryFee;
 
   useEffect(() => {
-    // Aplica o tema armazenado no localStorage
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -223,7 +224,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       metodo: selectedPayment,
       status: "Pendente",
       valor: total,
-      troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0, // Troco só é aplicável para pagamento em dinheiro
+      troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0,
     };
 
     // Estrutura o pedido completo
@@ -232,10 +233,11 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       status: "Recebido",
       forma_pagamento: selectedPayment,
       troco: pagamento.troco,
-      cliente_id: cliente,
+      cliente_id: cliente.id,
       itens_pedidos_attributes: itensPedidos,
       pagamento_attributes: pagamento,
       valor_total: total,
+      forma_entrega: selectedDelivery,
     };
 
     try {
@@ -246,7 +248,9 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       }
       toast.success('Pedido finalizado com sucesso!');
 
+      localStorage.setItem('pedido', JSON.stringify(pedidoCriado));
       onCheckout(); // Limpa o carrinho e redireciona
+      navigate('/order-tracking');
     } catch (error) {
       console.error("Erro ao enviar o pedido:", error);
       toast.error("Erro ao enviar o pedido. Tente novamente.");

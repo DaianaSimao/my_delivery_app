@@ -1,27 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { fetchRestaurantInfo } from '../../services/api';
 import type { Restaurante } from '../../types';
+import { createConsumer } from '@rails/actioncable'; // Importação do ActionCable
 
 const OrderTracking: React.FC = () => {
-  const [orderStatus, setOrderStatus] = useState<'pending' | 'accepted' | 'preparing' | 'delivered'>('pending');
+  // Ajuste o tipo do estado para refletir os status do backend
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurante | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const restauranteId = localStorage.getItem('restauranteId');
+  const pedido = JSON.parse(localStorage.getItem('pedido') || '{}');
+  const clienteNome = pedido.data.cliente.nome
+  const [orderStatus, setOrderStatus] = useState(pedido.data.status || 'Recebido');
 
+  // Configuração do ActionCable
   useEffect(() => {
-    const statuses = ['accepted', 'preparing', 'delivered'];
-    let index = 0;
+    const restauranteId = localStorage.getItem('restauranteId'); // Obtém o restaurante_id do localStorage
+    const pedidoId = pedido.data.id; // Obtém o ID do pedido
+    // Monta a URL do WebSocket com o restaurante_id
+    const cable = createConsumer(`ws://localhost:3000/cable?restaurante_id=${restauranteId}`);
+  
+    const subscription = cable.subscriptions.create(
+      { channel: 'PedidoStatusChannel', pedido_id: pedidoId }, // Inscreve-se no canal do pedido
+      {
+        received: (data: { status: 'Recebido' | 'Em Preparação' | 'Em entrega' | 'Entregue' }) => {
+          console.log('Dados recebidos:', data); // Log para verificar os dados recebidos
+          setOrderStatus(data.status); // Atualiza o estado do pedido com o novo status recebido
+        },
+        connected: () => {
+          console.log('Conectado ao WebSocket'); // Log para verificar a conexão
+        },
+        disconnected: () => {
+          console.log('Desconectado do WebSocket'); // Log para verificar a desconexão
+        },
+      }
+    );
+  
+    // Limpeza ao desmontar o componente
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [pedido.data.id]); // Dependência: ID do pedido
 
-    const timer = setInterval(() => {
-      setOrderStatus(statuses[index]);
-      index++;
-      if (index === statuses.length) clearInterval(timer);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
-
+  // Carrega as informações do restaurante
   useEffect(() => {
     const loadRestaurantInfo = async () => {
       try {
@@ -43,22 +64,23 @@ const OrderTracking: React.FC = () => {
   }, [restauranteId]);
 
   if (loading) {
-    return <div>Carregando...</div>; // Exibe um loading enquanto os dados são carregados
+    return <div>Carregando...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>; // Exibe uma mensagem de erro se ocorrer um problema
+    return <div>{error}</div>;
   }
 
   if (!restaurantInfo) {
-    return <div>Nenhuma informação do restaurante encontrada.</div>; // Exibe uma mensagem se não houver dados
+    return <div>Nenhuma informação do restaurante encontrada.</div>;
   }
 
+  // Ajuste os passos do status para refletir os status do backend
   const statusSteps = [
-    { key: 'pending', label: 'Pedido Recebido', description: 'Seu pedido foi recebido pelo estabelecimento.', completed: orderStatus !== 'pending' },
-    { key: 'accepted', label: 'Pedido Aceito', description: 'Seu pedido foi aceito e está sendo preparado.', completed: orderStatus === 'preparing' || orderStatus === 'delivered' },
-    { key: 'preparing', label: 'Saiu para Entrega', description: 'Seu pedido está a caminho.', completed: orderStatus === 'delivered' },
-    { key: 'delivered', label: 'Pedido Entregue', description: 'Seu pedido foi entregue com sucesso.', completed: false },
+    { key: 'Recebido', label: 'Pedido Recebido', description: 'Seu pedido foi recebido pelo estabelecimento.', completed: orderStatus == 'Recebido' },
+    { key: 'Em Preparação', label: 'Pedido em Preparação', description: 'Seu pedido está sendo preparado.', completed: orderStatus == 'Em Preparação' || orderStatus == 'Expedido' },
+    { key: 'Em entrega', label: 'Saiu para Entrega', description: 'Seu pedido está a caminho.', completed: orderStatus === 'Em Entrega' },
+    { key: 'Entregue', label: 'Pedido Entregue', description: 'Seu pedido foi entregue com sucesso.', completed: orderStatus === "Entregue" },
   ];
 
   return (
@@ -81,9 +103,10 @@ const OrderTracking: React.FC = () => {
         <div className="mt-6">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Detalhes do Pedido</h2>
           <div className="space-y-2">
-            <p className="text-gray-700 dark:text-gray-300"><strong>Entrega:</strong> Delivery</p>
-            <p className="text-gray-700 dark:text-gray-300"><strong>Pagamento:</strong> Mastercard - Crédito</p>
-            <p className="text-gray-700 dark:text-gray-300"><strong>Cliente:</strong> Daiana Simao da Silva</p>
+          <p className="text-gray-700 dark:text-gray-300"><strong>Pedido #{pedido.data.id}</strong></p>
+            <p className="text-gray-700 dark:text-gray-300"><strong>Entrega:</strong> {pedido.data.forma_entrega}</p>
+            <p className="text-gray-700 dark:text-gray-300"><strong>Pagamento:</strong> {pedido.data.forma_pagamento}</p>
+            <p className="text-gray-700 dark:text-gray-300"><strong>Cliente:</strong> {clienteNome}</p>
           </div>
         </div>
 

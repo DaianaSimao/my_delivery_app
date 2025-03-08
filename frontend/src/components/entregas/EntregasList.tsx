@@ -138,42 +138,42 @@ const EntregasList: React.FC = () => {
   const handleStatusChange = async (entregaId: number, newStatus: string) => {
     console.log('Mudar status:', entregaId, newStatus);
     try {
-      const statusMap: Record<string, string> = {
-        "Aguardando": "Aguardando",
-        "Em entrega": "SaiuParaEntrega",
-        "Entregue": "Entregue",
-      };
-      
-      const formattedStatus = statusMap[newStatus] || newStatus;
-      
-      console.log(formattedStatus);
-
       const response = await api.put(`/api/v1/entregas/${entregaId}`, {
-        entrega: { status: formattedStatus },
+        entrega: { status: newStatus }, // Mantendo exatamente o status recebido
       });
-
+  
       if (response.status !== 200) {
         throw new Error('Erro ao atualizar o status da entrega');
       }
-
+  
       setData((prevData) => {
         const updatedData: typeof prevData = { ...prevData };
-
+  
+        // Removendo a entrega de todas as colunas antes de adicionar na nova
         (Object.keys(updatedData) as (keyof typeof updatedData)[]).forEach((status) => {
           updatedData[status] = updatedData[status].filter((e) => e.id !== entregaId);
         });
-        
-        updatedData[formattedStatus as keyof typeof updatedData].unshift(response.data);
-
+  
+        // Garantindo que o status seja tratado corretamente
+        if (newStatus === "Em entrega") {
+          updatedData["SaiuParaEntrega"] = [response.data, ...updatedData["SaiuParaEntrega"]];
+        } else {
+          updatedData[newStatus as keyof typeof updatedData] = [
+            response.data,
+            ...updatedData[newStatus as keyof typeof updatedData],
+          ];
+        }
+  
         return updatedData;
       });
-
+  
       toast.success('Status da entrega atualizado com sucesso!');
     } catch (error) {
       console.error('Erro ao atualizar o status da entrega:', error);
       toast.error('Erro ao atualizar o status da entrega.');
     }
   };
+  
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
