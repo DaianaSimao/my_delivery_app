@@ -12,7 +12,7 @@ class Pagamento < ApplicationRecord
     when "pix"
       self.update!(metodo: "PIX")
     when "cash"
-      self.pedido.update!(metodo: "Dinheiro")
+      self.update!(metodo: "Dinheiro")
     end
   end
 end

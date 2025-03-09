@@ -192,9 +192,18 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
   const handleFinalizarPedido = async () => {
     // Verifica se todos os campos obrigatórios estão preenchidos
-    const cliente = localStorage.getItem('clienteId') || clienteEncontrado;
+    const clienteId =
+      typeof clienteEncontrado === "object" && clienteEncontrado !== null
+        ? clienteEncontrado.id
+        : localStorage.getItem("clienteId");
+
+    if (!clienteId) {
+      toast.error("Cliente não encontrado. Por favor, preencha os dados do cliente.");
+      return;
+    }
+
     const restauranteId = localStorage.getItem('restauranteId');
-    if (!cliente || !selectedPayment || !selectedDelivery) {
+    if (!clienteId || !selectedPayment || !selectedDelivery) {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -233,7 +242,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       status: "Recebido",
       forma_pagamento: selectedPayment,
       troco: pagamento.troco,
-      cliente_id: cliente.id,
+      cliente_id: clienteId,
       itens_pedidos_attributes: itensPedidos,
       pagamento_attributes: pagamento,
       valor_total: total,
