@@ -13,6 +13,11 @@ interface Endereco {
   cep: string;
 }
 
+interface RegiaoEntrega {
+  bairro: string;
+  taxa_entrega: number;
+}
+
 interface Restaurante {
   nome: string;
   descricao: string;
@@ -27,6 +32,7 @@ interface Restaurante {
   telefone: string;
   email: string;
   endereco: Endereco;
+  regioes_entrega: RegiaoEntrega[];
 }
 
 const RestauranteForm = () => {
@@ -52,6 +58,7 @@ const RestauranteForm = () => {
       estado: "",
       cep: "",
     },
+    regioes_entrega: [],
   });
 
   const navigate = useNavigate();
@@ -83,6 +90,31 @@ const RestauranteForm = () => {
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       [name]: checked,
+    }));
+  };
+
+  const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const novasRegioes = [...restaurante.regioes_entrega];
+    novasRegioes[index] = { ...novasRegioes[index], [name]: value };
+    setRestaurante((prevRestaurante) => ({
+      ...prevRestaurante,
+      regioes_entrega: novasRegioes,
+    }));
+  };
+
+  const adicionarRegiao = () => {
+    setRestaurante((prevRestaurante) => ({
+      ...prevRestaurante,
+      regioes_entrega: [...prevRestaurante.regioes_entrega, { bairro: "", taxa_entrega: 0 }],
+    }));
+  };
+
+  const removerRegiao = (index: number) => {
+    const novasRegioes = restaurante.regioes_entrega.filter((_, i) => i !== index);
+    setRestaurante((prevRestaurante) => ({
+      ...prevRestaurante,
+      regioes_entrega: novasRegioes,
     }));
   };
 
@@ -126,6 +158,7 @@ const RestauranteForm = () => {
             estado: "",
             cep: "",
           },
+          regioes_entrega: [],
         });
       } else {
         toast.error("Erro ao cadastrar restaurante.");
@@ -150,18 +183,35 @@ const RestauranteForm = () => {
         <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Adicionar Restaurante</h2>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-            <div className="sm:col-span-2">
-              <label htmlFor="nome" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nome:</label>
-              <input
-                type="text"
-                name="nome"
-                id="nome"
-                value={restaurante.nome}
-                onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="Nome do Restaurante"
-                required
-              />
+            <div className="sm:col-span-2 flex gap-4 items-center">
+              <div className="flex-1">
+                <label htmlFor="nome" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Nome:
+                </label>
+                <input
+                  type="text"
+                  name="nome"
+                  id="nome"
+                  value={restaurante.nome}
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Nome do Restaurante"
+                  required
+                />
+              </div>
+              <div className="flex items-center mt-6">
+                <input
+                  type="checkbox"
+                  name="ativo"
+                  id="ativo"
+                  checked={restaurante.ativo}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                  Ativo
+                </label>
+              </div>
             </div>
             <div className="sm:col-span-2">
               <label htmlFor="descricao" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descrição</label>
@@ -226,17 +276,6 @@ const RestauranteForm = () => {
                 placeholder="Avaliação"
                 required
               />
-            </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="ativo"
-                id="ativo"
-                checked={restaurante.ativo}
-                onChange={handleCheckboxChange}
-                className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</label>
             </div>
             <div className="w-full">
               <label htmlFor="abertura" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Horário de Abertura</label>
@@ -395,6 +434,47 @@ const RestauranteForm = () => {
                 required
               />
             </div>
+          </div>
+          <div className="sm:col-span-2 mt-4 ">
+            <label className="text-lg font-semibold text-gray-900 dark:text-white ">
+              Regiões de Entrega:
+            </label>
+            {restaurante.regioes_entrega.map((regiao, index) => (
+              <div key={index} className="flex items-center gap-2 mb-2 mt-4">
+                <input
+                  type="text"
+                  name="bairro"
+                  value={regiao.bairro}
+                  onChange={(e) => handleRegiaoChange(index, e)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Bairro"
+                  required
+                />
+                <input
+                  type="number"
+                  name="taxa_entrega"
+                  value={regiao.taxa_entrega}
+                  onChange={(e) => handleRegiaoChange(index, e)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Taxa de Entrega"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => removerRegiao(index)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={adicionarRegiao}
+              className="mt-2 text-sm text-blue-500 hover:text-blue-700"
+            >
+              + Adicionar Região
+            </button>
           </div>
           <div className="flex gap-4 mt-4 sm:mt-6">
             <button

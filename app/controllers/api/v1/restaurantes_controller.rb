@@ -21,9 +21,9 @@ class Api::V1::RestaurantesController < ApplicationController
   end
 
   def show
-    @restaurante = Restaurante.includes(:endereco).find(params[:id])
+    @restaurante = Restaurante.includes(:endereco, :regioes_entrega).find(params[:id])
     render json: {
-      data: @restaurante.as_json(include: :endereco)}
+      data: @restaurante.as_json(include:[ :regioes_entrega,:endereco]),}
   end
 
   def create
@@ -68,8 +68,9 @@ class Api::V1::RestaurantesController < ApplicationController
   def restaurante_params
     params.require(:restaurante).permit(:id, :nome, :descricao, :categoria, :taxa_entrega,
                                         :tempo_medio_entrega, :avaliacao, :ativo,
-                                        :abertura, :fechamento, :cnpj, :telefone, :email,
-                                        endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :created_at, :updated_at]
-                                        )
+                                        :abertura, :fechamento, :cnpj, :telefone, :email, :dias_funcionamento, :pedido_minimo,
+                                        endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ponto_referencia, :tipo],
+                                        regioes_entrega_attributes: [:id, :bairro, :taxa_entrega, :_destroy, :ativo, :restaurante_id]
+    )
   end
 end

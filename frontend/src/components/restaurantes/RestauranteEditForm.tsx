@@ -12,6 +12,15 @@ interface Endereco {
   cidade: string;
   estado: string;
   cep: string;
+  tipo: string;
+}
+
+interface RegiaoEntrega {
+  id?: number;
+  bairro: string;
+  taxa_entrega: number;
+  _destroy?: boolean;
+  ativo: boolean;
 }
 
 interface Restaurante {
@@ -22,6 +31,7 @@ interface Restaurante {
   taxa_entrega: number;
   tempo_medio_entrega: string;
   avaliacao: number;
+  pedido_minimo: number;
   ativo: boolean;
   abertura: string;
   fechamento: string;
@@ -29,6 +39,7 @@ interface Restaurante {
   telefone: string;
   email: string;
   endereco: Endereco;
+  regioes_entrega: RegiaoEntrega[];
 }
 
 // Função para formatar o horário (ISO 8601 -> HH:mm)
@@ -48,6 +59,7 @@ const RestauranteEditForm = () => {
     taxa_entrega: 0.0,
     tempo_medio_entrega: "",
     avaliacao: 0.0,
+    pedido_minimo: 0.0,
     ativo: true,
     abertura: "",
     fechamento: "",
@@ -62,7 +74,9 @@ const RestauranteEditForm = () => {
       cidade: "",
       estado: "",
       cep: "",
+      tipo: "Restaurante",
     },
+    regioes_entrega: [],
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -71,10 +85,22 @@ const RestauranteEditForm = () => {
   useEffect(() => {
     const fetchRestaurante = async () => {
       try {
+        restaurante.endereco.tipo = "Restaurante";
         const response = await api.get(`/api/v1/restaurantes/${id}`);
         const restauranteData = response.data.data;
         setRestaurante({
-          ...restauranteData,
+          id: restauranteData.id,
+          nome: restauranteData.nome,
+          descricao: restauranteData.descricao,
+          categoria: restauranteData.categoria,
+          taxa_entrega: restauranteData.taxa_entrega,
+          tempo_medio_entrega: restauranteData.tempo_medio_entrega,
+          avaliacao: restauranteData.avaliacao,
+          pedido_minimo: restauranteData.pedido_minimo,
+          ativo: restauranteData.ativo,
+          cnpj: restauranteData.cnpj,
+          telefone: restauranteData.telefone,
+          email: restauranteData.email,
           abertura: formatTime(restauranteData.abertura), // Aplica a formatação ao carregar
           fechamento: formatTime(restauranteData.fechamento), // Aplica a formatação ao carregar
           endereco: restauranteData.endereco || {
@@ -86,6 +112,7 @@ const RestauranteEditForm = () => {
             estado: "",
             cep: "",
           },
+          regioes_entrega: restauranteData.regioes_entrega || [],
         });
         setLoading(false);
       } catch (error) {
@@ -126,22 +153,96 @@ const RestauranteEditForm = () => {
     }));
   };
 
+  const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    const novasRegioes = [...restaurante.regioes_entrega];
+  
+    // Atualiza o valor com base no tipo do input
+    novasRegioes[index] = {
+      ...novasRegioes[index],
+      [name]: checked,
+    };
+  
+    setRestaurante((prevRestaurante) => ({
+      ...prevRestaurante,
+      regioes_entrega: novasRegioes,
+    }));
+  }
+
+  const adicionarRegiao = () => {
+    setRestaurante((prevRestaurante) => ({
+      ...prevRestaurante,
+      regioes_entrega: [...prevRestaurante.regioes_entrega, { bairro: "", taxa_entrega: 0, ativo: true }],
+    }));
+  };
+
+  const removerRegiao = (index: number) => {
+    const novasRegioes = [...restaurante.regioes_entrega];
+  
+    if (novasRegioes[index].id) {
+      // Se a região já existe no banco de dados, marque para exclusão
+      novasRegioes[index] = { ...novasRegioes[index], _destroy: true };
+    } else {
+      // Se a região é nova (não tem ID), remova-a do array
+      novasRegioes.splice(index, 1);
+    }
+  
+    setRestaurante((prevRestaurante) => ({
+      ...prevRestaurante,
+      regioes_entrega: novasRegioes,
+    }));
+  };
+
+  const filtrarCamposDesnecessarios = (objeto: any, camposParaRemover: string[]) => {
+    const novoObjeto = { ...objeto };
+  
+    // Remove campos desnecessários do objeto principal
+    camposParaRemover.forEach((campo) => delete novoObjeto[campo]);
+  
+    // Remove campos desnecessários de sub-objetos (endereco_attributes e regioes_entrega_attributes)
+    if (novoObjeto) {
+      camposParaRemover.forEach((campo) => delete novoObjeto[campo]);
+    }
+    if (novoObjeto.endereco_attributes) {
+      camposParaRemover.forEach((campo) => delete novoObjeto.endereco_attributes[campo]);
+    }
+  
+    if (novoObjeto.regioes_entrega_attributes) {
+      novoObjeto.regioes_entrega_attributes = novoObjeto.regioes_entrega_attributes.map((regiao: any) => {
+        const novaRegiao = { ...regiao };
+        camposParaRemover.forEach((campo) => delete novaRegiao[campo]);
+        return novaRegiao;
+      });
+    }
+  
+    return novoObjeto;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { id, created_at, updated_at, endereco_id, ...restauranteData } = restaurante;
+      const { id, ...restauranteData } = restaurante;
       const payload = {
-        restaurante: {
-          ...restaurante,
+          id: restaurante.id,
+          nome: restauranteData.nome,
+          descricao: restauranteData.descricao,
+          categoria: restauranteData.categoria,
+          ativo: restauranteData.ativo,
+          cnpj: restauranteData.cnpj,
+          telefone: restauranteData.telefone,
+          email: restauranteData.email,
+          pedido_minimo: restauranteData.pedido_minimo,
+          tempo_medio_entrega: restauranteData.tempo_medio_entrega,
           abertura: new Date(`1970-01-01T${restaurante.abertura}Z`).toISOString(), // Converte de volta para ISO 8601
           fechamento: new Date(`1970-01-01T${restaurante.fechamento}Z`).toISOString(), // Converte de volta para ISO 8601
           taxa_entrega: parseFloat(restaurante.taxa_entrega.toString()),
           avaliacao: parseFloat(restaurante.avaliacao.toString()),
           endereco_attributes: restaurante.endereco,
-        },
+          regioes_entrega_attributes: restaurante.regioes_entrega,
       };
+      const payload_filtrado_ = filtrarCamposDesnecessarios(payload, ["created_at", "updated_at"]);
 
-      const response = await api.put(`/api/v1/restaurantes/${id}`, payload);
+      const response = await api.put(`/api/v1/restaurantes/${id}`, payload_filtrado_);
 
       if (response.status === 200) {
         toast.success("Restaurante atualizado com sucesso!");
@@ -217,14 +318,14 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Taxa de Entrega */}
+            {/* Pedido minimo */}
             <div className="w-full">
-              <label htmlFor="taxa_entrega" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Taxa de Entrega</label>
+              <label htmlFor="taxa_entrega" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pedido</label>
               <input
                 type="number"
-                name="taxa_entrega"
-                id="taxa_entrega"
-                value={restaurante.taxa_entrega}
+                name="pedido_minimo"
+                id="pedido_minimo"
+                value={restaurante.pedido_minimo}
                 onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="Taxa de Entrega"
@@ -456,6 +557,62 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
+          </div>
+          <div className="sm:col-span-2">
+            <div className="sm:col-span-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-4">Regiões de entrega</h3>
+            </div>
+            {restaurante.regioes_entrega.map((regiao, index) => {
+              // Ignora regiões marcadas para exclusão
+              if (regiao._destroy) return null;
+
+              return (
+                <div key={index} className="flex items-center gap-2 mb-2">
+                  <input
+                    type="text"
+                    name="bairro"
+                    value={regiao.bairro}
+                    onChange={(e) => handleRegiaoChange(index, e)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Bairro"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="taxa_entrega"
+                    value={regiao.taxa_entrega}
+                    onChange={(e) => handleRegiaoChange(index, e)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Taxa de Entrega"
+                    required
+                  />
+
+                  <input
+                    type="checkbox"
+                    name="ativo"
+                    id="ativo"
+                    checked={regiao.ativo}
+                    onChange={(e) => handleRegiaoChange(index, e)}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</label>
+                  <button
+                    type="button"
+                    onClick={() => removerRegiao(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remover
+                  </button>
+                </div>
+              );
+            })}
+            <button
+              type="button"
+              onClick={adicionarRegiao}
+              className="mt-2 text-sm text-blue-500 hover:text-blue-700"
+            >
+              + Adicionar Região
+            </button>
           </div>
 
           {/* Botões */}
