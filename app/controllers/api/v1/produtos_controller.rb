@@ -65,6 +65,8 @@ class Api::V1::ProdutosController < ApplicationController
 
   def create
     produto = Produto.new(produto_params)
+    produto.restaurante_id = current_user.restaurantes.find(current_user.restaurante_ativo).id
+    binding.pry
     if produto.save
       render json: ProdutoSerializer.new(produto), status: :created
     else
