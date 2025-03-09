@@ -60,7 +60,18 @@ class Api::V1::EntregasController < ApplicationController
   end
 
   def update
+    status_antigo = @entrega.status
+
     if @entrega.update(entrega_params)
+      if status_antigo != @entrega.status # Verifica se o status mudou
+        case @entrega.status
+        when "Entregue"
+          @entrega.pedido.update(status: "Entregue")
+        when "Em entrega"
+          @entrega.pedido.update(status: "Em entrega")
+        end
+      end
+
       @entrega = Entrega.includes(:pedido, :entregador).find(@entrega.id)
 
       render json: @entrega.as_json(
