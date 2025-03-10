@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       get "cardapio/:restaurante_id", to: "produtos#cardapio"
       get "clientes/endereco/:endereco_id", to: "clientes#endereco"
       get "clientes/buscar_cliente/:id", to: "clientes#buscar_cliente"
+      get "restaurantes/regioes_entrega/:id", to: "restaurantes#regioes_entrega"
     end
   end
 end

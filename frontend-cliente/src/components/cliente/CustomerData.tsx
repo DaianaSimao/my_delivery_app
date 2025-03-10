@@ -41,6 +41,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showTrocoModal, setShowTrocoModal] = useState(false);
+  const [regiaoEntrega, setRegiaoEntrega] = useState<string | null>(null);
+  const [taxaEntrega, setTaxaEntrega] = useState<number>(0); 
   const navigate = useNavigate();
 
   const {
@@ -86,12 +88,17 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   }, [darkMode]);
 
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
+    setDarkMode((prevMode: any) => {
       const newMode = !prevMode;
       // Armazena a preferência do tema no localStorage
       localStorage.setItem('darkMode', JSON.stringify(newMode));
       return newMode;
     });
+  };
+
+  const handleRegiaoEntregaChange = (bairro: string, taxa: number) => {
+    setRegiaoEntrega(bairro); // Armazena a região selecionada
+    setTaxaEntrega(taxa); // Armazena a taxa de entrega
   };
 
   const handleConfirmarDadosCliente = (editar: boolean) => {
@@ -104,6 +111,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     }
     setShowClienteModal(false); // Fecha o modal
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -356,7 +364,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
         {showNeighborhoodModal && (
           <NeighborhoodModal
-            onNeighborhoodChange={handleNeighborhoodChange}
+            onRegiaoEntregaChange={handleRegiaoEntregaChange}
             onClose={() => setShowNeighborhoodModal(false)}
           />
         )}

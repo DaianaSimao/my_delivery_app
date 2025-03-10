@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Home, Briefcase, Users } from 'lucide-react';
+import NeighborhoodModal from './modals/NeighborhoodModal';
 
 interface AddressFormProps {
   formData: {
@@ -28,10 +29,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
   onComplementChange,
   onReferenceChange,
   onNeighborhoodChange,
-  onCityChange,
   onAddressTypeChange,
   onSubmit,
 }) => {
+  const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const addressTypes = [
     { id: 'Casa', title: 'Casa', icon: <Home className="w-6 h-6" /> },
     { id: 'Trabalho', title: 'Trabalho', icon: <Briefcase className="w-6 h-6" /> },
@@ -46,17 +47,27 @@ const AddressForm: React.FC<AddressFormProps> = ({
   return (
     <div className="space-y-6">
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex justify-between items-center">
-        <div>
+      <div>
           <h3 className="font-medium text-gray-900 dark:text-white">Região de Entrega</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">{formData.neighborhood}</p>
         </div>
         <button
-          onClick={() => onNeighborhoodChange('Centro')}
+          onClick={() => setShowNeighborhoodModal(true)}
           className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
         >
           Ver Opções
         </button>
       </div>
+
+      {showNeighborhoodModal && (
+        <NeighborhoodModal
+          onNeighborhoodChange={(neighborhood) => {
+            onNeighborhoodChange(neighborhood);
+            setShowNeighborhoodModal(false);
+          }}
+          onClose={() => setShowNeighborhoodModal(false)}
+        />
+      )}
 
       <form onSubmit={handleFormSubmit} className="space-y-4"> {/* onSubmit no formulário */}
         <div>

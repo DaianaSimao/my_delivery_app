@@ -1,6 +1,6 @@
 class Api::V1::RestaurantesController < ApplicationController
-  before_action :set_restaurante, only: %i[show update destroy]
-  skip_before_action :authenticate_user!, only: %i[show]
+  before_action :set_restaurante, only: %i[show update destroy regioes_entrega]
+  skip_before_action :authenticate_user!, only: %i[show regioes_entrega]
 
   def index
     @restaurantes = current_user.restaurantes
@@ -18,6 +18,13 @@ class Api::V1::RestaurantesController < ApplicationController
   def restaurantes_ativos
     @restaurantes = current_user.restaurantes.where(ativo: true).includes(:endereco)
     render json: RestauranteSerializer.new(@restaurantes).serializable_hash.to_json
+  end
+
+  def regioes_entrega
+    regioes = @restaurante.regioes_entrega # Supondo que você tenha um relacionamento no modelo Restaurante
+    render json: regioes.as_json
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Restaurante não encontrado" }, status: :not_found
   end
 
   def show
