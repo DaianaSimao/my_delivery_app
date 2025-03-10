@@ -59,13 +59,15 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
     });
   };
 
-  // Calcula o preço total: preço base + soma dos acompanhamentos selecionados
-  const totalPrice = Object.entries(selectedOptions).reduce((total, [optionId, quantity]) => {
+// Calcula o preço total: preço base + soma dos acompanhamentos selecionados
+const totalPrice = Number(
+  Object.entries(selectedOptions).reduce((total, [optionId, quantity]) => {
     const option = item?.produto_acompanhamentos
       .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
       .find((opt) => opt.id === Number(optionId));
-    return total + (option?.preco || 0) * quantity;
-  }, item?.preco ? parseFloat(item.preco.toString()) : 0);
+    return total + (Number(option?.preco) || 0) * quantity;
+  }, item?.preco ? parseFloat(item.preco.toString()) : 0).toFixed(2)
+);
 
   const handleAddToCart = () => {
     if (item) {
