@@ -24,7 +24,7 @@ class Pedido < ApplicationRecord
 
   def create_entrega
     if self.status == "Expedido"
-      Entrega.create(pedido_id: self.id)
+      Entrega.create(pedido_id: self.id, taxa_entrega: cliente.endereco.regioes_entrega.taxa_entrega)
     end
   end
 
