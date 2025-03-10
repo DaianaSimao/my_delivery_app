@@ -118,7 +118,7 @@ export const atualizarEndereco = async (enderecoId: number, dadosAtualizados: an
   }
 };
 
-export const  fetchRegioesEntrega = async (restauranteId: string | number) => {
+export const fetchRegioesEntrega = async (restauranteId: string | number) => {
   try {
     const response = await api.get(`/api/v1/restaurantes/regioes_entrega/${restauranteId}`);
     console.log(response.data);

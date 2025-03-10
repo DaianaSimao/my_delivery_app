@@ -5,6 +5,8 @@ import type { CartItem } from '../types';
 interface CartContextType {
   cartItems: CartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  restauranteId: string | null;
+  setRestauranteId: (id: string | null) => void;
   onCheckout: () => void;
 }
 
@@ -19,19 +21,34 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const saved = localStorage.getItem('cartItems');
     return saved ? JSON.parse(saved) : [];
   });
+  const [restauranteId, setRestauranteId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (restauranteId) {
+      const savedRestauranteId = localStorage.getItem('restauranteId');
+      if (savedRestauranteId !== restauranteId) {
+        setCartItems([]);
+        localStorage.removeItem('cartItems');
+        localStorage.setItem('restauranteId', restauranteId);
+      }
+    }
+  }, [restauranteId]);
+  
   const onCheckout = () => {
     console.log("Limpando carrinho e redirecionando...");
     setCartItems([]); // Limpa o carrinho
-    localStorage.removeItem('cartItems'); // Limpa o localStorage
+    localStorage.removeItem('cartItems'); // Remove os itens do localStorage
+    console.log("Carrinho limpo e redirecionando para o checkout...");
+    // Adicione aqui a lógica de redirecionamento, se necessário
   };
 
+  // Salva o carrinho no localStorage sempre que ele mudar
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, onCheckout }}>
+    <CartContext.Provider value={{ cartItems, setCartItems, restauranteId, setRestauranteId, onCheckout }}>
       {children}
     </CartContext.Provider>
   );
