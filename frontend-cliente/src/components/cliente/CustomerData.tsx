@@ -10,7 +10,7 @@ import ChangeModal from './modals/ChangeModal';
 import useCustomerData from '../../hooks/useCustomerData';
 import useAddress from '../../hooks/useAddress';
 import useOrder from '../../hooks/useOrder';
-import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente } from '../../services/api';
+import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atualizarEnderecoCliente, criarCliente, fetchRegioesEntrega } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useCart } from '../../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -73,10 +73,28 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     handlePaymentChange,
     handleTrocoChange,
   } = useOrder();
+  
+  const [regioesEntrega, setRegioesEntrega] = useState<any[]>([]);
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
-  const deliveryFee = 5.00;
+  useEffect(() => {
+    const restauranteId = localStorage.getItem('restauranteId');
+    if (restauranteId) {
+      fetchRegioesEntrega(restauranteId)
+        .then((data) => {
+          setRegioesEntrega(data);
+          // Atualiza a taxa de entrega com base no regioes_entrega_id inicial, se houver
+          if (addressFormData.regioes_entrega_id) {
+            const regiao = data.find((r: any) => r.id === addressFormData.regioes_entrega_id);
+            setDeliveryFee(regiao ? regiao.taxa_entrega : 0);
+          }
+        })
+        .catch((error) => console.error('Erro ao carregar regiões:', error));
+    }
+  }, [addressFormData.regioes_entrega_id]);
+
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const total = subtotal + deliveryFee;
+  const total = Number(subtotal) + Number(deliveryFee);
 
   useEffect(() => {
     if (darkMode) {
@@ -184,7 +202,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
           toast.success('Endereço salvo com sucesso!');
         }
       }
-
+      const regiao = regioesEntrega.find((r) => r.id === addressFormData.regioes_entrega_id);
+      setDeliveryFee(regiao ? regiao.taxa_entrega : 0);
       // Avança para o próximo passo
       setStep('payment');
     } catch (error) {
@@ -321,7 +340,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
             onReferenceChange={handleReferenceChange}
             onNeighborhoodChange={(neighborhood, regioes_entrega_id) => {
               handleNeighborhoodChange(neighborhood, regioes_entrega_id);
-              setShowNeighborhoodModal(false);
+              const regiao = regioesEntrega.find((r) => r.id === regioes_entrega_id);
+              setDeliveryFee(regiao ? regiao.taxa_entrega : 0); // Atualiza a taxa ao mudar a região
             }}
             onCityChange={handleCityChange}
             onAddressTypeChange={handleAddressTypeChange}
