@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Trash2, Pencil, Plus, Minus } from 'lucide-react';
 import CustomerData  from '../cliente/CustomerData';
 import type { CartItem } from '../../types';
+import { useNavigate } from 'react-router-dom';
 
 interface CartProps {
   items: CartItem[];
@@ -24,9 +25,10 @@ export function Cart({
 }: CartProps) {
   const [showCustomerDataForm, setShowCustomerDataForm] = useState(false);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const navigate = useNavigate();
 
   const handleCheckout = () => {
-    setShowCustomerDataForm(true);
+      navigate(`/dados`);
   };
 
   if (showCustomerDataForm) {
