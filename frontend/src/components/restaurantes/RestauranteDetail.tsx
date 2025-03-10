@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import restauranteIcon from "/icons/restaurante.svg";
+import DeliveryIcon from "/icons/delivery.svg";
 
 interface Endereco {
   id: number;
@@ -32,6 +33,11 @@ interface Restaurante {
   endereco: Endereco;
   created_at?: string;
   updated_at?: string;
+  regioes_entrega: {
+    id: number;
+    bairro: string;
+    taxa_entrega: number;
+  }[];
 }
 
 // Função para formatar o horário (ISO 8601 -> HH:mm)
@@ -45,7 +51,11 @@ const formatTime = (isoString: string): string => {
 const RestauranteDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     const fetchRestaurante = async () => {
@@ -131,6 +141,20 @@ const RestauranteDetail = () => {
               <p className="text-gray-900 dark:text-white">CEP: {restaurante.endereco.cep}</p>
             </div>
           </div>
+
+          <div className="sm:col-span-2">
+            <button
+              onClick={openModal}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <img
+                src={DeliveryIcon}
+                alt="Ícone do restaurante"
+                className="h-8 w-auto mr-3 text-4xl" 
+              />
+              Regioes de entrega:
+            </button>
+          </div>
         </div>
 
         {/* Botão Voltar */}
@@ -143,6 +167,41 @@ const RestauranteDetail = () => {
             Voltar
           </button>
         </div>
+        {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 mt-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Regiões + Taxas de Entrega
+            </h3>
+            <div className="space-y-4">
+              {restaurante.regioes_entrega?.length > 0 ? (
+                restaurante.regioes_entrega.map((re) => (
+                  <div key={re.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {re.bairro}
+                      {re.taxa_entrega && (
+                        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                          (R$ {re.taxa_entrega})
+                        </span>
+                      )}
+                    </h4>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-700 dark:text-gray-300">
+                  Este restaurante não possui regiões de entrega.
+                </p>
+              )}
+            </div>
+            <button
+              onClick={closeModal}
+              className="mt-4 inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
       </div>
     </section>
   );
