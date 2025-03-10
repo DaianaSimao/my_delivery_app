@@ -79,7 +79,6 @@ const MenuPage: React.FC = () => {
         onRemoveItem={handleRemoveItem}
         onUpdateQuantity={handleUpdateQuantity}
         onAddMore={() => setShowCart(false)}
-        onCheckout={() => console.log('Proceed to checkout')}
       />
     );
   }

@@ -173,7 +173,7 @@ const AppContent: React.FC = () => {
           path="/order-tracking"
           element={<OrderTracking />}
         />
-        <Route path="*" element={<Navigate to="/cardapio/1" />} />
+        <Route path="*" element={<Navigate to={`/cardapio/${restauranteId}`} />} />
       </Routes>
     </div>
   );
