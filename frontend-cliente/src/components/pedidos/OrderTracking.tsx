@@ -4,6 +4,10 @@ import type { Restaurante } from '../../types';
 import { createConsumer } from '@rails/actioncable'; // Importação do ActionCable
 import { ArrowLeft, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import orderIcon from "/icons/order.svg";
+import deliveryIcon from "/icons/delivery.svg";
+import payIcon from "/icons/pay.svg";
+import userIcon from "/icons/user.svg";
 
 const OrderTracking: React.FC = () => {
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurante | null>(null);
@@ -151,10 +155,38 @@ const OrderTracking: React.FC = () => {
           <div className="mt-6">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Detalhes do Pedido</h2>
             <div className="space-y-2">
-            <p className="text-gray-700 dark:text-gray-300"><strong>Pedido #{pedido.data.id}</strong></p>
-              <p className="text-gray-700 dark:text-gray-300"><strong>Entrega:</strong> {pedido.data.forma_entrega}</p>
-              <p className="text-gray-700 dark:text-gray-300"><strong>Pagamento:</strong> {pedido.data.forma_pagamento}</p>
-              <p className="text-gray-700 dark:text-gray-300"><strong>Cliente:</strong> {clienteNome}</p>
+              <p className="text-gray-700 dark:text-gray-300 flex items-center">
+                <img
+                  src={orderIcon}
+                  alt="Ícone do pedido"
+                  className="h-8 w-auto mr-3 text-4xl" 
+                />
+                <strong>Pedido #{pedido.data.id}</strong>
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 flex items-center">
+                <img
+                  src={deliveryIcon}
+                  alt="Ícone do delivery"
+                  className="h-8 w-auto mr-3 text-4xl" 
+                />
+                <strong>{pedido.data.forma_entrega}</strong>
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 flex items-center">
+                <img
+                  src={payIcon}
+                  alt="Ícone do pagamento"
+                  className="h-8 w-auto mr-3 text-4xl" 
+                />
+                <strong>Pagamento:&nbsp; </strong> {pedido.data.forma_pagamento}
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 flex items-center">
+                <img
+                  src={userIcon}
+                  alt="Ícone do pagamento"
+                  className="h-8 w-auto mr-3 text-4xl" 
+                />
+                <strong>Cliente:&nbsp;</strong> {clienteNome}
+              </p>
             </div>
           </div>
 
