@@ -7,73 +7,63 @@ const useAddress = (enderecoId?: number) => {
     number: '',
     complement: '',
     reference: '',
-    neighborhood: 'Centro',
-    city: 'São Paulo',
-    addressType: 'home',
+    neighborhood: '',
+    city: 'Cidade Padrão', // Ajuste conforme necessário
+    addressType: 'Casa',
+    regioes_entrega_id: 0, // Valor inicial
   });
-
-  const [originalData, setOriginalData] = useState({ ...formData });
 
   useEffect(() => {
     if (enderecoId) {
-      const buscarEndereco = async () => {
-        try {
-          const endereco = await fetchEnderecoById(enderecoId);
-          if (endereco) {
-            const dadosEndereco = {
-              street: endereco.rua,
-              number: endereco.numero,
-              complement: endereco.complemento || '',
-              reference: endereco.ponto_referencia || '',
-              neighborhood: endereco.bairro,
-              city: endereco.cidade,
-              addressType: endereco.tipo || 'home',
-
-            };
-            setFormData(dadosEndereco);
-            setOriginalData(dadosEndereco); // Armazena os dados originais
-          }
-        } catch (error) {
-          console.error('Erro ao buscar endereço:', error);
-        }
-      };
-
-      buscarEndereco();
+      fetchEnderecoById(enderecoId).then((data) => {
+        setFormData({
+          street: data.rua || '',
+          number: data.numero || '',
+          complement: data.complemento || '',
+          reference: data.ponto_referencia || '',
+          neighborhood: data.bairro || '',
+          city: data.cidade || 'Cidade Padrão',
+          addressType: data.tipo || 'Casa',
+          regioes_entrega_id: data.regioes_entrega_id || 0,
+        });
+      });
     }
   }, [enderecoId]);
 
-  // Funções para atualizar o estado do formulário
   const handleStreetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, street: e.target.value });
+    setFormData((prev) => ({ ...prev, street: e.target.value }));
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, number: e.target.value });
+    setFormData((prev) => ({ ...prev, number: e.target.value }));
   };
 
   const handleComplementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, complement: e.target.value });
+    setFormData((prev) => ({ ...prev, complement: e.target.value }));
   };
 
   const handleReferenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, reference: e.target.value });
+    setFormData((prev) => ({ ...prev, reference: e.target.value }));
   };
 
-  const handleNeighborhoodChange = (neighborhood: string) => {
-    setFormData({ ...formData, neighborhood });
+  const handleNeighborhoodChange = (neighborhood: string, regioes_entrega_id: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      neighborhood,
+      regioes_entrega_id, // Atualiza o ID da região
+    }));
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, city: e.target.value });
+    setFormData((prev) => ({ ...prev, city: e.target.value }));
   };
 
   const handleAddressTypeChange = (addressType: string) => {
-    setFormData({ ...formData, addressType });
+    setFormData((prev) => ({ ...prev, addressType }));
   };
 
   return {
     formData,
-    originalData, // Retorna os dados originais
     handleStreetChange,
     handleNumberChange,
     handleComplementChange,

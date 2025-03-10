@@ -41,8 +41,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showTrocoModal, setShowTrocoModal] = useState(false);
-  const [regiaoEntrega, setRegiaoEntrega] = useState<string | null>(null);
-  const [taxaEntrega, setTaxaEntrega] = useState<number>(0); 
+
   const navigate = useNavigate();
 
   const {
@@ -94,11 +93,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       localStorage.setItem('darkMode', JSON.stringify(newMode));
       return newMode;
     });
-  };
-
-  const handleRegiaoEntregaChange = (bairro: string, taxa: number) => {
-    setRegiaoEntrega(bairro); // Armazena a região selecionada
-    setTaxaEntrega(taxa); // Armazena a taxa de entrega
   };
 
   const handleConfirmarDadosCliente = (editar: boolean) => {
@@ -170,6 +164,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       ponto_referencia: addressFormData.reference,
       bairro: addressFormData.neighborhood,
       cidade: addressFormData.city,
+      regioes_entrega_id: addressFormData.regioes_entrega_id, // Adicionado
       tipo: addressFormData.addressType,
     };
 
@@ -317,22 +312,22 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
             />
           )}
 
-          {step === 'address' && (
-            <AddressForm
-              formData={addressFormData}
-              onStreetChange={handleStreetChange}
-              onNumberChange={handleNumberChange}
-              onComplementChange={handleComplementChange}
-              onReferenceChange={handleReferenceChange}
-              onNeighborhoodChange={(neighborhood) => {
-                handleNeighborhoodChange(neighborhood);
-                setShowNeighborhoodModal(false);
-              }}
-              onCityChange={handleCityChange}
-              onAddressTypeChange={handleAddressTypeChange}
-              onSubmit={handleSubmitAddress}
-            />
-          )}
+        {step === 'address' && (
+          <AddressForm
+            formData={addressFormData}
+            onStreetChange={handleStreetChange}
+            onNumberChange={handleNumberChange}
+            onComplementChange={handleComplementChange}
+            onReferenceChange={handleReferenceChange}
+            onNeighborhoodChange={(neighborhood, regioes_entrega_id) => {
+              handleNeighborhoodChange(neighborhood, regioes_entrega_id);
+              setShowNeighborhoodModal(false);
+            }}
+            onCityChange={handleCityChange}
+            onAddressTypeChange={handleAddressTypeChange}
+            onSubmit={handleSubmitAddress}
+          />
+        )}
 
           {step === 'payment' && (
             <>
@@ -364,7 +359,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
         {showNeighborhoodModal && (
           <NeighborhoodModal
-            onRegiaoEntregaChange={handleRegiaoEntregaChange}
+            onNeighborhoodChange={handleNeighborhoodChange}
             onClose={() => setShowNeighborhoodModal(false)}
           />
         )}

@@ -11,12 +11,13 @@ interface AddressFormProps {
     neighborhood: string;
     city: string;
     addressType: string;
+    regioes_entrega_id: number // Adicionado
   };
   onStreetChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onComplementChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onReferenceChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onNeighborhoodChange: (neighborhood: string) => void;
+  onNeighborhoodChange: (neighborhood: string, regionId: number) => void;
   onCityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddressTypeChange: (addressType: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -61,8 +62,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
       {showNeighborhoodModal && (
         <NeighborhoodModal
-          onNeighborhoodChange={(neighborhood) => {
-            onNeighborhoodChange(neighborhood);
+          onNeighborhoodChange={(neighborhood, regionId) => {
+            onNeighborhoodChange(neighborhood, regionId);
             setShowNeighborhoodModal(false);
           }}
           onClose={() => setShowNeighborhoodModal(false)}
