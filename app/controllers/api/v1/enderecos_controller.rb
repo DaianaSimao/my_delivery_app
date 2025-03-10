@@ -39,6 +39,6 @@ class Api::V1::EnderecosController < ApplicationController
   end
 
   def endereco_params
-    params.require(:endereco).permit(:rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :tipo, :ponto_referencia)
+    params.require(:endereco).permit(:rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :tipo, :ponto_referencia, :regioes_entrega_id)
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_09_212008) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_10_005752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,6 +75,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_09_212008) do
     t.datetime "updated_at", null: false
     t.string "tipo"
     t.string "ponto_referencia"
+    t.bigint "regioes_entrega_id"
+    t.index ["regioes_entrega_id"], name: "index_enderecos_on_regioes_entrega_id"
   end
 
   create_table "entregadores", force: :cascade do |t|
@@ -242,6 +244,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_09_212008) do
   add_foreign_key "acompanhamentos_pedidos", "itens_pedidos"
   add_foreign_key "avaliacoes", "pedidos"
   add_foreign_key "clientes", "enderecos"
+  add_foreign_key "enderecos", "regioes_entregas"
   add_foreign_key "entregadores", "restaurantes"
   add_foreign_key "entregas", "entregadores"
   add_foreign_key "entregas", "pedidos"
