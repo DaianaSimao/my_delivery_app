@@ -34,7 +34,7 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
         }
       } catch (error) {
         console.error('Erro ao carregar informações do restaurante:', error);
-        setError(error.message);
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }

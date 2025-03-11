@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Sun, Moon } from 'lucide-react';
 import CustomerForm from './CustomerForm';
 import AddressForm from './AddressForm';
@@ -339,7 +340,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
             onNumberChange={handleNumberChange}
             onComplementChange={handleComplementChange}
             onReferenceChange={handleReferenceChange}
-            onNeighborhoodChange={(neighborhood, regioes_entrega_id) => {
+            onNeighborhoodChange={(neighborhood: string, regioes_entrega_id: number) => {
               handleNeighborhoodChange(neighborhood, regioes_entrega_id);
               const regiao = regioesEntrega.find((r) => r.id === regioes_entrega_id);
               setDeliveryFee(regiao ? regiao.taxa_entrega : 0); // Atualiza a taxa ao mudar a região

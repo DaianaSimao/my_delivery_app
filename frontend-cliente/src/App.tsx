@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,7 +17,6 @@ import { Header } from './components/Header';
 import { CartProvider } from './contexts/CartContext';
 import CustomerData from './components/cliente/CustomerData';
 import OrderTracking from './components/pedidos/OrderTracking';
-import FabButton from './components/pedidos/FabButton';
 
 const CART_STORAGE_KEY = 'cartItems'; // Chave para salvar os itens do carrinho no localStorage
 
@@ -186,7 +186,6 @@ const App: React.FC = () => {
     <Router>
       <CartProvider>
         <AppContent />
-        <FabButton />
       </CartProvider>
     </Router>
   );
