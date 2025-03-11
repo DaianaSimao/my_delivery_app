@@ -3,8 +3,14 @@ class Api::V1::PedidosController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[create]
 
   def index
+    hoje = Time.now
+    inicio_intervalo = (hoje - 3.hours).beginning_of_day + 3.hours
+    fim_intervalo = (hoje - 3.hours).end_of_day + 3.hours
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
+
     @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).all.order(updated_at: :desc).where(restaurante_id: restaurante.id)
+    binding.pry 
+    @pedidos = @pedidos.where(created_at: inicio_intervalo..fim_intervalo)
 
     if params[:search].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
@@ -82,7 +88,7 @@ class Api::V1::PedidosController < ApplicationController
             only: %i[id quantidade preco_total],
             include: {
               produto: {
-                only: %i[id nome preco]},
+                only: %i[id nome preco] },
               acompanhamentos_pedidos: {
                 only: %i[quantidade preco_unitario],
                 include: {

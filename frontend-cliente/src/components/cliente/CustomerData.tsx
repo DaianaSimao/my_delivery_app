@@ -281,6 +281,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
       localStorage.setItem('pedido', JSON.stringify(pedidoCriado));
       onCheckout(); // Limpa o carrinho e redireciona
+      localStorage.setItem('status', 'Recebido');
       navigate('/order-tracking');
     } catch (error) {
       console.error("Erro ao enviar o pedido:", error);

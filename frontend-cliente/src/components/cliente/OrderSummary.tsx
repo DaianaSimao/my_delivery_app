@@ -107,7 +107,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         </div>
         <div className="flex justify-between text-gray-600 dark:text-gray-400">
           <span>Taxa de entrega</span>
-          <span>R$ {deliveryFee}</span>
+          <span>
+            {Number(deliveryFee) === 0
+              ? "Grátis"
+              : `R$ ${Number(deliveryFee).toFixed(2)}`}
+          </span>
         </div>
         <div className="flex justify-between font-semibold text-gray-900 dark:text-white text-lg">
           <span>Total</span>
