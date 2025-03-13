@@ -23,6 +23,10 @@ import Restaurantes from "./components/restaurantes/Restaurantes";
 import RestauranteForm from "./components/restaurantes/RestauranteForm";
 import RestauranteEditForm from "./components/restaurantes/RestauranteEditForm";
 import RestauranteDetails from "./components/restaurantes/RestauranteDetail";
+import EntregadoresList from "./components/entregadores/EntregadoresList";
+import EntregadorDetails from "./components/entregadores/EntregadorDetails";
+import EntregadoresForm from "./components/entregadores/EntregadoresForm";
+import EntregadoresEditForm from "./components/entregadores/EntregadoresEditForm";
 
 const restaurantInfo = {
   name: "Sushi Express",
@@ -94,6 +98,10 @@ const AppContent: React.FC = () => {
             <Route path="/restaurantes/new" element={<RestauranteForm />} />
             <Route path="/restaurantes/:id/editar" element={<RestauranteEditForm />} />
             <Route path="/restaurantes/:id" element={<RestauranteDetails />} />
+            <Route path="/entregadores" element={<EntregadoresList />} />
+            <Route path="/entregadores/new" element={<EntregadoresForm />} />
+            <Route path="/entregadores/:id" element={<EntregadorDetails />} />
+            <Route path="/entregadores/:id/editar" element={<EntregadoresEditForm />} />
             <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>

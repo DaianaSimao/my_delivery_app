@@ -59,7 +59,7 @@ class Api::V1::RestaurantesController < ApplicationController
   def switch_restaurant
     restaurante = current_user.restaurantes.find(params[:restaurante_id])
     if restaurante
-      current_user.update(restaurante_ativo: restaurante.id)
+      current_user.update_columns(restaurante_ativo: restaurante.id)
       render json: { message: "Restaurante alterado com sucesso!", restaurante_ativo: restaurante }
     else
       render json: { error: "Restaurante não encontrado ou não associado ao usuário." }, status: :unprocessable_entity

@@ -4,11 +4,19 @@ class Api::V1::EntregadoresController < ApplicationController
   def index
     restaurante = Restaurante.find(current_user.restaurante_ativo)
     @entregadores = Entregador.where(restaurante_id: restaurante.id)
-    render json: @entregadores.as_json
+    @entregadores =  @entregadores.page(params[:page]).per(params[:per_page])
+    render json: {
+      data: @entregadores,
+      meta: {
+        total_pages: @entregadores.total_pages,
+        total_count: @entregadores.total_count,
+        current_page: @entregadores.current_page
+      }
+    }
   end
 
   def show
-    render json: EntregadorSerializer.new(@entregador)
+    render json: @entregador.as_json
   end
 
   def create
