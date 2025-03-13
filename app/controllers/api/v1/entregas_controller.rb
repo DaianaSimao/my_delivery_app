@@ -2,8 +2,12 @@ class Api::V1::EntregasController < ApplicationController
   before_action :set_entrega, only: %i[show update destroy]
 
   def index
+    hoje = Time.now
+    inicio_intervalo = (hoje - 3.hours).beginning_of_day + 3.hours
+    fim_intervalo = (hoje - 3.hours).end_of_day + 3.hours
+
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
-    @entregas = Entrega.includes(:pedido, :entregador).where(pedidos: { restaurante_id: restaurante.id })
+    @entregas = Entrega.includes(:pedido, :entregador).where(pedidos: { restaurante_id: restaurante.id }, created_at: inicio_intervalo..fim_intervalo)
 
     if params[:entregador_nome].present?
       @entregas = @entregas.joins(:entregador
