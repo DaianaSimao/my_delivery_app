@@ -26,7 +26,7 @@ const ModalDesignarEntregador: React.FC<ModalDesignarEntregadorProps> = ({
   useEffect(() => {
     const fetchEntregadores = async () => {
       try {
-        const response = await api.get('/api/v1/entregadores');
+        const response = await api.get('/api/v1/entregadores/listar_entregadores');
         if (response.status === 200) {
           setEntregadores(response.data);
         }

@@ -23,7 +23,11 @@ Rails.application.routes.draw do
       resources :pedidos
       resources :pagamentorons
       resources :entregas
-      resources :entregadores
+      resources :entregadores do
+        collection do
+          get "listar_entregadores"
+        end
+      end
       resources :itens_pedidos
       resources :avaliacoes
       resources :enderecos

@@ -15,6 +15,12 @@ class Api::V1::EntregadoresController < ApplicationController
     }
   end
 
+  def listar_entregadores
+    restaurante = Restaurante.find(current_user.restaurante_ativo)
+    @entregadores = Entregador.where(restaurante_id: restaurante.id)
+    render json: @entregadores.as_json
+  end
+
   def show
     render json: @entregador.as_json
   end
