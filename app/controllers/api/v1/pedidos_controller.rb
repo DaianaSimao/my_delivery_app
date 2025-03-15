@@ -83,7 +83,7 @@ class Api::V1::PedidosController < ApplicationController
     if params[:pedido_id].present?
       @pedidos = @pedidos.where(id: params[:pedido_id])
     end
-  
+
     if params[:status].present?
       @pedidos = @pedidos.where(status: params[:status])
     end

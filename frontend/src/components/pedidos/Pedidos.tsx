@@ -28,11 +28,20 @@ const Pedidos: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
+  const [statusSelecionados, setStatusSelecionados] = useState<string[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleStatusChange = (status: string) => {
+    setStatusSelecionados((prev) =>
+      prev.includes(status)
+        ? prev.filter((s) => s !== status) // Remove o status se já estiver selecionado
+        : [...prev, status] // Adiciona o status se não estiver selecionado
+    );
   };
 
   useEffect(() => {
@@ -51,9 +60,10 @@ const Pedidos: React.FC = () => {
             cliente_nome: searchTerm,
             data_inicio: dataInicio,
             data_fim: dataFim,
+            status: statusSelecionados,
           }
         });
-
+        console.log(statusSelecionados);
         setPedidos(response.data.data);
         setTotalPages(response.data.meta.total_pages);
         setTotalPedidos(response.data.meta.total_count);
@@ -66,7 +76,7 @@ const Pedidos: React.FC = () => {
     };
 
     fetchPedidos();
-  }, [currentPage, perPage, searchTerm, dataInicio, dataFim]);
+  }, [currentPage, perPage, searchTerm, dataInicio, dataFim, statusSelecionados]);
 
   if (loading) {
     return <div className="text-center py-8 mt-5">Carregando...</div>;
@@ -86,16 +96,6 @@ const Pedidos: React.FC = () => {
                 <span className="text-gray-500">Todos os pedidos internos: </span>
                 <span className="dark:text-white"> {totalPedidos} </span>
               </h5>
-              <button type="button" className="group" data-tooltip-target="results-tooltip">
-                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <span className="sr-only">Mais informações</span>
-              </button>
-              <div id="results-tooltip" role="tooltip" className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                Mostrando 1-{pedidos.length} de {pedidos.length} resultados
-                <div className="tooltip-arrow" data-popper-arrow=""></div>
-              </div>
             </div>
           </div>
           <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700">
@@ -138,6 +138,51 @@ const Pedidos: React.FC = () => {
                 onChange={(e) => setDataFim(e.target.value)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               />
+            </div>
+            <div className="flex space-x-2">
+              <div className="relative">
+                <details className="group">
+                  <summary className="flex items-center justify-between px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer dark:bg-gray-700 dark:border-gray-600">
+                    <span className="text-sm text-gray-900 dark:text-white">Filtrar por Status</span>
+                    <svg
+                      className="w-4 h-4 ml-2 transition-transform transform group-open:rotate-180"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div className="fixed z-50 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg dark:bg-gray-700 dark:border-gray-600">
+                    <div className="p-2 space-y-2">
+                      {["Expedido", "Em Análise", "Recebido", "Finalizado", "Cancelado", "Em Preparação"].map((status) => (
+                        <div key={status} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id={`status-${status}`}
+                            value={status}
+                            checked={statusSelecionados.includes(status)}
+                            onChange={() => handleStatusChange(status)}
+                            className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            htmlFor={`status-${status}`}
+                            className="ml-2 text-sm text-gray-900 dark:text-gray-300"
+                          >
+                            {status}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </details>
+              </div>
             </div>
           </div>
           <div className="overflow-x-auto">
