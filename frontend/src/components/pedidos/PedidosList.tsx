@@ -1,6 +1,6 @@
-// src/components/pedidos/PedidosList.tsx
 import React, { useState, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
+import { useNavigate } from 'react-router-dom'; // Importe o useNavigate
 import PedidoColumn from './PedidoColumn';
 import usePedidos from '../../hooks/usePedidos';
 import api from '../../services/api';
@@ -34,6 +34,8 @@ const PedidosList: React.FC = () => {
     Em_Preparação: [] as Pedido[],
     Expedido: [] as Pedido[],
   });
+
+  const navigate = useNavigate(); // Hook para navegação
 
   // Inscreva-se no canal de pedidos
   useEffect(() => {
@@ -208,6 +210,21 @@ const PedidosList: React.FC = () => {
             onChange={(e) => setSearchPedidoId(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
           />
+        </div>
+        {/* Adicionando os botões aqui */}
+        <div className="flex space-x-2">
+          <button
+            onClick={() => navigate('/entregas')} // Navega para a tela de entregas
+            className="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            Ver Entregas
+          </button>
+          <button
+            onClick={() => navigate('/pedidos/listar_pedidos')} // Navega para a tela de pedidos internos
+            className="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+          >
+            Pedidos Internos
+          </button>
         </div>
       </div>
 
