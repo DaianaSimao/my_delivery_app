@@ -1,5 +1,5 @@
 class Api::V1::ClientesController < ApplicationController
-  before_action :set_cliente, only: %i[show update buscar_cliente]
+  before_action :set_cliente, only: %i[show update buscar_cliente carregar_cliente]
   skip_before_action :authenticate_user!
   def index
     @cliente = Cliente.find_by(telefone: params[:whatsapp])
@@ -16,6 +16,21 @@ class Api::V1::ClientesController < ApplicationController
     render json: @cliente.as_json
   end
 
+  def carregar_cliente
+    render json: @cliente.as_json(
+      only: %i[id nome telefone endereco_id sobrenome],
+      include: {
+        endereco: {
+          only: %i[id rua numero bairro cidade estado cep regiao_entrega ponto_referencia tipo complemento],
+          include: {
+            regioes_entrega: {
+              only: %i[id bairro cidade estado]
+            }
+          }
+        }
+      }
+    )
+  end
   def buscar_cliente
     render json: @cliente.as_json
   end

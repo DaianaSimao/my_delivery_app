@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PedidoModal from './PedidoModal'; // Importe o modal
+import { useNavigate } from 'react-router-dom'; // Importe o hook de navegação
 
 interface Pedido {
   id: number;
@@ -67,7 +68,7 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
-
+  const navigate = useNavigate();
   const statusOptions = ['Recebido', 'Em Análise', 'Em Preparação', 'Expedido'];
 
   // Verifica se o pedido está definido
@@ -82,6 +83,12 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
       month: 'long',
       year: 'numeric',
     });
+  };
+
+  const handleEditCliente = () => {
+    if (pedido.cliente) {
+      navigate(`/clientes/${pedido.cliente.id}/editar`); // Navega para a página de edição do cliente
+    }
   };
 
   return (
@@ -166,17 +173,16 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
                   Cancelar
                 </button>
 
-                {/* Editar */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(pedido.id);
+                    handleEditCliente();
                   }}
                   className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  Editar
+                  >
+                  Editar Cliente
                 </button>
-              </div>
+                </div>
             </div>
           )}
         </div>

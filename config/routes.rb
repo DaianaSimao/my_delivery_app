@@ -40,7 +40,11 @@ Rails.application.routes.draw do
       resources :itens_pedidos
       resources :avaliacoes
       resources :enderecos
-      resources :clientes
+      resources :clientes do
+        collection do
+          get "carregar_cliente/:id", to: "clientes#carregar_cliente"
+        end
+      end
       resources :produto_acompanhamentos
       resources :item_acompanhamentos
       resources :acompanhamentos

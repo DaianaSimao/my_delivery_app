@@ -22,10 +22,10 @@ class Api::V1::PedidosController < ApplicationController
       data: @pedidos.as_json(
         include: {
           cliente: {
-            only: %i[id nome telefone endereco_id],
+            only: %i[id nome telefone endereco_id sobrenome],
             include: {
               endereco: {
-                only: %i[id rua numero bairro cidade estado cep]
+                only: %i[id rua numero bairro cidade estado cep regiao_entrega_id ponto_referencia tipo complemento]
               }
             }
           },
