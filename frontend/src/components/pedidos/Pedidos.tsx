@@ -28,6 +28,7 @@ const Pedidos: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
+  const [searchPedidoId, setSearchPedidoId] = useState("");
   const [statusSelecionados, setStatusSelecionados] = useState<string[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
@@ -39,8 +40,8 @@ const Pedidos: React.FC = () => {
   const handleStatusChange = (status: string) => {
     setStatusSelecionados((prev) =>
       prev.includes(status)
-        ? prev.filter((s) => s !== status) // Remove o status se já estiver selecionado
-        : [...prev, status] // Adiciona o status se não estiver selecionado
+        ? prev.filter((s) => s !== status)
+        : [...prev, status]
     );
   };
 
@@ -61,6 +62,7 @@ const Pedidos: React.FC = () => {
             data_inicio: dataInicio,
             data_fim: dataFim,
             status: statusSelecionados,
+            pedido_id: searchPedidoId
           }
         });
 
@@ -76,7 +78,7 @@ const Pedidos: React.FC = () => {
     };
 
     fetchPedidos();
-  }, [currentPage, perPage, searchTerm, dataInicio, dataFim, statusSelecionados]);
+  }, [currentPage, perPage, searchTerm, searchPedidoId, dataInicio, dataFim, statusSelecionados]);
 
   if (loading) {
     return <div className="text-center py-8 mt-5">Carregando...</div>;
@@ -121,6 +123,15 @@ const Pedidos: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
+                </div>
+                <div className="w-full md:w-1/2 ml-2">
+                  <input
+                    type="text"
+                    placeholder="ID do Pedido"
+                    value={searchPedidoId}
+                    onChange={(e) => setSearchPedidoId(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   />
                 </div>
               </form>

@@ -10,7 +10,7 @@ class Pedido < ApplicationRecord
   accepts_nested_attributes_for :pagamento
   accepts_nested_attributes_for :itens_pedidos, allow_destroy: true
 
-  after_update :create_entrega
+  after_update :criar_entrega
   after_create :broadcast_new_order, :ajusta_metodo_pagamento
   after_update :atualiza_status, if: -> { saved_change_to_status? }
 
@@ -22,7 +22,7 @@ class Pedido < ApplicationRecord
     self.update_columns(forma_pagamento: self.pagamento.metodo)
   end
 
-  def create_entrega
+  def criar_entrega
     if self.status == "Expedido"
       Entrega.create(pedido_id: self.id, taxa_entrega: cliente.endereco.regioes_entrega.taxa_entrega)
     end
