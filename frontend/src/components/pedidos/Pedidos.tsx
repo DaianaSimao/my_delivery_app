@@ -26,6 +26,8 @@ const Pedidos: React.FC = () => {
   const [perPage] = useState(10);
   const [totalPedidos, setTotalPedidos] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
@@ -47,6 +49,8 @@ const Pedidos: React.FC = () => {
             page: currentPage,
             per_page: perPage,
             cliente_nome: searchTerm,
+            data_inicio: dataInicio,
+            data_fim: dataFim,
           }
         });
 
@@ -62,7 +66,7 @@ const Pedidos: React.FC = () => {
     };
 
     fetchPedidos();
-  }, [currentPage, perPage, searchTerm]);
+  }, [currentPage, perPage, searchTerm, dataInicio, dataFim]);
 
   if (loading) {
     return <div className="text-center py-8 mt-5">Carregando...</div>;
@@ -99,8 +103,8 @@ const Pedidos: React.FC = () => {
               <form
                 className="flex items-center"
                 onSubmit={(e) => {
-                  e.preventDefault(); // Evita o recarregamento da página
-                  handlePageChange(1); // Volta para a primeira página ao buscar
+                  e.preventDefault();
+                  handlePageChange(1);
                 }}
               >
                 <label htmlFor="simple-search" className="sr-only">Buscar</label>
@@ -120,6 +124,20 @@ const Pedidos: React.FC = () => {
                   />
                 </div>
               </form>
+            </div>
+            <div className="flex space-x-2">
+              <input
+                type="date"
+                value={dataInicio}
+                onChange={(e) => setDataInicio(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+              <input
+                type="date"
+                value={dataFim}
+                onChange={(e) => setDataFim(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
             </div>
           </div>
           <div className="overflow-x-auto">

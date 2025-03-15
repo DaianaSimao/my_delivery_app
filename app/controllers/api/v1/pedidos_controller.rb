@@ -71,8 +71,11 @@ class Api::V1::PedidosController < ApplicationController
   def listar_pedidos
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
 
-    @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).all.order(created_at: :desc).where(restaurante_id: restaurante.id)
+    @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento)
+                      .where(restaurante_id: restaurante.id)
+                      .order(created_at: :desc)
 
+    # Filtros
     if params[:cliente_nome].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:cliente_nome]}%")
     end
@@ -80,11 +83,19 @@ class Api::V1::PedidosController < ApplicationController
     if params[:pedido_id].present?
       @pedidos = @pedidos.where(id: params[:pedido_id])
     end
-
+  
     if params[:status].present?
       @pedidos = @pedidos.where(status: params[:status])
     end
 
+    # Filtro de data (range)
+    if params[:data_inicio].present? && params[:data_fim].present?
+      data_inicio = Date.parse(params[:data_inicio])
+      data_fim = Date.parse(params[:data_fim]).end_of_day
+      @pedidos = @pedidos.where(created_at: data_inicio..data_fim)
+    end
+
+    # Paginação
     @pedidos = @pedidos.page(params[:page] || 1).per(params[:per_page] || 10)
 
     render json: {
