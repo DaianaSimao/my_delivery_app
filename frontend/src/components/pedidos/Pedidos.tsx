@@ -63,7 +63,7 @@ const Pedidos: React.FC = () => {
             status: statusSelecionados,
           }
         });
-        console.log(statusSelecionados);
+
         setPedidos(response.data.data);
         setTotalPages(response.data.meta.total_pages);
         setTotalPedidos(response.data.meta.total_count);
@@ -89,7 +89,7 @@ const Pedidos: React.FC = () => {
   return (
     <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased mt-5 w-full">
       <div className="mx-auto max-w-screen-2xl px-4 lg:px-12 mt-7">
-        <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-visible">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
             <div className="flex-1 flex items-center space-x-2">
               <h5>
@@ -139,49 +139,51 @@ const Pedidos: React.FC = () => {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               />
             </div>
-            <div className="flex space-x-2">
-              <div className="relative">
-                <details className="group">
-                  <summary className="flex items-center justify-between px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer dark:bg-gray-700 dark:border-gray-600">
-                    <span className="text-sm text-gray-900 dark:text-white">Filtrar por Status</span>
-                    <svg
-                      className="w-4 h-4 ml-2 transition-transform transform group-open:rotate-180"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </summary>
-                  <div className="fixed z-50 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg dark:bg-gray-700 dark:border-gray-600">
-                    <div className="p-2 space-y-2">
-                      {["Expedido", "Em Análise", "Recebido", "Finalizado", "Cancelado", "Em Preparação"].map((status) => (
-                        <div key={status} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`status-${status}`}
-                            value={status}
-                            checked={statusSelecionados.includes(status)}
-                            onChange={() => handleStatusChange(status)}
-                            className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          />
-                          <label
-                            htmlFor={`status-${status}`}
-                            className="ml-2 text-sm text-gray-900 dark:text-gray-300"
-                          >
-                            {status}
-                          </label>
-                        </div>
-                      ))}
+            <div className="relative overflow-visible"> {/* Contêiner externo */}
+              <div className="flex space-x-2">
+                <div className="relative">
+                  <details className="group">
+                    <summary className="flex items-center justify-between px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer dark:bg-gray-700 dark:border-gray-600">
+                      <span className="text-sm text-gray-900 dark:text-white">Filtrar por Status</span>
+                      <svg
+                        className="w-4 h-4 ml-2 transition-transform transform group-open:rotate-180"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </summary>
+                    <div className="absolute z-50 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg dark:bg-gray-700 dark:border-gray-600">
+                      <div className="max-h-48 overflow-y-auto p-2 space-y-2"> {/* Scroll interno */}
+                        {["Expedido", "Em Análise", "Recebido", "Finalizado", "Cancelado", "Em Preparação"].map((status) => (
+                          <div key={status} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`status-${status}`}
+                              value={status}
+                              checked={statusSelecionados.includes(status)}
+                              onChange={() => handleStatusChange(status)}
+                              className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            />
+                            <label
+                              htmlFor={`status-${status}`}
+                              className="ml-2 text-sm text-gray-900 dark:text-gray-300"
+                            >
+                              {status}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </details>
+                  </details>
+                </div>
               </div>
             </div>
           </div>
