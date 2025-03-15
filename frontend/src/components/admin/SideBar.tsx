@@ -132,7 +132,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
                 <img
                   src={dashboardIcon}
                   alt="Ícone do pagamento"
-                  className="h-8 w-auto mr-3 text-4xl" 
+                  className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="ms-3">Dashboard</span>
               </a>
@@ -145,7 +145,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
                 <img
                   src={produtoIcon}
                   alt="Ícone do pagamento"
-                  className="h-8 w-auto mr-3 text-4xl" 
+                  className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Produtos</span>
               </a>
@@ -155,7 +155,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               <img
                   src={pedidoIcon}
                   alt="Ícone do pagamento"
-                  className="h-8 w-auto mr-3 text-4xl" 
+                  className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Pedidos</span>
               </a>
@@ -168,7 +168,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
                 <img
                   src={entregaIcon}
                   alt="Ícone do pagamento"
-                  className="h-8 w-auto mr-3 text-4xl" 
+                  className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Entregas</span>
               </a>
@@ -181,7 +181,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
                 <img
                   src={restauranteIcon}
                   alt="Ícone do pagamento"
-                  className="h-8 w-auto mr-3 text-4xl" 
+                  className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Restaurantes</span>
               </a>
@@ -194,7 +194,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
                 <img
                   src={entregadorIcon}
                   alt="Ícone do pagamento"
-                  className="h-8 w-auto mr-3 text-4xl" 
+                  className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Entregadores</span>
               </a>

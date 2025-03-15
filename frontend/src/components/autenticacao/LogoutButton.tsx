@@ -58,7 +58,7 @@ const LogoutButton: React.FC = () => {
             <img
               src={logoutIcon}
               alt="Ícone do pagamento"
-              className="h-8 w-auto mr-3 text-4xl" 
+              className="h-6 w-auto mr-1 text-4xl" 
             />
             <span className="flex-1 ms-3 whitespace-nowrap">Logout</span>
           </a>
