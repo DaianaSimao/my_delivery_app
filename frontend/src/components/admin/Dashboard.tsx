@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import {
   Menu,
@@ -15,6 +16,7 @@ import salesIcon from "/icons/sales.svg";
 import ordersIcon from "/icons/orders.svg";
 import statsIcon from "/icons/stats.svg";
 import deliveryIcon from "/icons/delivery.svg";
+import api from "../../services/api";
 
 interface MetricCardPropsType {
   icon: string;
@@ -160,152 +162,161 @@ const chartsConfig = {
   },
 };
 
-// Dados dos gráficos
-const salesChart = {
-  type: "area",
-  height: 220,
-  series: [
-    {
-      name: "Vendas",
-      data: [50, 40, 300, 320, 500, 350, 200],
-    },
-  ],
-  options: {
-    ...chartsConfig,
-    colors: ["#388e3c"], // Verde para vendas
-    stroke: {
-      lineCap: "round",
-      width: 2,
-    },
-    fill: {
-      opacity: 0,
-      type: "outline",
-    },
-    xaxis: {
-      ...chartsConfig.xaxis,
-      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    },
-  },
-};
-
-const ordersChart = {
-  type: "area",
-  height: 220,
-  series: [
-    {
-      name: "Pedidos",
-      data: [30, 50, 200, 250, 400, 300, 150],
-    },
-  ],
-  options: {
-    ...chartsConfig,
-    colors: ["#2196F3"], // Azul para pedidos
-    stroke: {
-      lineCap: "round",
-      width: 2,
-    },
-    fill: {
-      opacity: 0,
-      type: "outline",
-    },
-    xaxis: {
-      ...chartsConfig.xaxis,
-      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    },
-  },
-};
-
-const dailySalesChart = {
-  type: "bar",
-  height: 220,
-  series: [
-    {
-      name: "Vendas do Dia",
-      data: [50, 40, 300, 320, 500, 350, 200],
-    },
-  ],
-  options: {
-    ...chartsConfig,
-    colors: ["#4CAF50"], // Verde para vendas do dia
-    xaxis: {
-      ...chartsConfig.xaxis,
-      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    },
-  },
-};
-
-const dailyOrdersChart = {
-  type: "bar",
-  height: 220,
-  series: [
-    {
-      name: "Pedidos do Dia",
-      data: [30, 50, 200, 250, 400, 300, 150],
-    },
-  ],
-  options: {
-    ...chartsConfig,
-    colors: ["#2196F3"], // Azul para pedidos do dia
-    xaxis: {
-      ...chartsConfig.xaxis,
-      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    },
-  },
-};
-
-// Dados dos cards de métricas
-const metricCardsData = [
-  {
-    icon: salesIcon,
-    title: "Vendas Hoje",
-    value: "R$ 2.500",
-    description: "+12% em relação a ontem",
-  },
-  {
-    icon: ordersIcon,
-    title: "Pedidos Hoje",
-    value: "120",
-    description: "+8% em relação a ontem",
-  },
-  {
-    icon: statsIcon,
-    title: "Ticket Médio",
-    value: "R$ 45",
-    description: "+5% em relação a ontem",
-  },
-  {
-    icon: deliveryIcon,
-    title: "Entregas Hoje",
-    value: "90",
-    description: "+10% em relação a ontem",
-  },
-];
-
-// Dados dos gráficos principais
-const chartCardsData = [
-  {
-    title: "Vendas Semanais",
-    value: "R$ 15.000",
-    chart: salesChart,
-  },
-  {
-    title: "Pedidos Semanais",
-    value: "850",
-    chart: ordersChart,
-  },
-  {
-    title: "Vendas do Dia",
-    value: "R$ 2.500",
-    chart: dailySalesChart,
-  },
-  {
-    title: "Pedidos do Dia",
-    value: "120",
-    chart: dailyOrdersChart,
-  },
-];
-
 function Dashboard() {
+  const [dashboardData, setDashboardData] = useState({
+    vendas_do_dia: 0,
+    crescimento_vendas: 0,
+    pedidos_total: 0,
+    crescimento_pedidos: 0,
+    entregas_total: 0,
+    crescimento_entregas: 0,
+    ticket_medio: 0,
+    crescimento_ticket_medio: 0,
+    vendas_semanais: [0, 0, 0, 0, 0, 0, 0],
+    pedidos_semanais: [0, 0, 0, 0, 0, 0, 0],
+    entregas_semanais: [0, 0, 0, 0, 0, 0, 0],
+  });
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Token de autenticação não encontrado.");
+        }
+
+        const response = await api.get("/api/v1/relatorios/dashboard");
+        setDashboardData(response.data.data);
+      } catch (err) {
+        console.error("Erro ao carregar dados do dashboard:", err);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // Dados dos cards de métricas
+  const metricCardsData = [
+    {
+      icon: salesIcon,
+      title: "Vendas Hoje",
+      value: `R$ ${dashboardData.vendas_do_dia.toFixed(2)}`,
+      description: `${dashboardData.crescimento_vendas}% em relação a ontem`,
+    },
+    {
+      icon: ordersIcon,
+      title: "Pedidos Hoje",
+      value: dashboardData.pedidos_total.toString(),
+      description: `${dashboardData.crescimento_pedidos}% em relação a ontem`,
+    },
+    {
+      icon: statsIcon,
+      title: "Ticket Médio",
+      value: `R$ ${dashboardData.ticket_medio.toFixed(2)}`,
+      description: `${dashboardData.crescimento_ticket_medio}% em relação a ontem`,
+    },
+    {
+      icon: deliveryIcon,
+      title: "Entregas Hoje",
+      value: dashboardData.entregas_total.toString(),
+      description: `${dashboardData.crescimento_entregas}% em relação a ontem`,
+    },
+  ];
+
+  // Dados dos gráficos principais
+  const chartCardsData = [
+    {
+      title: "Vendas Semanais",
+      value: `R$ ${dashboardData.vendas_semanais.reduce((a, b) => a + b, 0).toFixed(2)}`,
+      chart: {
+        type: "area",
+        height: 220,
+        series: [
+          {
+            name: "Vendas",
+            data: dashboardData.vendas_semanais,
+          },
+        ],
+        options: {
+          ...chartsConfig,
+          colors: ["#388e3c"], // Verde para vendas
+          stroke: {
+            lineCap: "round",
+            width: 2,
+          },
+          fill: {
+            opacity: 0,
+            type: "outline",
+          },
+          xaxis: {
+            ...chartsConfig.xaxis,
+            categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+          },
+        },
+      },
+    },
+    {
+      title: "Pedidos Semanais",
+      value: dashboardData.pedidos_semanais.reduce((a, b) => a + b, 0).toString(),
+      chart: {
+        type: "area",
+        height: 220,
+        series: [
+          {
+            name: "Pedidos",
+            data: dashboardData.pedidos_semanais,
+          },
+        ],
+        options: {
+          ...chartsConfig,
+          colors: ["#2196F3"], // Azul para pedidos
+          stroke: {
+            lineCap: "round",
+            width: 2,
+          },
+          fill: {
+            opacity: 0,
+            type: "outline",
+          },
+          xaxis: {
+            ...chartsConfig.xaxis,
+            categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+          },
+        },
+      },
+    },
+    {
+      title: "Entregas Semanais",
+      value: dashboardData.entregas_semanais.reduce((a, b) => a + b, 0).toString(),
+      chart: {
+        type: "area",
+        height: 220,
+        series: [
+          {
+            name: "Entregas",
+            data: dashboardData.entregas_semanais,
+          },
+        ],
+        options: {
+          ...chartsConfig,
+          colors: ["#FF9800"], // Laranja para entregas
+          stroke: {
+            lineCap: "round",
+            width: 2,
+          },
+          fill: {
+            opacity: 0,
+            type: "outline",
+          },
+          xaxis: {
+            ...chartsConfig.xaxis,
+            categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+          },
+        },
+      },
+    },
+  ];
+
   return (
     <section className="px-8 py-10 bg-gray-50 dark:bg-gray-900 mt-10">
       <div className="grid xl:grid-cols-5 lg:grid-cols-4 grid-cols-1 lg:gap-x-5 gap-y-5">
