@@ -27,13 +27,7 @@ import EntregadoresList from "./components/entregadores/EntregadoresList";
 import EntregadorDetails from "./components/entregadores/EntregadorDetails";
 import EntregadoresForm from "./components/entregadores/EntregadoresForm";
 import EntregadoresEditForm from "./components/entregadores/EntregadoresEditForm";
-
-const restaurantInfo = {
-  name: "Sushi Express",
-  openingHours: "Seg-Dom: 11:30 - 23:00",
-  minimumOrder: 30,
-  profileUrl: "#",
-};
+import Pedidos from "./components/pedidos/Pedidos";
 
 const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -77,7 +71,6 @@ const AppContent: React.FC = () => {
           <Route
             element={
               <AuthenticatedLayout
-                restaurantInfo={restaurantInfo}
                 isDarkMode={isDarkMode}
                 onToggleDarkMode={toggleDarkMode}
               />
@@ -92,6 +85,7 @@ const AppContent: React.FC = () => {
             <Route path="/acompanhamentos/new" element={<AcompanhamentosForm />} />
             <Route path="/acompanhamentos/:id/editar" element={<AcompanhamentosEditForm />} />
             <Route path="/pedidos" element={<PedidosList />} />
+            <Route path="/pedidos/listar_pedidos" element={<Pedidos />} />
             <Route path="/entregas" element={<EntregasList />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/restaurantes" element={<Restaurantes />} />

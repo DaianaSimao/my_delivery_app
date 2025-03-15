@@ -20,7 +20,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :restaurantes
       resources :produtos
-      resources :pedidos
+      resources :pedidos do
+        collection do
+          get "listar_pedidos"
+        end
+      end
       resources :pagamentorons
       resources :entregas
       resources :entregadores do

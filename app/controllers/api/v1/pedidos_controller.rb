@@ -68,6 +68,79 @@ class Api::V1::PedidosController < ApplicationController
     }
   end
 
+  def listar_pedidos
+    restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
+
+    @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).all.order(created_at: :desc).where(restaurante_id: restaurante.id)
+
+    if params[:cliente_nome].present?
+      @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:cliente_nome]}%")
+    end
+
+    if params[:pedido_id].present?
+      @pedidos = @pedidos.where(id: params[:pedido_id])
+    end
+
+    if params[:status].present?
+      @pedidos = @pedidos.where(status: params[:status])
+    end
+
+    @pedidos = @pedidos.page(params[:page] || 1).per(params[:per_page] || 10)
+
+    render json: {
+      data: @pedidos.as_json(
+        include: {
+          cliente: {
+            only: %i[id nome telefone endereco_id],
+            include: {
+              endereco: {
+                only: %i[id rua numero bairro cidade estado cep]
+              }
+            }
+          },
+          itens_pedidos: {
+            only: %i[id quantidade preco_total],
+            include: {
+              produto: {
+                only: %i[id nome preco],
+                include: {
+                  acompanhamentos: {
+                    only: %i[id nome quantidade_maxima],
+                    include: {
+                      item_acompanhamentos: {
+                        only: %i[id nome preco]
+                      }
+                    }
+                  }
+                }
+              },
+              acompanhamentos_pedidos: {
+                only: %i[quantidade preco_unitario],
+                include: {
+                  item_acompanhamento: {
+                    only: %i[id nome quantidade_maxima],
+                    include: {
+                      acompanhamento: {
+                        only: %i[id nome quantidade_maxima]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          pagamento: {
+            only: %i[id metodo status valor]
+          }
+        }
+      ),
+      meta: {
+        total_pages: @pedidos.total_pages,
+        total_count: @pedidos.total_count,
+        current_page: @pedidos.current_page
+      }
+    }
+  end
   def show
     pedido = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(params[:id])
 
