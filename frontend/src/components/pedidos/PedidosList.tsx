@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
-import { useNavigate } from 'react-router-dom'; // Importe o useNavigate
+import { useNavigate } from 'react-router-dom';
 import PedidoColumn from './PedidoColumn';
 import usePedidos from '../../hooks/usePedidos';
 import api from '../../services/api';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { createConsumer } from '@rails/actioncable';
 
 interface Pedido {
@@ -35,9 +35,8 @@ const PedidosList: React.FC = () => {
     Expedido: [] as Pedido[],
   });
 
-  const navigate = useNavigate(); // Hook para navegação
+  const navigate = useNavigate();
 
-  // Inscreva-se no canal de pedidos
   useEffect(() => {
     const token = localStorage.getItem('token');
     const restauranteId = localStorage.getItem('restauranteId');
@@ -53,9 +52,8 @@ const PedidosList: React.FC = () => {
       { channel: 'PedidosChannel', restaurante_id: restauranteId },
       {
         received: (message: { type: string; pedido: Pedido }) => {
-          console.log('Mensagem recebida:', message); // Log da mensagem recebida
+          console.log('Mensagem recebida:', message);
           if (message.type === 'NEW_PEDIDO') {
-            // Atualiza o estado da lista de pedidos
             setData((prevData) => ({
               ...prevData,
               Recebido: [message.pedido, ...prevData.Recebido],
@@ -71,7 +69,6 @@ const PedidosList: React.FC = () => {
     };
   }, []);
 
-  // Filtra os pedidos com base no termo de busca
   const filterPedidos = (pedidos: Pedido[], term: string, pedidoId: string) => {
     return pedidos.filter((pedido) => {
       const matchesNome = pedido.cliente?.nome.toLowerCase().includes(term.toLowerCase());
@@ -80,7 +77,6 @@ const PedidosList: React.FC = () => {
     });
   };
 
-  // Atualiza os pedidos filtrados
   useEffect(() => {
     if (pedidos.length > 0) {
       const filteredPedidos = {
@@ -133,9 +129,52 @@ const PedidosList: React.FC = () => {
   };
 
   const handleCancel = async (pedidoId: number) => {
-    try {
-      const response = await api.delete(`/api/v1/pedidos/${pedidoId}`);
+    const confirmCancel = await toast.promise(
+      new Promise((resolve, reject) => {
+        toast(
+          (t) => (
+            <div>
+              <p>Tem certeza que deseja cancelar o pedido?</p>
+              <div className="flex justify-end mt-2">
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    resolve(true);
+                  }}
+                  className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                >
+                  Sim
+                </button>
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    resolve(false);
+                  }}
+                  className="bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                  Não
+                </button>
+              </div>
+            </div>
+          ),
+          {
+            duration: Infinity,
+          }
+        );
+      }),
+      {
+        loading: 'Cancelando pedido...',
+        success: 'Pedido cancelado com sucesso!',
+        error: 'Erro ao cancelar o pedido.',
+      }
+    );
 
+    if (!confirmCancel) return;
+
+    try {
+      const response = await api.put(`/api/v1/pedidos/${pedidoId}`, {
+        status: "Cancelado",
+      });
       if (response.status !== 200) {
         throw new Error('Erro ao cancelar o pedido');
       }
@@ -148,7 +187,6 @@ const PedidosList: React.FC = () => {
         return updatedData;
       });
 
-      toast.success('Pedido cancelado com sucesso!');
     } catch (error) {
       console.error('Erro ao cancelar o pedido:', error);
       toast.error('Erro ao cancelar o pedido.');
@@ -164,6 +202,7 @@ const PedidosList: React.FC = () => {
 
   return (
     <div className="p-4">
+      <Toaster />
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
         <div className="w-full md:w-1/2">
           <form
@@ -211,16 +250,15 @@ const PedidosList: React.FC = () => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
           />
         </div>
-        {/* Adicionando os botões aqui */}
         <div className="flex space-x-2">
           <button
-            onClick={() => navigate('/entregas')} // Navega para a tela de entregas
+            onClick={() => navigate('/entregas')}
             className="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
             Ver Entregas
           </button>
           <button
-            onClick={() => navigate('/pedidos/listar_pedidos')} // Navega para a tela de pedidos internos
+            onClick={() => navigate('/pedidos/listar_pedidos')}
             className="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
           >
             Pedidos Internos
