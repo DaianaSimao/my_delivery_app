@@ -256,7 +256,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       metodo: selectedPayment,
       status: "Pendente",
       valor: total,
-      troco: selectedPayment === "cash" ? parseFloat(trocoValue) || 0 : 0,
+      troco: selectedPayment === "cash" ? parseFloat(trocoValue) - total : 0,
     };
 
     // Estrutura o pedido completo
@@ -264,7 +264,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       restaurante_id: restauranteId,
       status: "Recebido",
       forma_pagamento: selectedPayment,
-      troco: pagamento.troco,
+      troco: pagamento.troco - total ,
       cliente_id: clienteId,
       itens_pedidos_attributes: itensPedidos,
       pagamento_attributes: pagamento,
