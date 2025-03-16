@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { fetchClienteByWhatsApp, criarCliente } from '../services/api';
+import { fetchClienteByWhatsApp } from '../services/api';
 
 interface Cliente {
   id: string;

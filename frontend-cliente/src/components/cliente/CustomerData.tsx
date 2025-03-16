@@ -31,6 +31,15 @@ interface CustomerDataProps {
   onBack: () => void;
 }
 
+interface Cliente {
+  id: any;
+  nome?: string; // Propriedades opcionais
+  telefone?: string;
+  endereco_id?: number;
+  sobrenome?: string;
+  // Outras propriedades do cliente...
+}
+
 const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   const { onCheckout } = useCart();
   const [darkMode, setDarkMode] = useState(() => {
@@ -165,9 +174,13 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
   const handleSubmitAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const clienteId = localStorage.getItem('clienteId');
-    const cliente = clienteEncontrado || (clienteId ? { id: clienteId } : null);
+
+    const cliente: Cliente | null = clienteEncontrado && 'nome' in clienteEncontrado
+      ? clienteEncontrado
+      : clienteId
+      ? { id: clienteId } // Cria um objeto Cliente básico com apenas o ID
+      : null;
 
     // Verifica se o cliente foi encontrado ou criado
     if (!cliente) {
@@ -188,17 +201,14 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     };
 
     try {
-      // Se o cliente já tem um endereco_id, atualiza o endereço
-      if ('endereco_id' in cliente) {
+      if (cliente.endereco_id) {
         await atualizarEndereco(cliente.endereco_id, enderecoData);
         toast.success('Endereço atualizado com sucesso!');
       } else {
-        // Se o cliente não tem um endereco_id, cria um novo endereço
         const endereco = await criarEndereco(enderecoData);
         if (!endereco) {
           throw new Error('Erro ao salvar endereço.');
         } else {
-          // Atualiza o cliente com o ID do endereço
           await atualizarEnderecoCliente(cliente.id, { endereco_id: endereco.id });
           toast.success('Endereço salvo com sucesso!');
         }

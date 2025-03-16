@@ -8,7 +8,7 @@ class Api::V1::PedidosController < ApplicationController
     fim_intervalo = (hoje - 3.hours).end_of_day + 3.hours
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
 
-    @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).all.order(updated_at: :desc).where(restaurante_id: restaurante.id, created_at: inicio_intervalo..fim_intervalo)
+    @pedidos = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).all.order(created_at: :desc).where(restaurante_id: restaurante.id, created_at: inicio_intervalo..fim_intervalo)
 
     if params[:search].present?
       @pedidos = @pedidos.joins(:cliente).where("clientes.nome ILIKE ?", "%#{params[:search]}%")
