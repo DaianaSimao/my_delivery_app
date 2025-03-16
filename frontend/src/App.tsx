@@ -30,6 +30,7 @@ import EntregadoresEditForm from "./components/entregadores/EntregadoresEditForm
 import Pedidos from "./components/pedidos/Pedidos";
 import ClienteForm from "./components/pedidos/ClienteForm";
 import ItensForm from "./components/pedidos/ItensForm";
+import PagamentoForm from "./components/pedidos/PagamentoForm";
 
 const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -100,6 +101,7 @@ const AppContent: React.FC = () => {
             <Route path="/entregadores/:id/editar" element={<EntregadoresEditForm />} />
             <Route path="/clientes/:id/editar" element={<ClienteForm />} />
             <Route path="/pedidos/:id/editar-itens" element={<ItensForm />} />
+            <Route path="/pedidos/:id/editar-pagamento" element={<PagamentoForm />} />
             <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>

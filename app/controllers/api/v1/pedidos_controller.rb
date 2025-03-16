@@ -1,5 +1,5 @@
 class Api::V1::PedidosController < ApplicationController
-  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens]
+  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens pagamento atualizar_pagamento]
   skip_before_action :authenticate_user!, only: %i[create]
 
   def index
@@ -196,6 +196,12 @@ class Api::V1::PedidosController < ApplicationController
   rescue => e
     render json: { error: "Erro ao atualizar pedido: #{e.message}" }, status: :internal_server_error
   end
+
+  def pagamento
+    pagamento = @pedido.pagamento
+    render json: pagamento.as_json
+  end
+
   def show
     pedido = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(params[:id])
 

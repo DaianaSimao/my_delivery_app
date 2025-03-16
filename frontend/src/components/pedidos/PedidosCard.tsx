@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PedidoModal from './PedidoModal'; // Importe o modal
 import { useNavigate } from 'react-router-dom'; // Importe o hook de navegação
+import { toast } from 'react-hot-toast';
 
 interface Pedido {
   id: number;
@@ -14,6 +15,7 @@ interface Pedido {
   itens_pedidos: Array<{
     produto: {
       nome: string;
+      preco: number;
       acompanhamentos?: Array<{
         id: number;
         nome: string;
@@ -50,7 +52,8 @@ interface Pedido {
     estado: string;
     cep: string;
   };
-  pagamento?: {
+  pagamento: {
+    id: number;
     metodo: string;
     status: string;
     valor: string;
@@ -188,6 +191,19 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
                 >
                   Editar Itens
                 </button>
+                <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (pedido.pagamento) {
+                    navigate(`/pedidos/${pedido.id}/editar-pagamento`);
+                  } else {
+                    toast.error("Pagamento não encontrado para este pedido.");
+                  }
+                }}
+                className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+              >
+                Editar Pagamento
+              </button>
               </div>
             </div>
           )}

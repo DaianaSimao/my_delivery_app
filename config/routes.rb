@@ -32,9 +32,10 @@ Rails.application.routes.draw do
         member do
           get "itens", to: "pedidos#itens"
           put "atualizar_itens", to: "pedidos#atualizar_itens"
+          get "pagamento", to: "pedidos#pagamento"
         end
       end
-      resources :pagamentorons
+      resources :pagamentos
       resources :entregas
       resources :entregadores do
         collection do
