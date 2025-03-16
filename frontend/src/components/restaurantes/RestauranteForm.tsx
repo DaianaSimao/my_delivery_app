@@ -147,11 +147,13 @@ const RestauranteForm = () => {
         cidade: restaurante.endereco.cidade,
         bairro: bairroSelecionado,
         taxa_entrega: 0,
+        ativo: true
       };
       setRestaurante((prevRestaurante) => ({
         ...prevRestaurante,
         regioes_entrega: [...prevRestaurante.regioes_entrega, novaRegiao],
       }));
+      setCidadeSelecionada("");
       setBairroSelecionado("");
     } else {
       toast.error("Selecione um bairro.");
@@ -178,7 +180,7 @@ const RestauranteForm = () => {
           regioes_entrega_attributes: restaurante.regioes_entrega,
         },
       };
-  
+
       const response = await api.post("/api/v1/restaurantes", payload);
   
       if (response.status === 201) {
@@ -484,8 +486,8 @@ const RestauranteForm = () => {
               />
             </div>
           </div>
-                    {/* Dropdown de Cidades */}
-                    <div className="w-full">
+          {/* Dropdown de Cidades */}
+          <div className="w-full">
             <label htmlFor="cidade" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Cidade
             </label>

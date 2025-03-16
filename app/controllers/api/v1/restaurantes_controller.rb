@@ -76,7 +76,7 @@ class Api::V1::RestaurantesController < ApplicationController
     params.require(:restaurante).permit(:id, :nome, :descricao, :categoria, :taxa_entrega,
                                         :tempo_medio_entrega, :avaliacao, :ativo,
                                         :abertura, :fechamento, :cnpj, :telefone, :email, :dias_funcionamento, :pedido_minimo,
-                                        endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ponto_referencia, :tipo],
+                                        endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ponto_referencia, :tipo, :uf],
                                         regioes_entrega_attributes: [:id, :bairro, :cidade, :taxa_entrega, :_destroy, :ativo, :restaurante_id]
     )
   end

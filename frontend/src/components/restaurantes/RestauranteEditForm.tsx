@@ -42,6 +42,13 @@ interface Restaurante {
   regioes_entrega: RegiaoEntrega[];
 }
 
+interface Bairro {
+  id: number;
+  nome: string;
+  cidade: string;
+  uf: string;
+}
+
 // Função para formatar o horário (ISO 8601 -> HH:mm)
 const formatTime = (isoString: string): string => {
   const date = new Date(isoString);
@@ -78,6 +85,12 @@ const RestauranteEditForm = () => {
     },
     regioes_entrega: [],
   });
+
+  const [cidades, setCidades] = useState<string[]>([]);
+  const [bairros, setBairros] = useState<Bairro[]>([]);
+  const [cidadeSelecionada, setCidadeSelecionada] = useState<string>("");
+  const [bairroSelecionado, setBairroSelecionado] = useState<string>("");
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -85,7 +98,6 @@ const RestauranteEditForm = () => {
   useEffect(() => {
     const fetchRestaurante = async () => {
       try {
-        restaurante.endereco.tipo = "Restaurante";
         const response = await api.get(`/api/v1/restaurantes/${id}`);
         const restauranteData = response.data.data;
         setRestaurante({
@@ -125,7 +137,35 @@ const RestauranteEditForm = () => {
     fetchRestaurante();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Carrega as cidades com base no estado do endereço
+  useEffect(() => {
+    if (restaurante.endereco.estado) {
+      api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.estado}`)
+        .then((response) => {
+          console.log("Cidades carregadas:", response.data); // Depuração
+          setCidades(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao carregar cidades:", error);
+        });
+    }
+  }, [restaurante.endereco.estado ]);
+
+  // Carrega os bairros com base na cidade selecionada
+  useEffect(() => {
+    if (cidadeSelecionada) {
+      api.get(`/api/v1/bairros?cidade=${cidadeSelecionada}&uf=${restaurante.endereco.estado}`)
+        .then((response) => {
+          console.log("Bairros carregados:", response.data); // Depuração
+          setBairros(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao carregar bairros:", error);
+        });
+    }
+  }, [cidadeSelecionada, restaurante.endereco.estado]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     if (name.startsWith("endereco.")) {
@@ -154,31 +194,37 @@ const RestauranteEditForm = () => {
   };
 
   const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
+    const { name, value } = e.target;
     const novasRegioes = [...restaurante.regioes_entrega];
-  
-    // Atualiza o valor com base no tipo do input
-    novasRegioes[index] = {
-      ...novasRegioes[index],
-      [name]: checked,
-    };
-  
+    novasRegioes[index] = { ...novasRegioes[index], [name]: value };
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       regioes_entrega: novasRegioes,
     }));
-  }
+  };
 
   const adicionarRegiao = () => {
-    setRestaurante((prevRestaurante) => ({
-      ...prevRestaurante,
-      regioes_entrega: [...prevRestaurante.regioes_entrega, { bairro: "", taxa_entrega: 0, ativo: true }],
-    }));
+    if (cidadeSelecionada && bairroSelecionado) {
+      const novaRegiao = {
+        cidade: cidadeSelecionada,
+        bairro: bairroSelecionado,
+        taxa_entrega: 0,
+        ativo: true,
+      };
+      setRestaurante((prevRestaurante) => ({
+        ...prevRestaurante,
+        regioes_entrega: [...prevRestaurante.regioes_entrega, novaRegiao],
+      }));
+      setCidadeSelecionada("");
+      setBairroSelecionado("");
+    } else {
+      toast.error("Selecione uma cidade e um bairro.");
+    }
   };
 
   const removerRegiao = (index: number) => {
     const novasRegioes = [...restaurante.regioes_entrega];
-  
+
     if (novasRegioes[index].id) {
       // Se a região já existe no banco de dados, marque para exclusão
       novasRegioes[index] = { ...novasRegioes[index], _destroy: true };
@@ -186,7 +232,7 @@ const RestauranteEditForm = () => {
       // Se a região é nova (não tem ID), remova-a do array
       novasRegioes.splice(index, 1);
     }
-  
+
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       regioes_entrega: novasRegioes,
@@ -221,26 +267,27 @@ const RestauranteEditForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { id, ...restauranteData } = restaurante;
       const payload = {
+        restaurante: {
           id: restaurante.id,
-          nome: restauranteData.nome,
-          descricao: restauranteData.descricao,
-          categoria: restauranteData.categoria,
-          ativo: restauranteData.ativo,
-          cnpj: restauranteData.cnpj,
-          telefone: restauranteData.telefone,
-          email: restauranteData.email,
-          pedido_minimo: restauranteData.pedido_minimo,
-          tempo_medio_entrega: restauranteData.tempo_medio_entrega,
+          nome: restaurante.nome,
+          descricao: restaurante.descricao,
+          categoria: restaurante.categoria,
+          ativo: restaurante.ativo,
+          cnpj: restaurante.cnpj,
+          telefone: restaurante.telefone,
+          email: restaurante.email,
+          pedido_minimo: restaurante.pedido_minimo,
+          tempo_medio_entrega: restaurante.tempo_medio_entrega,
           abertura: new Date(`1970-01-01T${restaurante.abertura}Z`).toISOString(), // Converte de volta para ISO 8601
           fechamento: new Date(`1970-01-01T${restaurante.fechamento}Z`).toISOString(), // Converte de volta para ISO 8601
           taxa_entrega: parseFloat(restaurante.taxa_entrega.toString()),
           avaliacao: parseFloat(restaurante.avaliacao.toString()),
           endereco_attributes: restaurante.endereco,
           regioes_entrega_attributes: restaurante.regioes_entrega,
+        },
       };
-      const payload_filtrado_ = filtrarCamposDesnecessarios(payload, ["created_at", "updated_at"]);
+      const payload_filtrado_ = filtrarCamposDesnecessarios(payload.restaurante , ["created_at", "updated_at" , "regioes_entrega_id"]);
 
       const response = await api.put(`/api/v1/restaurantes/${id}`, payload_filtrado_);
 
@@ -558,10 +605,62 @@ const RestauranteEditForm = () => {
               />
             </div>
           </div>
+
+          {/* Regiões de Entrega */}
           <div className="sm:col-span-2">
-            <div className="sm:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-4">Regiões de entrega</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-4">Regiões de Entrega</h3>
+            {/* Dropdown de Cidades */}
+            <div className="w-full">
+              <label htmlFor="cidade" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Cidade
+              </label>
+              <select
+                id="cidade"
+                name="cidade"
+                value={cidadeSelecionada}
+                onChange={(e) => setCidadeSelecionada(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              >
+                <option value="">Selecione uma cidade</option>
+                {cidades.map((cidade, index) => (
+                  <option key={index} value={cidade}>
+                    {cidade}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {/* Dropdown de Bairros */}
+            <div className="w-full">
+              <label htmlFor="bairro" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Bairro
+              </label>
+              <select
+                id="bairro"
+                name="bairro"
+                value={bairroSelecionado}
+                onChange={(e) => setBairroSelecionado(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              >
+                <option value="">Selecione um bairro</option>
+                {bairros.map((bairro) => (
+                  <option key={bairro.id} value={bairro.nome}>
+                    {bairro.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Botão para adicionar região */}
+            <button
+              type="button"
+              onClick={adicionarRegiao}
+              className="mt-2 text-sm text-blue-500 hover:text-blue-700"
+            >
+              + Adicionar Região
+            </button>
+
+            {/* Lista de regiões de entrega */}
             {restaurante.regioes_entrega.map((regiao, index) => {
               // Ignora regiões marcadas para exclusão
               if (regiao._destroy) return null;
@@ -572,10 +671,8 @@ const RestauranteEditForm = () => {
                     type="text"
                     name="bairro"
                     value={regiao.bairro}
-                    onChange={(e) => handleRegiaoChange(index, e)}
+                    disabled
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Bairro"
-                    required
                   />
                   <input
                     type="number"
@@ -586,16 +683,6 @@ const RestauranteEditForm = () => {
                     placeholder="Taxa de Entrega"
                     required
                   />
-
-                  <input
-                    type="checkbox"
-                    name="ativo"
-                    id="ativo"
-                    checked={regiao.ativo}
-                    onChange={(e) => handleRegiaoChange(index, e)}
-                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</label>
                   <button
                     type="button"
                     onClick={() => removerRegiao(index)}
@@ -606,13 +693,6 @@ const RestauranteEditForm = () => {
                 </div>
               );
             })}
-            <button
-              type="button"
-              onClick={adicionarRegiao}
-              className="mt-2 text-sm text-blue-500 hover:text-blue-700"
-            >
-              + Adicionar Região
-            </button>
           </div>
 
           {/* Botões */}
