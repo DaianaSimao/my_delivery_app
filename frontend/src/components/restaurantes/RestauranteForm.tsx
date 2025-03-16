@@ -11,12 +11,14 @@ interface Endereco {
   cidade: string;
   estado: string;
   cep: string;
+  uf: string;
 }
 
 interface RegiaoEntrega {
   cidade: string;
   bairro: string;
   taxa_entrega: number;
+  ativo: boolean;
 }
 
 interface Restaurante {
@@ -65,6 +67,7 @@ const RestauranteForm = () => {
       cidade: "",
       estado: "",
       cep: "",
+      uf: "",
     },
     regioes_entrega: [],
   });
@@ -132,9 +135,9 @@ const RestauranteForm = () => {
   };
 
   const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, checked } = e.target;
     const novasRegioes = [...restaurante.regioes_entrega];
-    novasRegioes[index] = { ...novasRegioes[index], [name]: value };
+    novasRegioes[index] = { ...novasRegioes[index], [name]: checked };
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       regioes_entrega: novasRegioes,
@@ -208,6 +211,7 @@ const RestauranteForm = () => {
             cidade: "",
             estado: "",
             cep: "",
+            uf: "",
           },
           regioes_entrega: [],
         });
@@ -312,19 +316,6 @@ const RestauranteForm = () => {
                 onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="Tempo Médio de Entrega"
-                required
-              />
-            </div>
-            <div className="w-full">
-              <label htmlFor="avaliacao" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Avaliação</label>
-              <input
-                type="number"
-                name="avaliacao"
-                id="avaliacao"
-                value={restaurante.avaliacao}
-                onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="Avaliação"
                 required
               />
             </div>
@@ -472,6 +463,20 @@ const RestauranteForm = () => {
                 required
               />
             </div>
+            {/* UF */}
+            <div className="w-full">
+              <label htmlFor="endereco.uf" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">UF</label>
+              <input
+                type="text"
+                name="endereco.uf"
+                id="endereco.uf"
+                value={restaurante.endereco.uf}
+                onChange={handleChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder="UF"
+                required
+              />
+            </div>
             <div className="w-full">
               <label htmlFor="endereco.cep" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CEP</label>
               <input
@@ -485,6 +490,9 @@ const RestauranteForm = () => {
                 required
               />
             </div>
+          </div>
+          <div className="sm:col-span-2 mt-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Regiões de Entrega</h3>
           </div>
           {/* Dropdown de Cidades */}
           <div className="w-full">
@@ -509,7 +517,7 @@ const RestauranteForm = () => {
 
           {/* Dropdown de Bairros */}
           <div className="w-full">
-            <label htmlFor="bairro" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="bairro" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white mt-4">
               Bairro
             </label>
             <select
@@ -532,7 +540,7 @@ const RestauranteForm = () => {
           <button
             type="button"
             onClick={adicionarRegiao}
-            className="mt-2 text-sm text-blue-500 hover:text-blue-700"
+            className="mt-4 text-sm text-blue-500 hover:text-blue-700 mb-4"
           >
             + Adicionar Região
           </button>
@@ -556,6 +564,15 @@ const RestauranteForm = () => {
                 placeholder="Taxa de Entrega"
                 required
               />
+              <input
+                type="checkbox"
+                name="ativo"
+                id="ativo"
+                checked={regiao.ativo}
+                onChange={(e) => handleRegiaoChange(index, e)}
+                className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</label>
               <button
                 type="button"
                 onClick={() => removerRegiao(index)}

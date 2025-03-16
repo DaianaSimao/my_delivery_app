@@ -13,6 +13,7 @@ interface Endereco {
   estado: string;
   cep: string;
   tipo: string;
+  uf: string;
 }
 
 interface RegiaoEntrega {
@@ -82,6 +83,7 @@ const RestauranteEditForm = () => {
       estado: "",
       cep: "",
       tipo: "Restaurante",
+      uf: "",
     },
     regioes_entrega: [],
   });
@@ -123,6 +125,7 @@ const RestauranteEditForm = () => {
             cidade: "",
             estado: "",
             cep: "",
+            uf: "",
           },
           regioes_entrega: restauranteData.regioes_entrega || [],
         });
@@ -139,9 +142,10 @@ const RestauranteEditForm = () => {
 
   // Carrega as cidades com base no estado do endereço
   useEffect(() => {
-    if (restaurante.endereco.estado) {
-      api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.estado}`)
+    if (restaurante.endereco) {
+      api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.uf}`)
         .then((response) => {
+          console.log("uf", restaurante.endereco.uf);
           console.log("Cidades carregadas:", response.data); // Depuração
           setCidades(response.data);
         })
@@ -154,7 +158,7 @@ const RestauranteEditForm = () => {
   // Carrega os bairros com base na cidade selecionada
   useEffect(() => {
     if (cidadeSelecionada) {
-      api.get(`/api/v1/bairros?cidade=${cidadeSelecionada}&uf=${restaurante.endereco.estado}`)
+      api.get(`/api/v1/bairros?cidade=${cidadeSelecionada}&uf=${restaurante.endereco.uf}`)
         .then((response) => {
           console.log("Bairros carregados:", response.data); // Depuração
           setBairros(response.data);
@@ -194,9 +198,9 @@ const RestauranteEditForm = () => {
   };
 
   const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, checked} = e.target;
     const novasRegioes = [...restaurante.regioes_entrega];
-    novasRegioes[index] = { ...novasRegioes[index], [name]: value };
+    novasRegioes[index] = { ...novasRegioes[index], [name]: checked };
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       regioes_entrega: novasRegioes,
@@ -215,7 +219,6 @@ const RestauranteEditForm = () => {
         ...prevRestaurante,
         regioes_entrega: [...prevRestaurante.regioes_entrega, novaRegiao],
       }));
-      setCidadeSelecionada("");
       setBairroSelecionado("");
     } else {
       toast.error("Selecione uma cidade e um bairro.");
@@ -322,18 +325,35 @@ const RestauranteEditForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
             {/* Nome */}
-            <div className="sm:col-span-2">
-              <label htmlFor="nome" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nome:</label>
-              <input
-                type="text"
-                name="nome"
-                id="nome"
-                value={restaurante.nome}
-                onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="Nome do Restaurante"
-                required
-              />
+            <div className="sm:col-span-2 flex gap-4 items-center">
+              <div className="flex-1">
+                <label htmlFor="nome" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Nome:
+                </label>
+                <input
+                  type="text"
+                  name="nome"
+                  id="nome"
+                  value={restaurante.nome}
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Nome do Restaurante"
+                  required
+                />
+              </div>
+              <div className="flex items-center mt-6">
+                <input
+                  type="checkbox"
+                  name="ativo"
+                  id="ativo"
+                  checked={restaurante.ativo}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                  Ativo
+                </label>
+              </div>
             </div>
 
             {/* Descrição */}
@@ -393,34 +413,6 @@ const RestauranteEditForm = () => {
                 placeholder="Tempo Médio de Entrega"
                 required
               />
-            </div>
-
-            {/* Avaliação */}
-            <div className="w-full">
-              <label htmlFor="avaliacao" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Avaliação</label>
-              <input
-                type="number"
-                name="avaliacao"
-                id="avaliacao"
-                value={restaurante.avaliacao}
-                onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="Avaliação"
-                required
-              />
-            </div>
-
-            {/* Ativo */}
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="ativo"
-                id="ativo"
-                checked={restaurante.ativo}
-                onChange={handleCheckboxChange}
-                className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</label>
             </div>
 
             {/* Horário de Abertura */}
@@ -589,7 +581,20 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
-
+            {/* UF */}
+            <div className="w-full">
+              <label htmlFor="endereco.uf" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">UF</label>
+              <input
+                type="text"
+                name="endereco.uf"
+                id="endereco.uf"
+                value={restaurante.endereco.uf}
+                onChange={handleChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder="UF"
+                required
+              />
+            </div>
             {/* CEP */}
             <div className="w-full">
               <label htmlFor="endereco.cep" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CEP</label>
@@ -683,6 +688,15 @@ const RestauranteEditForm = () => {
                     placeholder="Taxa de Entrega"
                     required
                   />
+                  <input
+                    type="checkbox"
+                    name="ativo"
+                    id="ativo"
+                    checked={regiao.ativo}
+                    onChange={(e) => handleRegiaoChange(index, e)}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</label>
                   <button
                     type="button"
                     onClick={() => removerRegiao(index)}
