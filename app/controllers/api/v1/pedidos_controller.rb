@@ -180,14 +180,10 @@ class Api::V1::PedidosController < ApplicationController
         @pedido.update!(valor_total: novo_valor_total)
 
         if @pedido.pagamento
+          @pedido.pagamento.update!(valor: novo_valor_total)
           if @pedido.pagamento.metodo == "Dinheiro"
-            diferenca = @pedido.pagamento.valor - novo_valor_total
-            if diferenca > 0
-              novo_troco = @pedido.pagamento.troco - diferenca
-              @pedido.pagamento.update!(troco: novo_troco, valor: novo_valor_total)
-            else
-              @pedido.pagamento.update!(valor: novo_valor_total)
-            end
+            novo_troco = @pedido.troco_para - @pedido.pagamento.valor
+            @pedido.pagamento.update!(troco: novo_troco)
           end
         end
 

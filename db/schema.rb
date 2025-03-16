@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_16_010025) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_16_201654) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -155,13 +155,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_16_010025) do
     t.bigint "restaurante_id", null: false
     t.string "status", default: "Recebido"
     t.string "forma_pagamento"
-    t.decimal "troco", precision: 10, scale: 2, default: "0.0"
+    t.decimal "troco_para", precision: 10, scale: 2, default: "0.0"
     t.decimal "valor_total", precision: 10, scale: 2, null: false
     t.text "observacoes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "cliente_id", null: false
     t.string "forma_entrega"
+    t.decimal "taxa_entrega", precision: 10, scale: 2, default: "0.0"
     t.index ["cliente_id"], name: "index_pedidos_on_cliente_id"
     t.index ["restaurante_id"], name: "index_pedidos_on_restaurante_id"
   end

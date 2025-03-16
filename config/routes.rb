@@ -29,6 +29,10 @@ Rails.application.routes.draw do
         collection do
           get "listar_pedidos"
         end
+        member do
+          get "itens", to: "pedidos#itens"
+          put "atualizar_itens", to: "pedidos#atualizar_itens"
+        end
       end
       resources :pagamentorons
       resources :entregas
