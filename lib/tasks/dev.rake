@@ -184,4 +184,36 @@ namespace :dev do
       end
     end
   end
+
+  desc "Importa estados, cidades e bairros de um CSV"
+  task bairros: :environment do
+    require 'csv'
+
+    csv_path = Rails.root.join('public', 'bairros.csv')
+
+    unless File.exist?(csv_path)
+      puts "Arquivo CSV não encontrado em #{csv_path}"
+      next
+    end
+
+    bairros_criados = 0
+
+    # Lê o arquivo CSV
+    CSV.foreach(csv_path, headers: true) do |row|
+      uf = row['uf']
+      cidade_nome = row['cidade']
+      bairro_nome = row['bairro']
+
+      bairro = Bairro.create(
+        uf: uf,
+        cidade: cidade_nome,
+        nome: bairro_nome
+      )
+
+      puts "Bairro #{bairro_nome} criado com sucesso!" if bairro.persisted?
+      bairros_criados += 1
+    end
+    puts "Bairros criados: #{bairros_criados}"
+    puts "Task finalizada!"
+  end
 end

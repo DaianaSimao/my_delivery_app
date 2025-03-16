@@ -1,0 +1,2 @@
+class Bairro < ApplicationRecord
+end
