@@ -123,7 +123,7 @@ const PedidoModal: React.FC<PedidoModalProps> = ({ pedido, onClose }) => {
                       }, {} as Record<string, { quantidadeTotal: number; itens: typeof item.acompanhamentos_pedidos }>)
                     ).map(([nomeAcompanhamento, { quantidadeTotal, itens }], aIndex) => (
                       <li key={aIndex} className="text-sm text-gray-600 dark:text-gray-400">
-                        {nomeAcompanhamento} (Quantidade: {quantidadeTotal}) - R$ {itens[0].preco_unitario * quantidadeTotal}
+                        {nomeAcompanhamento} (Quantidade: {Number(quantidadeTotal).toFixed(2)}) - R$ {Number(itens[0].preco_unitario * quantidadeTotal).toFixed(2)}
 
                         {/* Itens dos Acompanhamentos */}
                         <ul className="ml-4 list-disc list-inside">
