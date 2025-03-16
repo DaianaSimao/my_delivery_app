@@ -230,7 +230,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
-
+    const troco = selectedPayment === 'cash' ? parseFloat(trocoValue) : 0;
     // Estrutura os itens do pedido
     const itensPedidos = cartItems.map((item) => {
       // Extrai o ID do produto (parte antes do hífen)
@@ -254,9 +254,9 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     // Estrutura o pagamento
     const pagamento = {
       metodo: selectedPayment,
-      status: "Pendente",
+      status: selectedPayment === "cash" || selectedPayment === "pix" ? "Aguardando Pagamento" : "Pago",
       valor: total,
-      troco: selectedPayment === "cash" ? parseFloat(trocoValue) - total : 0,
+      troco: selectedPayment === "cash" ? troco - total : 0,
     };
 
     // Estrutura o pedido completo
@@ -270,6 +270,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       pagamento_attributes: pagamento,
       valor_total: total,
       forma_entrega: selectedDelivery,
+      troco_para: selectedPayment === "cash" ? troco : 0,
     };
 
     try {

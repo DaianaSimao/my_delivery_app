@@ -1,5 +1,5 @@
 class Api::V1::PedidosController < ApplicationController
-  before_action :set_pedido, only: %i[show update destroy]
+  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens]
   skip_before_action :authenticate_user!, only: %i[create]
 
   def index
@@ -151,6 +151,54 @@ class Api::V1::PedidosController < ApplicationController
         current_page: @pedidos.current_page
       }
     }
+  end
+
+  # GET /api/v1/pedidos/:id/itens
+  def itens
+    itens_pedido = @pedido.itens_pedidos.includes(:produto, :acompanhamentos_pedidos)
+    render json: itens_pedido, include: [:produto, acompanhamentos_pedidos: { include: :item_acompanhamento }]
+  end
+
+  # PUT /api/v1/pedidos/:id/itens
+  def atualizar_itens
+    itens_params = params.require(:itens).map do |item|
+      item.permit(:id, :quantidade, acompanhamentos_pedidos_attributes: [:id, :quantidade])
+    end
+
+    ActiveRecord::Base.transaction do
+      if @pedido.update(itens_pedidos_attributes: itens_params)
+        novo_valor_total = @pedido.itens_pedidos.sum do |item|
+          valor_item = item.quantidade * item.produto.preco
+          valor_acompanhamentos = item.acompanhamentos_pedidos.sum do |acomp|
+            acomp.quantidade * acomp.preco_unitario
+          end
+          taxa_entrega = @pedido.taxa_entrega || 0
+
+          valor_item + valor_acompanhamentos + taxa_entrega
+        end
+
+        @pedido.update!(valor_total: novo_valor_total)
+
+        if @pedido.pagamento
+          if @pedido.pagamento.metodo == "Dinheiro"
+            diferenca = @pedido.pagamento.valor - novo_valor_total
+            if diferenca > 0
+              novo_troco = @pedido.pagamento.troco - diferenca
+              @pedido.pagamento.update!(troco: novo_troco, valor: novo_valor_total)
+            else
+              @pedido.pagamento.update!(valor: novo_valor_total)
+            end
+          end
+        end
+
+        render json: @pedido, status: :ok
+      else
+        render json: { errors: @pedido.errors.full_messages }, status: :unprocessable_entity
+        raise ActiveRecord::Rollback
+      end
+    end
+  rescue => e
+    render json: { error: "Erro ao atualizar pedido: #{e.message}" }, status: :internal_server_error
   end
   def show
     pedido = Pedido.includes(:cliente, :itens_pedidos, :produtos, :pagamento).find(params[:id])
@@ -317,7 +365,7 @@ class Api::V1::PedidosController < ApplicationController
 
   def pedido_params
     params.require(:pedido).permit(
-      :restaurante_id, :status, :forma_pagamento, :troco, :valor_total, :observacoes, :cliente_id, :forma_entrega,
+      :restaurante_id, :status, :forma_pagamento, :troco_para, :valor_total, :observacoes, :cliente_id, :forma_entrega,
       pagamento_attributes: [ :metodo, :status, :valor, :troco ],
       itens_pedidos_attributes: [ :id, :quantidade, :preco_unitario, :produto_id, :observacao, :_destroy, acompanhamentos_pedidos_attributes: [ :id, :quantidade, :preco_unitario, :item_acompanhamento_id, :_destroy ] ])
   end
