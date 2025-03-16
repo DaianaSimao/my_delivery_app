@@ -1,5 +1,5 @@
 class Api::V1::PedidosController < ApplicationController
-  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens pagamento atualizar_pagamento]
+  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens pagamento]
   skip_before_action :authenticate_user!, only: %i[create]
 
   def index
