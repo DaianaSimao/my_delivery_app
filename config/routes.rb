@@ -49,6 +49,11 @@ Rails.application.routes.draw do
       resources :item_acompanhamentos
       resources :acompanhamentos
       resources :acompanhamentos_pedidos
+      resources :bairros do
+        collection do
+          get "cidades"
+        end
+      end
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
       get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
       get "cardapio/:restaurante_id", to: "produtos#cardapio"

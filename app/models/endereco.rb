@@ -1,5 +1,5 @@
 class Endereco < ApplicationRecord
-  belongs_to :regioes_entrega, class_name: "RegioesEntrega"
+  belongs_to :regioes_entrega, class_name: "RegioesEntrega", optional: true
 
   has_many :restaurante
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ interface Endereco {
 }
 
 interface RegiaoEntrega {
+  cidade: string;
   bairro: string;
   taxa_entrega: number;
 }
@@ -33,6 +34,13 @@ interface Restaurante {
   email: string;
   endereco: Endereco;
   regioes_entrega: RegiaoEntrega[];
+}
+
+interface Bairro {
+  id: number;
+  nome: string;
+  cidade: string;
+  uf: string;
 }
 
 const RestauranteForm = () => {
@@ -60,8 +68,38 @@ const RestauranteForm = () => {
     },
     regioes_entrega: [],
   });
+  const [cidades, setCidades] = useState<string[]>([]);
+  const [bairros, setBairros] = useState<Bairro[]>([]);
+  const [cidadeSelecionada, setCidadeSelecionada] = useState<string>("");
+  const [bairroSelecionado, setBairroSelecionado] = useState<string>("");
 
   const navigate = useNavigate();
+
+  // Carrega as cidades com base no estado do endereço
+  useEffect(() => {
+    if (restaurante.endereco.estado) {
+      api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.estado}`)
+        .then((response) => {
+          setCidades(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao carregar cidades:", error);
+        });
+    }
+  }, [restaurante.endereco.estado]);
+
+  // Carrega os bairros com base na cidade selecionada
+  useEffect(() => {
+    if (cidadeSelecionada) {
+      api.get(`/api/v1/bairros?cidade=${cidadeSelecionada}&uf=${restaurante.endereco.estado}`)
+        .then((response) => {
+          setBairros(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao carregar bairros:", error);
+        });
+    }
+  }, [cidadeSelecionada, restaurante.endereco.estado]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -104,10 +142,20 @@ const RestauranteForm = () => {
   };
 
   const adicionarRegiao = () => {
-    setRestaurante((prevRestaurante) => ({
-      ...prevRestaurante,
-      regioes_entrega: [...prevRestaurante.regioes_entrega, { bairro: "", taxa_entrega: 0 }],
-    }));
+    if (bairroSelecionado) {
+      const novaRegiao = {
+        cidade: restaurante.endereco.cidade,
+        bairro: bairroSelecionado,
+        taxa_entrega: 0,
+      };
+      setRestaurante((prevRestaurante) => ({
+        ...prevRestaurante,
+        regioes_entrega: [...prevRestaurante.regioes_entrega, novaRegiao],
+      }));
+      setBairroSelecionado("");
+    } else {
+      toast.error("Selecione um bairro.");
+    }
   };
 
   const removerRegiao = (index: number) => {
@@ -127,6 +175,7 @@ const RestauranteForm = () => {
           taxa_entrega: parseFloat(restaurante.taxa_entrega.toString()),
           avaliacao: parseFloat(restaurante.avaliacao.toString()),
           endereco_attributes: restaurante.endereco, // Use apenas endereco_attributes
+          regioes_entrega_attributes: restaurante.regioes_entrega,
         },
       };
   
@@ -435,47 +484,85 @@ const RestauranteForm = () => {
               />
             </div>
           </div>
-          <div className="sm:col-span-2 mt-4 ">
-            <label className="text-lg font-semibold text-gray-900 dark:text-white ">
-              Regiões de Entrega:
+                    {/* Dropdown de Cidades */}
+                    <div className="w-full">
+            <label htmlFor="cidade" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Cidade
             </label>
-            {restaurante.regioes_entrega.map((regiao, index) => (
-              <div key={index} className="flex items-center gap-2 mb-2 mt-4">
-                <input
-                  type="text"
-                  name="bairro"
-                  value={regiao.bairro}
-                  onChange={(e) => handleRegiaoChange(index, e)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="Bairro"
-                  required
-                />
-                <input
-                  type="number"
-                  name="taxa_entrega"
-                  value={regiao.taxa_entrega}
-                  onChange={(e) => handleRegiaoChange(index, e)}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="Taxa de Entrega"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => removerRegiao(index)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Remover
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={adicionarRegiao}
-              className="mt-2 text-sm text-blue-500 hover:text-blue-700"
+            <select
+              id="cidade"
+              name="cidade"
+              value={cidadeSelecionada}
+              onChange={(e) => setCidadeSelecionada(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             >
-              + Adicionar Região
-            </button>
+              <option value="">Selecione uma cidade</option>
+              {cidades.map((cidade, index) => (
+                <option key={index} value={cidade}>
+                  {cidade}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {/* Dropdown de Bairros */}
+          <div className="w-full">
+            <label htmlFor="bairro" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Bairro
+            </label>
+            <select
+              id="bairro"
+              name="bairro"
+              value={bairroSelecionado}
+              onChange={(e) => setBairroSelecionado(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            >
+              <option value="">Selecione um bairro</option>
+              {bairros.map((bairro) => (
+                <option key={bairro.id} value={bairro.nome}>
+                  {bairro.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Botão para adicionar região */}
+          <button
+            type="button"
+            onClick={adicionarRegiao}
+            className="mt-2 text-sm text-blue-500 hover:text-blue-700"
+          >
+            + Adicionar Região
+          </button>
+
+          {/* Lista de regiões de entrega */}
+          {restaurante.regioes_entrega.map((regiao, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2 mt-4">
+              <input
+                type="text"
+                name="bairro"
+                value={regiao.bairro}
+                disabled
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+              <input
+                type="number"
+                name="taxa_entrega"
+                value={regiao.taxa_entrega}
+                onChange={(e) => handleRegiaoChange(index, e)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder="Taxa de Entrega"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => removerRegiao(index)}
+                className="text-red-500 hover:text-red-700"
+              >
+                Remover
+              </button>
+            </div>
+          ))}
           <div className="flex gap-4 mt-4 sm:mt-6">
             <button
               type="submit"

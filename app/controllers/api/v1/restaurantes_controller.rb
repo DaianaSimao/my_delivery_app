@@ -35,8 +35,8 @@ class Api::V1::RestaurantesController < ApplicationController
 
   def create
     restaurante = Restaurante.new(restaurante_params)
-
     if restaurante.save
+      UserRestaurante.create(user_id: current_user.id, restaurante_id: restaurante.id)
       render json: RestauranteSerializer.new(restaurante).serializable_hash.to_json, status: :created
     else
       render json: { errors: restaurante.errors.full_messages }, status: :unprocessable_entity
@@ -77,7 +77,7 @@ class Api::V1::RestaurantesController < ApplicationController
                                         :tempo_medio_entrega, :avaliacao, :ativo,
                                         :abertura, :fechamento, :cnpj, :telefone, :email, :dias_funcionamento, :pedido_minimo,
                                         endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ponto_referencia, :tipo],
-                                        regioes_entrega_attributes: [:id, :bairro, :taxa_entrega, :_destroy, :ativo, :restaurante_id]
+                                        regioes_entrega_attributes: [:id, :bairro, :cidade, :taxa_entrega, :_destroy, :ativo, :restaurante_id]
     )
   end
 end
