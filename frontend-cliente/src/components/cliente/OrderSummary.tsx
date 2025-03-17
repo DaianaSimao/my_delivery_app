@@ -6,6 +6,7 @@ interface OrderItem {
   quantity: number;
   price: number;
   options?: string[];
+  acompanhamentos?: string[];
 }
 
 interface OrderSummaryProps {

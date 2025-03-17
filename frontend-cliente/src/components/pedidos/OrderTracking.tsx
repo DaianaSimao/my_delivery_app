@@ -1,74 +1,66 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import { fetchRestaurantInfo } from '../../services/api';
-import type { Restaurante } from '../../types';
-import { createConsumer } from '@rails/actioncable'; // Importação do ActionCable
-import { ArrowLeft, Sun, Moon } from 'lucide-react';
+// OrderTracking.tsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchRestaurantInfo } from '../../services/api';
+import { useCart } from '../../contexts/CartContext'; // Importar o contexto
+import type { Restaurante } from '../../types';
+import { createConsumer } from '@rails/actioncable';
+import { ArrowLeft, Sun, Moon } from 'lucide-react';
 import orderIcon from "/icons/order.svg";
 import deliveryIcon from "/icons/delivery.svg";
 import payIcon from "/icons/pay.svg";
 import userIcon from "/icons/user.svg";
 
 const OrderTracking: React.FC = () => {
+  const { clearCart } = useCart(); // Usar o contexto
   const [restaurantInfo, setRestaurantInfo] = useState<Restaurante | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const restauranteId = localStorage.getItem('restauranteId');
   const pedido = JSON.parse(localStorage.getItem('pedido') || '{}');
-  const clienteNome = pedido.data.cliente.nome
-  const [orderStatus, setOrderStatus] = useState(() => {
-    return localStorage.getItem('status') || 'Recebido';
-  });
-  
+  const clienteNome = pedido.data?.cliente?.nome || 'Desconhecido';
+  const [orderStatus, setOrderStatus] = useState(() => localStorage.getItem('status') || 'Recebido');
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('darkMode');
     return savedTheme ? JSON.parse(savedTheme) : true;
   });
-  
+
   useEffect(() => {
-    const restauranteId = localStorage.getItem('restauranteId'); // Obtém o restaurante_id do localStorage
-    const pedidoId = pedido.data.id; // Obtém o ID do pedido
-  
-    // Monta a URL do WebSocket com o restaurante_id
+    clearCart();
+  }, []);
+
+  useEffect(() => {
+    const pedidoId = pedido.data?.id;
+    if (!restauranteId || !pedidoId) return;
+
     const cable = createConsumer(`ws://localhost:3000/cable?restaurante_id=${restauranteId}`);
-  
     const subscription = cable.subscriptions.create(
-      { channel: 'PedidoStatusChannel', pedido_id: pedidoId }, // Inscreve-se no canal do pedido
+      { channel: 'PedidoStatusChannel', pedido_id: pedidoId },
       {
         received: (data: { status: 'Recebido' | 'Em Preparação' | 'Em entrega' | 'Entregue' }) => {
-          console.log('Dados recebidos:', data); // Log para verificar os dados recebidos
           setOrderStatus(data.status);
           localStorage.setItem('status', data.status);
           if (data.status === 'Entregue') {
-            subscription.unsubscribe(); // Cancela a inscrição no canal
+            subscription.unsubscribe();
           }
-
           if (data.status === 'Em entrega') {
             const audio = new Audio('/sounds/notification.mp3');
             audio.play();
           }
-
           if (data.status === 'Entregue') {
             localStorage.removeItem('status');
           }
         },
-        connected: () => {
-          console.log('Conectado ao WebSocket'); // Log para verificar a conexão
-        },
-        disconnected: () => {
-          console.log('Desconectado do WebSocket'); // Log para verificar a desconexão
-        },
+        connected: () => console.log('Conectado ao WebSocket'),
+        disconnected: () => console.log('Desconectado do WebSocket'),
       }
     );
-  
-    // Limpeza ao desmontar o componente
     return () => {
       subscription.unsubscribe();
     };
-  }, [pedido.data.id]);
-  
+  }, [pedido.data?.id, restauranteId]);
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -112,25 +104,15 @@ const OrderTracking: React.FC = () => {
 
     loadRestaurantInfo();
   }, [restauranteId]);
-
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!restaurantInfo) {
-    return <div className='dark:text-white'>Nenhuma informação do restaurante encontrada.</div>;
-  }
-
+  if (loading) return <div>Carregando...</div>;
+  if (error) return <div>{error}</div>;
+  if (!restaurantInfo) return <div className='dark:text-white'>Nenhuma informação do restaurante encontrada.</div>;
 
   const statusSteps = [
     { key: 'Recebido', label: 'Pedido Recebido', description: 'Seu pedido foi recebido pelo estabelecimento.', completed: orderStatus == 'Recebido' },
-    { key: 'Em Preparação', label: 'Pedido em Preparação', description: 'Seu pedido está sendo preparado.', completed: orderStatus == 'Em Preparação' || orderStatus == 'Expedido' },
+    { key: 'Em Preparação', label: 'Pedido em Preparação', description: 'Seu pedido está sendo preparado.', completed: orderStatus == 'Em Preparação' || orderStatus == 'Expedido'},
     { key: 'Em entrega', label: 'Saiu para Entrega', description: 'Seu pedido está a caminho.', completed: orderStatus === 'Em entrega' },
-    { key: 'Entregue', label: 'Pedido Entregue', description: 'Seu pedido foi entregue com sucesso.', completed: orderStatus === "Entregue" },
+    { key: 'Entregue', label: 'Pedido Entregue', description: 'Seu pedido foi entregue com sucesso.', completed: orderStatus === 'Entregue' },
   ];
 
   return (

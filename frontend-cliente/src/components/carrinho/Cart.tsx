@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+// components/carrinho/Cart.tsx
+import { useState } from 'react';
 import { ArrowLeft, Trash2, Pencil, Plus, Minus } from 'lucide-react';
-import CustomerData  from '../cliente/CustomerData';
+import CustomerData from '../cliente/CustomerData';
 import type { CartItem } from '../../types';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +29,7 @@ export function Cart({
   const navigate = useNavigate();
 
   const handleCheckout = () => {
-      navigate(`/dados`);
+    navigate(`/dados`);
   };
 
   if (showCustomerDataForm) {

@@ -8,47 +8,44 @@ interface CartContextType {
   restauranteId: string | null;
   setRestauranteId: (id: string | null) => void;
   onCheckout: () => void;
+  clearCart: () => void; // Adicionando explicitamente
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-interface CartProviderProps {
-  children: React.ReactNode;
-}
-
-export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('cartItems');
     return saved ? JSON.parse(saved) : [];
   });
-  const [restauranteId, setRestauranteId] = useState<string | null>(null);
+  const [restauranteId, setRestauranteId] = useState<string | null>(() => localStorage.getItem('restauranteId'));
 
   useEffect(() => {
     if (restauranteId) {
       const savedRestauranteId = localStorage.getItem('restauranteId');
       if (savedRestauranteId !== restauranteId) {
-        setCartItems([]);
-        localStorage.removeItem('cartItems');
+        clearCart(); // Limpa ao trocar de restaurante
         localStorage.setItem('restauranteId', restauranteId);
       }
     }
   }, [restauranteId]);
-  
-  const onCheckout = () => {
-    console.log("Limpando carrinho e redirecionando...");
-    setCartItems([]); // Limpa o carrinho
-    localStorage.removeItem('cartItems'); // Remove os itens do localStorage
-    console.log("Carrinho limpo e redirecionando para o checkout...");
-    // Adicione aqui a lógica de redirecionamento, se necessário
-  };
 
-  // Salva o carrinho no localStorage sempre que ele mudar
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem('cartItems');
+  };
+
+  const onCheckout = () => {
+    clearCart();
+    console.log("Carrinho limpo após checkout");
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, restauranteId, setRestauranteId, onCheckout }}>
+    <CartContext.Provider value={{ cartItems, setCartItems, restauranteId, setRestauranteId, onCheckout, clearCart }}>
       {children}
     </CartContext.Provider>
   );
