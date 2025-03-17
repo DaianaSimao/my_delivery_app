@@ -12,6 +12,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchProductDetails } from '../../services/api';
 import type { MenuItem, CartItem } from '../../types';
+import { useTheme } from '../../hooks/useTheme'; // Importe o hook useTheme
 
 interface ItemDetailsProps {
   onAddToCart: (item: CartItem) => void;
@@ -20,11 +21,13 @@ interface ItemDetailsProps {
 const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
   const { itemId } = useParams<{ itemId: string }>();
   const [item, setItem] = useState<MenuItem | null>(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
   const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
   const [observation, setObservation] = useState('');
   const navigate = useNavigate();
+
+  // Use o hook useTheme para gerenciar o dark mode
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   useEffect(() => {
     const loadProductDetails = async () => {
@@ -40,8 +43,6 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
 
     loadProductDetails();
   }, [itemId]);
-
-  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const toggleGroup = (groupId: number) => {
     setExpandedGroups((prev) =>
@@ -59,19 +60,17 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
     });
   };
 
-// Calcula o preço total: preço base + soma dos acompanhamentos selecionados
-const totalPrice = Number(
-  Object.entries(selectedOptions).reduce((total, [optionId, quantity]) => {
-    const option = item?.produto_acompanhamentos
-      .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
-      .find((opt) => opt.id === Number(optionId));
-    return total + (Number(option?.preco) || 0) * quantity;
-  }, item?.preco ? parseFloat(item.preco.toString()) : 0).toFixed(2)
-);
+  const totalPrice = Number(
+    Object.entries(selectedOptions).reduce((total, [optionId, quantity]) => {
+      const option = item?.produto_acompanhamentos
+        .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
+        .find((opt) => opt.id === Number(optionId));
+      return total + (Number(option?.preco) || 0) * quantity;
+    }, item?.preco ? parseFloat(item.preco.toString()) : 0).toFixed(2)
+  );
 
   const handleAddToCart = () => {
     if (item) {
-      // Gera uma key única concatenando o id do produto com o timestamp atual
       const uniqueId = `${item.id}-${new Date().getTime()}`;
       const cartItem: CartItem = {
         id: uniqueId,
@@ -106,6 +105,7 @@ const totalPrice = Number(
               quantidade: quantity,
             };
           }),
+        produto_acompanhamentos: []
       };
       onAddToCart(cartItem);
       navigate('/cart');
@@ -117,7 +117,7 @@ const totalPrice = Number(
   }
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
+    <div className={isDarkMode ? 'dark' : ''}> {/* Use isDarkMode do useTheme */}
       <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="pb-24">
           {/* Imagem do produto */}
@@ -136,10 +136,10 @@ const totalPrice = Number(
               </button>
               <div className="flex gap-2">
                 <button
-                  onClick={toggleDarkMode}
+                  onClick={toggleDarkMode} // Use toggleDarkMode do useTheme
                   className="p-2 bg-white/80 dark:bg-gray-800/80 rounded-full"
                 >
-                  {darkMode ? (
+                  {isDarkMode ? ( // Use isDarkMode do useTheme
                     <Sun className="w-6 h-6 text-gray-800 dark:text-white" />
                   ) : (
                     <Moon className="w-6 h-6 text-gray-800 dark:text-white" />
