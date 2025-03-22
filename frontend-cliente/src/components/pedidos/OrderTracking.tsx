@@ -1,7 +1,7 @@
 // OrderTracking.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { fetchRestaurantInfo } from '../../services/api';
+import { fetchRestaurantInfo, fetchPedidoById } from '../../services/api';
 import { useCart } from '../../contexts/CartContext'; // Importar o contexto
 import type { Restaurante } from '../../types';
 import { createConsumer } from '@rails/actioncable';
@@ -10,7 +10,6 @@ import orderIcon from "/icons/order.svg";
 import deliveryIcon from "/icons/delivery.svg";
 import payIcon from "/icons/pay.svg";
 import userIcon from "/icons/user.svg";
-import axios from 'axios';
 
 // Interface para dados do pedido
 interface PedidoData {
@@ -54,17 +53,15 @@ const OrderTracking: React.FC = () => {
     }
     
     try {
-      // Buscar o pedido atualizado pela API
-      const response = await axios.get(`http://localhost:3000/api/v1/pedidos/rastreio_pedido/${pedidoIdSalvo}`);
-      if (response.data) {
-        setPedido({ data: response.data });
-        console.log('Pedido:', response.data);
-        setOrderStatus(response.data.status);
-        
-        // Se o pedido já foi entregue, mostrar tela de conclusão
-        if (response.data.status === 'Entregue') {
-          setPedidoConcluido(true);
-        }
+      // Buscar o pedido atualizado usando o serviço da API
+      const data = await fetchPedidoById(pedidoIdSalvo);
+      setPedido({ data });
+      console.log('Pedido:', data);
+      setOrderStatus(data.status);
+      
+      // Se o pedido já foi entregue, mostrar tela de conclusão
+      if (data.status === 'Entregue') {
+        setPedidoConcluido(true);
       }
     } catch (error) {
       console.error('Erro ao buscar pedido:', error);
@@ -306,7 +303,7 @@ const OrderTracking: React.FC = () => {
 
   const statusSteps = [
     { key: 'Recebido', label: 'Pedido Recebido', description: 'Seu pedido foi recebido pelo estabelecimento.', completed: true },
-    { key: 'Em Preparação', label: 'Pedido em Preparação', description: 'Seu pedido está sendo preparado.', completed: orderStatus === 'Em Preparação' || orderStatus === 'Em entrega' || orderStatus === 'Entregue' },
+    { key: 'Em Preparação', label: 'Pedido em Preparação', description: 'Seu pedido está sendo preparado.', completed: orderStatus === 'Em Preparação' || orderStatus === 'Em entrega' || orderStatus === 'Entregue' || orderStatus === 'Expedido' },
     { key: 'Em entrega', label: 'Saiu para Entrega', description: 'Seu pedido está a caminho.', completed: orderStatus === 'Em entrega' || orderStatus === 'Entregue' },
     { key: 'Entregue', label: 'Pedido Entregue', description: 'Seu pedido foi entregue com sucesso.', completed: orderStatus === 'Entregue' },
   ];

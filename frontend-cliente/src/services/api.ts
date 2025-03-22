@@ -58,6 +58,16 @@ export const fetchEnderecoById = async (enderecoId: number) => {
   }
 };
 
+export const fetchPedidoById = async (pedidoId: string | number) => {
+  try {
+    const response = await api.get(`/api/v1/pedidos/rastreio_pedido/${pedidoId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar pedido:", error);
+    throw error;
+  }
+};
+
 export const criarCliente = async (clienteData: any) => {
   try {
     const response = await api.post("/api/v1/clientes", clienteData);
