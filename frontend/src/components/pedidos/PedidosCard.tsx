@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import PedidoModal from './PedidoModal'; // Importe o modal
-import { useNavigate } from 'react-router-dom'; // Importe o hook de navegação
+import PedidoModal from './PedidoModal';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { gerarComandaPDF } from '../../utils/comandaCozinhaGenerator'; // Importe a função utilitária
 
 interface Pedido {
   id: number;
@@ -14,31 +15,22 @@ interface Pedido {
   valor_total: number;
   itens_pedidos: Array<{
     produto: {
+      id: number;
       nome: string;
       preco: number;
-      acompanhamentos?: Array<{
-        id: number;
-        nome: string;
-        quantidade_maxima: number;
-        item_acompanhamentos?: Array<{
-          id: number;
-          nome: string;
-          preco: number;
-        }>;
-      }>;
     };
     acompanhamentos_pedidos?: Array<{
       id: number;
-      itens_acompanhamentos_pedidos?: Array<{
+      item_acompanhamento: {
         id: number;
+        nome: string;
+        preco: number;
         acompanhamento: {
           id: number;
           nome: string;
-          quantidade_maxima: number;
         };
-      }>;
+      };
       quantidade: number;
-      preco_unitario: number;
     }>;
     quantidade: number;
   }>;
@@ -58,6 +50,7 @@ interface Pedido {
     status: string;
     valor: string;
   };
+  observacoes?: string;
 }
 
 interface PedidosCardProps {
@@ -70,7 +63,7 @@ interface PedidosCardProps {
 const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCancel, onEdit }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const statusOptions = ['Recebido', 'Em Análise', 'Em Preparação', 'Expedido'];
 
@@ -78,6 +71,7 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
   if (!pedido) {
     return <p className="text-red-500">Erro: Pedido não encontrado.</p>;
   }
+
   // Formata a data do pedido
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -90,8 +84,14 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
 
   const handleEditCliente = () => {
     if (pedido.cliente) {
-      navigate(`/clientes/${pedido.cliente.id}/editar`); // Navega para a página de edição do cliente
+      navigate(`/clientes/${pedido.cliente.id}/editar`);
     }
+  };
+
+  // Função para baixar a comanda em PDF
+  const handleDownloadComanda = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Impede que o clique no botão abra o modal
+    gerarComandaPDF(pedido); // Usa a função utilitária
   };
 
   return (
@@ -99,13 +99,13 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
       {/* Card do Pedido */}
       <div
         className="p-4 mb-4 rounded-lg shadow-md border-l-4 bg-white dark:bg-gray-800 relative cursor-pointer"
-        onClick={() => setIsModalOpen(true)} // Abre o modal ao clicar no card
+        onClick={() => setIsModalOpen(true)}
       >
         {/* Dropdown de Ações */}
         <div className="absolute top-2 right-2">
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Impede que o clique no botão abra o modal
+              e.stopPropagation();
               setIsDropdownOpen(!isDropdownOpen);
             }}
             className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -182,7 +182,7 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
                     handleEditCliente();
                   }}
                   className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  >
+                >
                   Editar Cliente
                 </button>
                 <button
@@ -192,18 +192,18 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
                   Editar Itens
                 </button>
                 <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (pedido.pagamento) {
-                    navigate(`/pedidos/${pedido.id}/editar-pagamento`);
-                  } else {
-                    toast.error("Pagamento não encontrado para este pedido.");
-                  }
-                }}
-                className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
-              >
-                Editar Pagamento
-              </button>
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (pedido.pagamento) {
+                      navigate(`/pedidos/${pedido.id}/editar-pagamento`);
+                    } else {
+                      toast.error("Pagamento não encontrado para este pedido.");
+                    }
+                  }}
+                  className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                >
+                  Editar Pagamento
+                </button>
               </div>
             </div>
           )}
@@ -222,12 +222,9 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
           </p>
         </div>
 
-        {/* Botão para Baixar Fatura */}
+        {/* Botão para Baixar Comanda */}
         <button
-          onClick={(e) => {
-            e.stopPropagation(); // Impede que o clique no botão abra o modal
-            // Lógica para baixar a fatura
-          }}
+          onClick={handleDownloadComanda}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
         >
           📝 Baixar Comanda
