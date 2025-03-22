@@ -37,7 +37,7 @@ class Api::V1::EntregasController < ApplicationController
               only: %i[id nome email telefone endereco_id],
               include: {
                 endereco: {
-                  only: %i[id rua numero bairro cidade estado cep]
+                  only: %i[id rua numero bairro cidade estado cep complemento ponto_referencia]
                 }
               }
             }

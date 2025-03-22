@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ModalDesignarEntregador from './ModalDesignarEntregador';
 import ModalInformacoesEntrega from './ModalInformacoesEntrega';
+import { gerarComandaPDF } from '../../utils/comandaEntregaGenerator'; // Importe a função utilitária
 
 interface Entrega {
   id: number;
@@ -13,15 +14,18 @@ interface Entrega {
     cliente: {
       nome: string;
       telefone: string;
+      endereco: {
+        rua: string;
+        numero: string;
+        bairro: string;
+        cidade: string;
+        estado: string;
+        cep: string;
+        complemento?: string;
+        ponto_referencia?: string;
+      };
     };
-    endereco: {
-      rua: string;
-      numero: string;
-      bairro: string;
-      cidade: string;
-      estado: string;
-      cep: string;
-    };
+    troco?: string;
   };
   entregador?: {
     id: number;
@@ -56,28 +60,20 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
 
   const handleImprimirComanda = (e: React.MouseEvent) => {
     e.stopPropagation(); // Impede que o clique abra o modal
-    const comanda = `
-      Comanda do Pedido #${entrega.pedido_id}
-      Cliente: ${entrega.pedido.cliente.nome} (${entrega.pedido.cliente.telefone})
-      Endereço: ${entrega.pedido.endereco.rua}, ${entrega.pedido.endereco.numero} - ${entrega.pedido.endereco.bairro}, ${entrega.pedido.endereco.cidade}/${entrega.pedido.endereco.estado} - ${entrega.pedido.endereco.cep}
-      Forma de Pagamento: ${entrega.pedido.forma_pagamento}
-      Observações: ${entrega.pedido.observacoes || 'Nenhuma'}
-    `;
-    console.log(comanda);
-    alert('Comanda impressa no console!');
+    gerarComandaPDF(entrega); // Usa a função utilitária para gerar o PDF
   };
 
   return (
     <>
       <div
         className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm mb-4 cursor-pointer relative"
-        onClick={abrirModal} // Agora o card todo abre o modal
+        onClick={abrirModal}
       >
         {/* Ícone de três pontinhos no canto superior direito */}
         <div className="absolute top-2 right-2">
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Impede que o clique no botão abra o modal
+              e.stopPropagation();
               setIsDropdownOpen(!isDropdownOpen);
             }}
             className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -147,7 +143,7 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
         </p>
 
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-        Entregador: {entrega.entregador ? `${entrega.entregador.nome} (${entrega.entregador.veiculo})` : 'Sem entregador'}
+          Entregador: {entrega.entregador ? `${entrega.entregador.nome} (${entrega.entregador.veiculo})` : 'Sem entregador'}
         </p>
 
         {/* Botões de Ação */}
@@ -200,7 +196,6 @@ const EntregaCard: React.FC<EntregaCardProps> = ({
           isOpen={modalAberto}
           onClose={fecharModal}
           entrega={entrega}
-
         />
       )}
     </>
