@@ -1,6 +1,6 @@
 class Api::V1::PedidosController < ApplicationController
-  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens pagamento]
-  skip_before_action :authenticate_user!, only: %i[create]
+  before_action :set_pedido, only: %i[show update destroy itens atualizar_itens pagamento rastreio_pedido]
+  skip_before_action :authenticate_user!, only: %i[create rastreio_pedido]
 
   def index
     hoje = Time.now
@@ -200,6 +200,21 @@ class Api::V1::PedidosController < ApplicationController
   def pagamento
     pagamento = @pedido.pagamento
     render json: pagamento.as_json
+  end
+
+  def rastreio_pedido
+    render json: @pedido.as_json(
+      include: {
+        cliente: {
+          only: %i[id nome telefone endereco_id],
+          include: {
+            endereco: {
+              only: %i[id rua numero bairro cidade estado cep]
+            }
+          }
+        }
+      }
+    )
   end
 
   def show

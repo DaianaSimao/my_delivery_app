@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       resources :pedidos do
         collection do
           get "listar_pedidos"
+          get "rastreio_pedido/:id", to: "pedidos#rastreio_pedido"
         end
         member do
           get "itens", to: "pedidos#itens"

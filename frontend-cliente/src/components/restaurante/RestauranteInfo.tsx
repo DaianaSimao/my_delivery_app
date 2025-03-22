@@ -23,7 +23,7 @@ const formatDiasFuncionamento = (dias: string | undefined): string => {
   return dias.split(',').join(', ');
 };
 
-const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode }) => {
+const RestauranteInfo: React.FC<RestauranteInfoProps> = () => {
   const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
   const [regioes, setRegioes] = useState<RegiaoEntrega[]>([]);
   const [loading, setLoading] = useState(true);

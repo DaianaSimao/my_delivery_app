@@ -290,9 +290,13 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       }
       toast.success('Pedido finalizado com sucesso!');
 
+      // Salvar pedido completo no localStorage
       localStorage.setItem('pedido', JSON.stringify(pedidoCriado));
+      
+      // Salvar apenas o ID do pedido para recuperação posterior
+      localStorage.setItem('pedidoId', pedidoCriado.data.id.toString());
+      
       onCheckout(); // Limpa o carrinho e redireciona
-      localStorage.setItem('status', 'Recebido');
       navigate('/order-tracking');
     } catch (error) {
       console.error("Erro ao enviar o pedido:", error);
