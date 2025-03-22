@@ -31,6 +31,7 @@ import Pedidos from "./components/pedidos/Pedidos";
 import ClienteForm from "./components/pedidos/ClienteForm";
 import ItensForm from "./components/pedidos/ItensForm";
 import PagamentoForm from "./components/pedidos/PagamentoForm";
+import Entregas from "./components/entregas/Entregas";
 
 const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -90,6 +91,7 @@ const AppContent: React.FC = () => {
             <Route path="/pedidos" element={<PedidosList />} />
             <Route path="/pedidos/listar_pedidos" element={<Pedidos />} />
             <Route path="/entregas" element={<EntregasList />} />
+            <Route path="/listar_entregas" element={<Entregas />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/restaurantes" element={<Restaurantes />} />
             <Route path="/restaurantes/new" element={<RestauranteForm />} />

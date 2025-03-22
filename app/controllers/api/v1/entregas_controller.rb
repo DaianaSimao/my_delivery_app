@@ -50,6 +50,71 @@ class Api::V1::EntregasController < ApplicationController
     )
   end
 
+  def listar_entregas
+    restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
+    @entregas = Entrega.includes(:pedido, :entregador).where(pedidos: { restaurante_id: restaurante.id }).order(created_at: :desc)
+
+    if params[:entregador_nome].present?
+      @entregas = @entregas.joins(:entregador
+      ).where(
+        "entregadores.nome ILIKE :entregador_nome",
+        entregador_nome: "%#{params[:entregador_nome]}%"
+      )
+    end
+
+
+    if params[:entrega_id].present?
+      @entregas = @entregas.find(params[:pedido_id])
+    end
+
+    if params[:search].present?
+      @entregas = @entregas.joins(pedido: :cliente
+      ).where("clientes.nome ILIKE :search ",
+              search: "%#{params[:search]}%")
+    end
+
+    if params[:status].present?
+      @entregas = @entregas.where(status: params[:status])
+    end
+
+    # Filtro de data (range)
+    if params[:data_inicio].present? && params[:data_fim].present?
+      data_inicio = Date.parse(params[:data_inicio])
+      data_fim = Date.parse(params[:data_fim]).end_of_day
+      @entregas = @entregas.where(created_at: data_inicio..data_fim)
+    end
+
+    @entregas = @entregas.page(params[:page] || 1).per(params[:per_page] || 10)
+
+    render json: {
+      data: @entregas.as_json(
+        include: {
+          pedido: {
+            only: %i[id status forma_pagamento valor_total observacoes],
+            include: {
+              cliente: {
+                only: %i[id nome email telefone endereco_id],
+                include: {
+                  endereco: {
+                    only: %i[id rua numero bairro cidade estado cep]
+                  }
+                }
+              }
+            }
+          },
+          entregador: {
+            only: %i[id nome telefone veiculo]
+          }
+        }
+      ),
+      meta: {
+        total_pages: @entregas.total_pages,
+        total_count: @entregas.total_count,
+        current_page: @entregas.current_page
+      }
+    }
+  end
+
   def show
     render json: EntregaSerializer.new(@entrega)
   end

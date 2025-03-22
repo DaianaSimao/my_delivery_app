@@ -1,20 +1,20 @@
 Rails.application.routes.draw do
   devise_for :users, defaults: { format: :json }, controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
+    sessions: "users/sessions",
+    registrations: "users/registrations"
   }
 
   devise_scope :user do
-    post 'login', to: 'users/sessions#create'
-    delete 'logout', to: 'users/sessions#destroy'
-    post 'sign_up', to: 'users/registrations#create'
+    post "login", to: "users/sessions#create"
+    delete "logout", to: "users/sessions#destroy"
+    post "sign_up", to: "users/registrations#create"
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
   get "hello", to: "api#index"
 
-  mount Rswag::Api::Engine => '/api-docs'
-  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => "/api-docs"
+  mount Rswag::Ui::Engine => "/api-docs"
 
   namespace :api do
     namespace :v1 do
@@ -37,7 +37,11 @@ Rails.application.routes.draw do
         end
       end
       resources :pagamentos
-      resources :entregas
+      resources :entregas do
+        collection do
+          get "listar_entregas"
+        end
+      end
       resources :entregadores do
         collection do
           get "listar_entregadores"

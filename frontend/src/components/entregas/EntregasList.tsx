@@ -4,6 +4,7 @@ import { EntregaColumn } from './EntregaColumn';
 import useEntregas from '../../hooks/useEntregas';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface Entrega {
   pedido: any;
@@ -21,6 +22,7 @@ interface Entrega {
 
 const EntregasList: React.FC = () => {
   const { entregas, loading, error } = useEntregas();
+  const navigate = useNavigate();
   const [data, setData] = useState({
     Aguardando: [] as Entrega[],
     SaiuParaEntrega: [] as Entrega[],
@@ -181,7 +183,7 @@ const EntregasList: React.FC = () => {
   return (
     <>
       <div className="p-4"></div>
-      <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700 mt-10">
         <div className="w-full md:w-1/2">
           <form
             className="flex items-center"
@@ -236,6 +238,20 @@ const EntregasList: React.FC = () => {
             onChange={(e) => setEntregadorNome(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
           />
+        </div>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => navigate('/pedidos')}
+            className="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            Ver Pedidos
+          </button>
+          <button
+            onClick={() => navigate('/listar_entregas')}
+            className="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+          >
+            Entregas Internas
+          </button>
         </div>
       </div>
       <DragDropContext onDragEnd={() => {}}>
