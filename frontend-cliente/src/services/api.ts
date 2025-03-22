@@ -98,7 +98,7 @@ export const criarPedido = async (pedidoData: any) => {
   }
 };
 
-export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; telefone: string; }) => {
+export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; sobrenome:string; telefone: string; }) => {
   try {
     const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
     return response.data;

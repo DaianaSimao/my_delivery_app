@@ -142,7 +142,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       try {
         // Atualiza os dados no backend
         await atualizarCliente(clienteEncontrado.id, {
-          nome: `${customerFormData.firstName} ${customerFormData.lastName}`,
+          nome: customerFormData.firstName,
+          sobrenome: customerFormData.lastName,
           telefone: customerFormData.whatsapp,
         });
         toast.success('Cliente atualizado com sucesso!');
@@ -155,7 +156,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     } else if (!clienteEncontrado) {
       try {
         const cliente = await criarCliente({
-          nome: `${customerFormData.firstName} ${customerFormData.lastName}`,
+          nome: customerFormData.firstName,
+          sobrenome: customerFormData.lastName,
           telefone: customerFormData.whatsapp,
         });
         localStorage.setItem('cliente', cliente);
