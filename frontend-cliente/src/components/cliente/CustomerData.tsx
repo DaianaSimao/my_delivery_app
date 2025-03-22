@@ -185,10 +185,9 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
     // Verifica se o cliente foi encontrado ou criado
     if (!cliente) {
       toast.error('Cliente não encontrado. Por favor, preencha os dados do cliente.');
-      return; // Interrompe a execução se não houver cliente
+      return;
     }
 
-    // Dados do endereço
     const enderecoData = {
       rua: addressFormData.street,
       numero: addressFormData.number,

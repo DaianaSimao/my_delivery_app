@@ -78,7 +78,7 @@ export function Header({ restauranteId, isDarkMode, onToggleDarkMode }: HeaderPr
               )}
             </button>
             <a
-              href="#"
+              href="/restaurante"
               className="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400"
             >
               <User className="h-5 w-5" />

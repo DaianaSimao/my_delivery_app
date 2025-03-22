@@ -10,6 +10,7 @@ import { Cart } from './carrinho/Cart';
 import CustomerData from './cliente/CustomerData';
 import OrderTracking from './pedidos/OrderTracking';
 import type { CartItem } from '../types';
+import RestauranteInfo from './restaurante/RestauranteInfo';
 
 const AppContent: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -85,6 +86,15 @@ const AppContent: React.FC = () => {
         />
         <Route path="/order-tracking" element={<OrderTracking />} />
         <Route path="*" element={<Navigate to={`/cardapio/${restauranteId}`} />} />
+        <Route
+          path="/restaurante" 
+          element={
+            <RestauranteInfo 
+              isDarkMode={isDarkMode}
+              onBack={() => navigate(-1)}
+              onToggleDarkMode={toggleDarkMode}
+            />} 
+        />
       </Routes>
     </div>
   );
