@@ -22,7 +22,7 @@ class Api::V1::RelatoriosController < ApplicationController
     entregas_total_anterior = @entregas_do_dia_anterior.count
     crescimento_entregas = calcular_crescimento(entregas_total, entregas_total_anterior)
     ticket_medio = (vendas_do_dia / pedidos_total).round(2)
-    ticket_medio_anterior = (vendas_do_dia_anterior / pedidos_total_anterior).round(2)
+    ticket_medio_anterior = pedidos_total_anterior.zero? ? 0 : (vendas_do_dia_anterior / pedidos_total_anterior.to_f).round(2)
     crescimento_ticket_medio = calcular_crescimento(ticket_medio, ticket_medio_anterior)
 
     # Dados para os gráficos
