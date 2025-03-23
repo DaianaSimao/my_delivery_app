@@ -86,6 +86,14 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   
   const [regioesEntrega, setRegioesEntrega] = useState<any[]>([]);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [isOrderFinalized, setIsOrderFinalized] = useState(false);
+
+  useEffect(() => {
+    if (cartItems.length === 0 && !isOrderFinalized) {
+      toast.error('Seu carrinho está vazio. Adicione itens para prosseguir.');
+      navigate('/cart'); // Redireciona para a página do carrinho
+    }
+  }, [cartItems, navigate, isOrderFinalized]);
 
   useEffect(() => {
     const restauranteId = localStorage.getItem('restauranteId');
@@ -297,6 +305,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       
       // Salvar apenas o ID do pedido para recuperação posterior
       localStorage.setItem('pedidoId', pedidoCriado.data.id.toString());
+
+      setIsOrderFinalized(true);
       
       onCheckout(); // Limpa o carrinho e redireciona
       navigate('/order-tracking');
@@ -304,6 +314,11 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
       console.error("Erro ao enviar o pedido:", error);
       toast.error("Erro ao enviar o pedido. Tente novamente.");
     }
+  };
+
+  const handleBack = () => {
+    setIsOrderFinalized(false); // Reseta o estado ao voltar
+    onBack(); // Chama a função onBack original
   };
 
   return (
@@ -315,7 +330,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
               onClick={() => {
                 if (step === 'address') setStep('data');
                 else if (step === 'payment') setStep('address');
-                else onBack();
+                else handleBack();
               }}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
             >

@@ -66,4 +66,7 @@ export interface CartItem extends MenuItem {
   quantity: number;
   options?: string[];
   observation?: string;
+  name: string; // Adicionado para corresponder ao OrderItem
+  price: number; // Adicionado para corresponder ao OrderItem
+  acompanhamentos: any[]; // Adicionado para corresponder ao OrderItem
 }

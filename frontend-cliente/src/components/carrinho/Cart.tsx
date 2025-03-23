@@ -151,7 +151,10 @@ export function Cart({
             </div>
             <button
               onClick={handleCheckout}
-              className="px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors"
+              disabled={items.length === 0} // Desabilita o botão se o carrinho estiver vazio
+              className={`px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg transition-colors ${
+                items.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600'
+              }`}
             >
               Avançar
             </button>
