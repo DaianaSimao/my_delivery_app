@@ -18,7 +18,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :restaurantes
+      resources :restaurantes do
+        member do
+          get "mais_pedidos", to: "restaurantes#mais_pedidos"
+        end
+      end
       resources :relatorios do
         collection do
           get "dashboard"

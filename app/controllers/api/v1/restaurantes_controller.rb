@@ -1,6 +1,6 @@
 class Api::V1::RestaurantesController < ApplicationController
   before_action :set_restaurante, only: %i[show update destroy regioes_entrega]
-  skip_before_action :authenticate_user!, only: %i[show regioes_entrega]
+  skip_before_action :authenticate_user!, only: %i[show regioes_entrega mais_pedidos]
 
   def index
     @restaurantes = current_user.restaurantes
@@ -25,6 +25,18 @@ class Api::V1::RestaurantesController < ApplicationController
     render json: regioes.as_json
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Restaurante não encontrado" }, status: :not_found
+  end
+
+  def mais_pedidos
+    restaurante = Restaurante.find(params[:id])
+    mais_pedidos = restaurante.produtos
+                              .joins(:itens_pedidos)
+                              .where('produtos.disponivel = ?', true)
+                              .group('produtos.id')
+                              .order('COUNT(itens_pedidos.id) DESC')
+                              .limit(4) # Limita a 4 itens mais pedidos
+
+    render json: { data: mais_pedidos }
   end
 
   def show

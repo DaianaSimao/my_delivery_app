@@ -138,3 +138,13 @@ export const fetchRegioesEntrega = async (restauranteId: string | number) => {
     throw error;
   }
 }
+
+export const fetchMaisPedidos = async (restauranteId: string | number) => {
+  try {
+    const response = await api.get(`/api/v1/restaurantes/${restauranteId}/mais_pedidos`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar itens mais pedidos:", error);
+    throw error;
+  }
+};
