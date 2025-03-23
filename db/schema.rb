@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_201824) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_211106) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -176,13 +176,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_201824) do
     t.index ["produto_id"], name: "index_produto_acompanhamentos_on_produto_id"
   end
 
-  create_table "produto_acompanhamentos_adicionais", force: :cascade do |t|
-    t.bigint "produtos_id", null: false
-    t.bigint "acompanhamentos_adicionais_id", null: false
+  create_table "produto_secoes", force: :cascade do |t|
+    t.bigint "produto_id", null: false
+    t.bigint "secoes_cardapio_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["acompanhamentos_adicionais_id"], name: "idx_on_acompanhamentos_adicionais_id_d92621c90b"
-    t.index ["produtos_id"], name: "index_produto_acompanhamentos_adicionais_on_produtos_id"
+    t.index ["produto_id"], name: "index_produto_secoes_on_produto_id"
+    t.index ["secoes_cardapio_id"], name: "index_produto_secoes_on_secoes_cardapio_id"
   end
 
   create_table "produtos", force: :cascade do |t|
@@ -195,11 +195,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_201824) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["restaurante_id"], name: "index_produtos_on_restaurante_id"
-  end
-
-  create_table "produtos_promocoes", id: false, force: :cascade do |t|
-    t.bigint "promocao_id", null: false
-    t.bigint "produto_id", null: false
   end
 
   create_table "promocoes", force: :cascade do |t|
@@ -257,6 +252,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_201824) do
     t.index ["endereco_id"], name: "index_restaurantes_on_endereco_id"
   end
 
+  create_table "secoes_cardapios", force: :cascade do |t|
+    t.string "nome"
+    t.bigint "restaurante_id", null: false
+    t.string "ordem"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id"], name: "index_secoes_cardapios_on_restaurante_id"
+  end
+
   create_table "user_restaurantes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "restaurante_id", null: false
@@ -298,12 +302,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_201824) do
   add_foreign_key "pedidos", "restaurantes"
   add_foreign_key "produto_acompanhamentos", "acompanhamentos"
   add_foreign_key "produto_acompanhamentos", "produtos"
-  add_foreign_key "produto_acompanhamentos_adicionais", "acompanhamentos_adicionais", column: "acompanhamentos_adicionais_id"
-  add_foreign_key "produto_acompanhamentos_adicionais", "produtos", column: "produtos_id"
+  add_foreign_key "produto_secoes", "produtos"
+  add_foreign_key "produto_secoes", "secoes_cardapios"
   add_foreign_key "produtos", "restaurantes"
   add_foreign_key "promocoes_produtos", "produtos"
   add_foreign_key "promocoes_produtos", "promocoes"
   add_foreign_key "restaurantes", "enderecos"
+  add_foreign_key "secoes_cardapios", "restaurantes"
   add_foreign_key "user_restaurantes", "restaurantes"
   add_foreign_key "user_restaurantes", "users"
 end

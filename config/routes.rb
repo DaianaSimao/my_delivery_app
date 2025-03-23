@@ -69,6 +69,7 @@ Rails.application.routes.draw do
         end
       end
       resources :promocoes
+      resources :secoes_cardapios
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
       get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
       get "cardapio/:restaurante_id", to: "produtos#cardapio"
