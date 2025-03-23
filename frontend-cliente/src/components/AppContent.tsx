@@ -16,9 +16,11 @@ const AppContent: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const {
     cartItems,
-    setCartItems, // Se necessário
-    clearCart,    // Para limpar manualmente
-    // Remover handleAddToCart, handleRemoveItem, handleUpdateQuantity do hook antigo
+    setCartItems,
+    clearCart,
+    editCartItem,
+    itemToEdit,
+    setItemToEdit
   } = useCart();
   const navigate = useNavigate();
   const restauranteId = localStorage.getItem('restauranteId');
@@ -48,7 +50,8 @@ const AppContent: React.FC = () => {
   };
 
   const handleEditItem = (item: CartItem) => {
-    navigate(`/item/${item.id}`);
+    setItemToEdit(item); // Definir o item que está sendo editado
+    navigate(`/item/${item.id.split('-')[0]}`); // Navegar para a página de edição
   };
 
   const handleAddMore = () => navigate(`/cardapio/${restauranteId}`);
@@ -58,7 +61,16 @@ const AppContent: React.FC = () => {
       <Toaster />
       <Routes>
         <Route path="/cardapio/:restauranteId/*" element={<CardapioLayout />} />
-        <Route path="/item/:itemId" element={<ItemDetails onAddToCart={handleAddToCart} />} />
+        <Route 
+          path="/item/:itemId" 
+          element={
+            <ItemDetails 
+              onAddToCart={handleAddToCart} 
+              itemToEdit={itemToEdit} 
+              onEditItem={editCartItem} 
+            />
+          } 
+        />
         <Route
           path="/cart"
           element={

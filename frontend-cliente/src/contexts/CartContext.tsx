@@ -8,7 +8,10 @@ interface CartContextType {
   restauranteId: string | null;
   setRestauranteId: (id: string | null) => void;
   onCheckout: () => void;
-  clearCart: () => void; // Adicionando explicitamente
+  clearCart: () => void;
+  editCartItem: (originalItemId: string, updatedItem: CartItem) => void;
+  itemToEdit: CartItem | null;
+  setItemToEdit: React.Dispatch<React.SetStateAction<CartItem | null>>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -19,6 +22,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : [];
   });
   const [restauranteId, setRestauranteId] = useState<string | null>(() => localStorage.getItem('restauranteId'));
+  const [itemToEdit, setItemToEdit] = useState<CartItem | null>(null);
 
   useEffect(() => {
     if (restauranteId) {
@@ -44,8 +48,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log("Carrinho limpo após checkout");
   };
 
+  const editCartItem = (originalItemId: string, updatedItem: CartItem) => {
+    setCartItems((prevItems) => 
+      prevItems.map((item) => 
+        item.id === originalItemId ? updatedItem : item
+      )
+    );
+    setItemToEdit(null);
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, restauranteId, setRestauranteId, onCheckout, clearCart }}>
+    <CartContext.Provider value={{ 
+      cartItems, 
+      setCartItems, 
+      restauranteId, 
+      setRestauranteId, 
+      onCheckout, 
+      clearCart, 
+      editCartItem,
+      itemToEdit,
+      setItemToEdit
+    }}>
       {children}
     </CartContext.Provider>
   );

@@ -16,14 +16,18 @@ import { useTheme } from '../../hooks/useTheme'; // Importe o hook useTheme
 
 interface ItemDetailsProps {
   onAddToCart: (item: CartItem) => void;
+  itemToEdit?: CartItem | null; // Item a ser editado, se estiver no modo de edição
+  onEditItem?: (originalItemId: string, updatedItem: CartItem) => void; // Função para atualizar o item
 }
 
-const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
+const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEditItem }) => {
   const { itemId } = useParams<{ itemId: string }>();
   const [item, setItem] = useState<MenuItem | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({});
   const [expandedGroups, setExpandedGroups] = useState<number[]>([]);
   const [observation, setObservation] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [originalItemId, setOriginalItemId] = useState<string>('');
   const navigate = useNavigate();
 
   // Use o hook useTheme para gerenciar o dark mode
@@ -43,6 +47,31 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
 
     loadProductDetails();
   }, [itemId]);
+
+  // Efeito para carregar os dados do item quando estiver no modo de edição
+  useEffect(() => {
+    if (itemToEdit) {
+      setIsEditMode(true);
+      setOriginalItemId(itemToEdit.id);
+      setObservation(itemToEdit.observation || '');
+      
+      // Inicializar as opções selecionadas com base nos acompanhamentos do item
+      if (itemToEdit.acompanhamentos && itemToEdit.acompanhamentos.length > 0) {
+        const optionsMap: Record<number, number> = {};
+        
+        itemToEdit.acompanhamentos.forEach((acomp: { id: any; quantidade: number; }) => {
+          optionsMap[Number(acomp.id)] = acomp.quantidade;
+        });
+        
+        setSelectedOptions(optionsMap);
+      }
+      
+      // Expandir todos os grupos de acompanhamentos
+      if (item?.produto_acompanhamentos) {
+        setExpandedGroups(item.produto_acompanhamentos.map(pa => pa.acompanhamento.id));
+      }
+    }
+  }, [itemToEdit, item]);
 
   const toggleGroup = (groupId: number) => {
     setExpandedGroups((prev) =>
@@ -69,45 +98,87 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
     }, item?.preco ? parseFloat(item.preco.toString()) : 0).toFixed(2)
   );
 
-  const handleAddToCart = () => {
+  const handleSubmit = () => {
     if (item) {
-      const uniqueId = `${item.id}-${new Date().getTime()}`;
-      const cartItem: CartItem = {
-        id: uniqueId,
-        name: item.nome,
-        price: totalPrice,
-        quantity: 1,
-        image: item.imagem_url,
-        options: Object.entries(selectedOptions)
-          .filter(([_, quantity]) => quantity > 0)
-          .map(([optionId, quantity]) => {
-            const option = item.produto_acompanhamentos
-              .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
-              .find((opt) => opt.id === Number(optionId));
-            return `${option?.nome} (${quantity}x) - R$ ${option?.preco}`;
-          }),
-        observation: observation,
-        nome: '',
-        descricao: '',
-        preco: 0,
-        imagem_url: '',
-        disponivel: '',
-        acompanhamentos: Object.entries(selectedOptions)
-          .filter(([_, quantity]) => quantity > 0)
-          .map(([optionId, quantity]) => {
-            const option = item.produto_acompanhamentos
-              .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
-              .find((opt) => opt.id === Number(optionId));
-            return {
-              id: optionId,
-              nome: option?.nome || '',
-              preco: option?.preco || 0,
-              quantidade: quantity,
-            };
-          }),
-        produto_acompanhamentos: []
-      };
-      onAddToCart(cartItem);
+      if (isEditMode && onEditItem && originalItemId) {
+        // Atualizar item existente
+        const updatedItem: CartItem = {
+          id: originalItemId,
+          name: item.nome,
+          price: totalPrice,
+          quantity: itemToEdit?.quantity || 1,
+          image: item.imagem_url,
+          options: Object.entries(selectedOptions)
+            .filter(([_, quantity]) => quantity > 0)
+            .map(([optionId, quantity]) => {
+              const option = item.produto_acompanhamentos
+                .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
+                .find((opt) => opt.id === Number(optionId));
+              return `${option?.nome} (${quantity}x) - R$ ${option?.preco}`;
+            }),
+          observation: observation,
+          nome: '',
+          descricao: '',
+          preco: 0,
+          imagem_url: '',
+          disponivel: '',
+          acompanhamentos: Object.entries(selectedOptions)
+            .filter(([_, quantity]) => quantity > 0)
+            .map(([optionId, quantity]) => {
+              const option = item.produto_acompanhamentos
+                .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
+                .find((opt) => opt.id === Number(optionId));
+              return {
+                id: optionId,
+                nome: option?.nome || '',
+                preco: option?.preco || 0,
+                quantidade: quantity,
+              };
+            }),
+          produto_acompanhamentos: []
+        };
+        
+        onEditItem(originalItemId, updatedItem);
+      } else {
+        // Adicionar novo item
+        const uniqueId = `${item.id}-${new Date().getTime()}`;
+        const cartItem: CartItem = {
+          id: uniqueId,
+          name: item.nome,
+          price: totalPrice,
+          quantity: 1,
+          image: item.imagem_url,
+          options: Object.entries(selectedOptions)
+            .filter(([_, quantity]) => quantity > 0)
+            .map(([optionId, quantity]) => {
+              const option = item.produto_acompanhamentos
+                .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
+                .find((opt) => opt.id === Number(optionId));
+              return `${option?.nome} (${quantity}x) - R$ ${option?.preco}`;
+            }),
+          observation: observation,
+          nome: '',
+          descricao: '',
+          preco: 0,
+          imagem_url: '',
+          disponivel: '',
+          acompanhamentos: Object.entries(selectedOptions)
+            .filter(([_, quantity]) => quantity > 0)
+            .map(([optionId, quantity]) => {
+              const option = item.produto_acompanhamentos
+                .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
+                .find((opt) => opt.id === Number(optionId));
+              return {
+                id: optionId,
+                nome: option?.nome || '',
+                preco: option?.preco || 0,
+                quantidade: quantity,
+              };
+            }),
+          produto_acompanhamentos: []
+        };
+        onAddToCart(cartItem);
+      }
       navigate('/cart');
     }
   };
@@ -255,10 +326,10 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart }) => {
               </p>
             </div>
             <button
-              onClick={handleAddToCart}
+              onClick={handleSubmit}
               className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
             >
-              Avançar
+              {isEditMode ? 'Atualizar' : 'Avançar'}
             </button>
           </div>
         </div>
