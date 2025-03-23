@@ -24,13 +24,13 @@ const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
       title: 'Entrega',
       description: 'Receba em casa',
       icon: <MapPin className="w-6 h-6" />,
-    },
-    {
-      id: 'Retirada',
-      title: 'Retirada',
-      description: 'Retire no local',
-      icon: <Home className="w-6 h-6" />,
-    },
+    }
+    // {
+    //   id: 'Retirada',
+    //   title: 'Retirada',
+    //   description: 'Retire no local',
+    //   icon: <Home className="w-6 h-6" />,
+    // },
   ];
 
   const paymentMethods = [
