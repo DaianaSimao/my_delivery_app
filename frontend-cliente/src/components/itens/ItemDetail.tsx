@@ -81,9 +81,37 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
     );
   };
 
-  const updateQuantity = (optionId: number, increment: boolean) => {
+  // Função para calcular a quantidade total de itens selecionados por grupo de acompanhamento
+  const getTotalSelectedInGroup = (acompanhamentoId: number): number => {
+    let total = 0;
+    const options = item?.produto_acompanhamentos
+      .find(pa => pa.acompanhamento.id === acompanhamentoId)
+      ?.acompanhamento.item_acompanhamentos || [];
+      
+    options.forEach(option => {
+      total += selectedOptions[option.id] || 0;
+    });
+    
+    return total;
+  };
+
+  const updateQuantity = (optionId: number, increment: boolean, acompanhamentoId: number) => {
     setSelectedOptions((prev) => {
       const currentValue = prev[optionId] || 0;
+      
+      // Se estiver incrementando, verificar se atingiu o limite máximo
+      if (increment) {
+        const acompanhamento = item?.produto_acompanhamentos
+          .find(pa => pa.acompanhamento.id === acompanhamentoId)?.acompanhamento;
+        
+        const totalSelected = getTotalSelectedInGroup(acompanhamentoId);
+        
+        // Se já atingiu o limite máximo, não permitir adicionar mais
+        if (totalSelected >= (acompanhamento?.quantidade_maxima || 0)) {
+          return prev;
+        }
+      }
+      
       const newValue = increment ? currentValue + 1 : Math.max(0, currentValue - 1);
       return { ...prev, [optionId]: newValue };
     });
@@ -237,67 +265,81 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
 
             {/* Acompanhamentos e opções */}
             <div className="space-y-6 mt-6">
-              {item.produto_acompanhamentos.map(({ acompanhamento }) => (
-                <div
-                  key={acompanhamento.id}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
-                >
-                  <button
-                    onClick={() => toggleGroup(acompanhamento.id)}
-                    className="w-full px-4 py-3 flex justify-between bg-gray-50 dark:bg-gray-800"
+              {item.produto_acompanhamentos.map(({ acompanhamento }) => {
+                const totalSelected = getTotalSelectedInGroup(acompanhamento.id);
+                return (
+                  <div
+                    key={acompanhamento.id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
                   >
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {acompanhamento.nome}
-                    </h3>
-                    {expandedGroups.includes(acompanhamento.id) ? (
-                      <ChevronUp />
-                    ) : (
-                      <ChevronDown />
-                    )}
-                  </button>
+                    <button
+                      onClick={() => toggleGroup(acompanhamento.id)}
+                      className="w-full px-4 py-3 flex justify-between bg-gray-50 dark:bg-gray-800"
+                    >
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {acompanhamento.nome} 
+                        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                          ({totalSelected}/{acompanhamento.quantidade_maxima || 0})
+                        </span>
+                      </h3>
+                      {expandedGroups.includes(acompanhamento.id) ? (
+                        <ChevronUp />
+                      ) : (
+                        <ChevronDown />
+                      )}
+                    </button>
 
-                  {expandedGroups.includes(acompanhamento.id) && (
-                    <div className="p-4 bg-white dark:bg-gray-900 space-y-4">
-                      {acompanhamento.item_acompanhamentos.map((option) => (
-                        <div
-                          key={option.id}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="flex gap-4 flex-1">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900 dark:text-white">
-                                {option.nome}
-                              </h4>
-                              {option.preco && (
-                                <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                                  + R$ {option.preco}
-                                </p>
-                              )}
+                    {expandedGroups.includes(acompanhamento.id) && (
+                      <div className="p-4 bg-white dark:bg-gray-900 space-y-4">
+                        {acompanhamento.item_acompanhamentos.map((option) => {
+                          const maxReached = getTotalSelectedInGroup(acompanhamento.id) >= (acompanhamento.quantidade_maxima || 0);
+                          return (
+                            <div
+                              key={option.id}
+                              className="flex items-center justify-between"
+                            >
+                              <div className="flex gap-4 flex-1">
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-gray-900 dark:text-white">
+                                    {option.nome}
+                                  </h4>
+                                  {option.preco && (
+                                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                                      + R$ {option.preco}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => updateQuantity(option.id, false, acompanhamento.id)}
+                                  className="p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                >
+                                  <Minus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                                </button>
+                                <span className="w-8 text-center font-medium text-gray-900 dark:text-white">
+                                  {selectedOptions[option.id] || 0}
+                                </span>
+                                <button
+                                  onClick={() => updateQuantity(option.id, true, acompanhamento.id)}
+                                  disabled={maxReached && !(selectedOptions[option.id] || 0)}
+                                  className={`p-1 rounded-full ${
+                                    maxReached && !(selectedOptions[option.id] || 0)
+                                      ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
+                                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                  }`}
+                                >
+                                  <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => updateQuantity(option.id, false)}
-                              className="p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                            >
-                              <Minus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                            </button>
-                            <span className="w-8 text-center font-medium text-gray-900 dark:text-white">
-                              {selectedOptions[option.id] || 0}
-                            </span>
-                            <button
-                              onClick={() => updateQuantity(option.id, true)}
-                              className="p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                            >
-                              <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Observações */}
