@@ -15,6 +15,7 @@ import dashboardIcon from "/icons/dashboard_menu.svg";
 import pedidoIcon from "/icons/pedido_menu.svg";
 import entregaIcon from "/icons/entrega_menu.svg";
 import entregadorIcon from "/icons/entregador_menu.svg";
+import descontoIcon from "/icons/desconto.svg";
 
 interface SideBarProps {
   isDarkMode: boolean;
@@ -148,6 +149,19 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Produtos</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/promocoes"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <img
+                  src={descontoIcon}
+                  alt="Ícone do promoção"
+                  className="h-6 w-auto mr-1 text-4xl" 
+                />
+                <span className="flex-1 ms-3 whitespace-nowrap">Promoções</span>
               </a>
             </li>
             <li>

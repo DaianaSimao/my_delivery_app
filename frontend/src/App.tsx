@@ -32,6 +32,9 @@ import ClienteForm from "./components/pedidos/ClienteForm";
 import ItensForm from "./components/pedidos/ItensForm";
 import PagamentoForm from "./components/pedidos/PagamentoForm";
 import Entregas from "./components/entregas/Entregas";
+import PromocoesList from "./components/promocoes/PromocoesList";
+import PromocaoDetail from "./components/promocoes/PromocaoDetail";
+import PromocaoForm from "./components/promocoes/PromocaoForm";
 
 const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -104,6 +107,10 @@ const AppContent: React.FC = () => {
             <Route path="/clientes/:id/editar" element={<ClienteForm />} />
             <Route path="/pedidos/:id/editar-itens" element={<ItensForm />} />
             <Route path="/pedidos/:id/editar-pagamento" element={<PagamentoForm />} />
+            <Route path="/promocoes" element={<PromocoesList />} />
+            <Route path="/promocoes/new" element={<PromocaoForm />} />
+            <Route path="/promocoes/:id" element={<PromocaoDetail />} />
+            <Route path="/promocoes/:id/editar" element={<PromocaoForm />} />
             <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>

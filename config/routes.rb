@@ -68,6 +68,7 @@ Rails.application.routes.draw do
           get "cidades"
         end
       end
+      resources :promocoes
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
       get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
       get "cardapio/:restaurante_id", to: "produtos#cardapio"

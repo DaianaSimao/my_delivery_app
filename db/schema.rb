@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_16_201654) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_191730) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -195,6 +195,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_16_201654) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["restaurante_id"], name: "index_produtos_on_restaurante_id"
+  end
+
+  create_table "promocoes", force: :cascade do |t|
+    t.string "nome"
+    t.text "descricao"
+    t.string "tipo"
+    t.decimal "valor_de"
+    t.decimal "valor_para"
+    t.decimal "desconto_percentual"
+    t.date "data_inicio"
+    t.date "data_fim"
+    t.boolean "ativa"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "restaurante_id"
+    t.integer "produto_id"
   end
 
   create_table "regioes_entregas", force: :cascade do |t|
