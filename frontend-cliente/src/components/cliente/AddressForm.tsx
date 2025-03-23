@@ -17,7 +17,7 @@ interface AddressFormProps {
   onNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onComplementChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onReferenceChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onNeighborhoodChange: (neighborhood: string, regionId: number) => void;
+  onNeighborhoodChange: (neighborhood: string, regionId: number, city: string) => void;
   onCityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddressTypeChange: (addressType: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -62,8 +62,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
       {showNeighborhoodModal && (
         <NeighborhoodModal
-          onNeighborhoodChange={(neighborhood, regionId) => {
-            onNeighborhoodChange(neighborhood, regionId);
+          onNeighborhoodChange={(neighborhood, regionId, city) => {
+            onNeighborhoodChange(neighborhood, regionId, city);
             setShowNeighborhoodModal(false);
           }}
           onClose={() => setShowNeighborhoodModal(false)}

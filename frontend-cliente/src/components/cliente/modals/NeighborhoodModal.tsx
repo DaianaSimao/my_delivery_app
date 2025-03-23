@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchRegioesEntrega } from '../../../services/api';
 
 interface NeighborhoodModalProps {
-  onNeighborhoodChange: (neighborhood: string, regionId: number) => void; // Atualizado para incluir regionId
+  onNeighborhoodChange: (neighborhood: string, regionId: number, cidade: string) => void; // Atualizado para incluir regionId
   onClose: () => void;
 }
 
@@ -30,9 +30,7 @@ const NeighborhoodModal: React.FC<NeighborhoodModalProps> = ({
             <button
               key={regiao.id} // Assumindo que há um campo 'id' único
               onClick={() => {
-                console.log('Região selecionada:', regiao.bairro);
-                console.log('ID da região:', regiao.id);
-                onNeighborhoodChange(regiao.bairro, regiao.id); // Passa bairro e id
+                onNeighborhoodChange(regiao.bairro, regiao.id, regiao.cidade); // Passa bairro e id
                 onClose();
               }}
               className="w-full p-3 text-left rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700

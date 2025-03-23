@@ -356,8 +356,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
             onNumberChange={handleNumberChange}
             onComplementChange={handleComplementChange}
             onReferenceChange={handleReferenceChange}
-            onNeighborhoodChange={(neighborhood: string, regioes_entrega_id: number) => {
-              handleNeighborhoodChange(neighborhood, regioes_entrega_id);
+            onNeighborhoodChange={(neighborhood: string, regioes_entrega_id: number, city: string) => {
+              handleNeighborhoodChange(neighborhood, regioes_entrega_id, city);
               const regiao = regioesEntrega.find((r) => r.id === regioes_entrega_id);
               setDeliveryFee(regiao ? regiao.taxa_entrega : 0); // Atualiza a taxa ao mudar a região
             }}

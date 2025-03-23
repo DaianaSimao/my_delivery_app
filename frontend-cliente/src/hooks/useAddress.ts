@@ -46,11 +46,12 @@ const useAddress = (enderecoId?: number) => {
     setFormData((prev) => ({ ...prev, reference: e.target.value }));
   };
 
-  const handleNeighborhoodChange = (neighborhood: string, regioes_entrega_id: number) => {
+  const handleNeighborhoodChange = (neighborhood: string, regioes_entrega_id: number, city: string) => {
     setFormData((prev) => ({
       ...prev,
       neighborhood,
       regioes_entrega_id, // Atualiza o ID da região
+      city,
     }));
   };
 
