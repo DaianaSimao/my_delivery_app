@@ -1,8 +1,8 @@
 # app/models/promocao.rb
 class Promocao < ApplicationRecord
   belongs_to :restaurante
-  belongs_to :produto
-  
+  has_many :promocoes_produtos
+  has_many :produtos, through: :promocoes_produtos
   validates :nome, presence: true
   validates :tipo, presence: true, inclusion: { in: %w[de_para desconto_percentual] }
   validates :valor_de, presence: true, if: :de_para?

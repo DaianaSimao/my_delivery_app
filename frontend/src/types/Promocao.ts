@@ -1,3 +1,5 @@
+import { Produto } from './Produto';
+
 export interface Promocao {
   id: number;
   nome: string;
@@ -10,5 +12,6 @@ export interface Promocao {
   data_fim: string;
   ativa: boolean;
   restaurante_id?: number;
-  produto_id?: number;
+  produto_ids?: number[]; // Array de números (IDs dos produtos)
+  produtos?: Produto[]; // Array de objetos (Produtos)
 }

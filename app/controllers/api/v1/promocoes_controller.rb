@@ -18,12 +18,14 @@ class Api::V1::PromocoesController < ApplicationController
   end
 
   def show
-    render json: @promocao.as_json
+    @promocao = Promocao.includes(:produtos).find(params[:id])
+    render json: @promocao, include: [:produtos]
   end
 
   def create
     @promocao = Promocao.new(promocao_params)
     @promocao.restaurante_id = current_user.restaurante_ativo
+    binding.pry
     if @promocao.save
       render json: @promocao, status: :created
     else
@@ -54,7 +56,7 @@ class Api::V1::PromocoesController < ApplicationController
   def promocao_params
     params.require(:promocao).permit(
       :nome, :descricao, :tipo, :valor_de, :valor_para, :desconto_percentual,
-      :data_inicio, :data_fim, :ativa, :restaurante_id, :produto_id
+      :data_inicio, :data_fim, :ativa, :restaurante_id, produto_ids: []
     )
   end
 end

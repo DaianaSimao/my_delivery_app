@@ -1,4 +1,3 @@
-// src/components/promocoes/PromocaoDetail.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -65,6 +64,20 @@ const PromocaoDetail: React.FC = () => {
             <p className="text-gray-900 dark:text-white">
               Status: {promocao.ativa ? 'Ativa' : 'Inativa'}
             </p>
+          </div>
+          <div className="sm:col-span-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Produtos:</h3>
+            {promocao.produtos && promocao.produtos.length > 0 ? (
+              <ul className="mt-2 space-y-2">
+                {promocao.produtos.map((produto) => (
+                  <li key={produto.id} className="text-gray-700 dark:text-gray-300">
+                    {produto.nome}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700 dark:text-gray-300">Nenhum produto associado.</p>
+            )}
           </div>
         </div>
         <div className="flex gap-4 mt-4 sm:mt-6">

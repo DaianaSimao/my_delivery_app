@@ -1,4 +1,3 @@
-// src/components/promocoes/PromocaoForm.tsx
 import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,7 +18,7 @@ const PromocaoForm: React.FC = () => {
     data_inicio: "",
     data_fim: "",
     ativa: true,
-    produto_id: undefined,
+    produto_ids: [],
   });
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const navigate = useNavigate();
@@ -27,28 +26,42 @@ const PromocaoForm: React.FC = () => {
   useEffect(() => {
     const fetchProdutos = async () => {
       try {
-        // Carrega os produtos do restaurante do usuário logado
         const produtosResponse = await api.get("/api/v1/produtos");
         setProdutos(produtosResponse.data.data);
       } catch (error) {
         console.error("Erro ao carregar produtos:", error);
       }
     };
-
-    fetchProdutos();
-
-    // Se estiver editando, carrega os dados da promoção
-    if (id) {
-      const fetchPromocao = async () => {
-        try {
-          const promocaoResponse = await api.get(`/api/v1/promocoes/${id}`);
-          setPromocao(promocaoResponse.data);
-        } catch (error) {
-          console.error("Erro ao carregar promoção:", error);
-        }
-      };
-      fetchPromocao();
-    }
+  
+    const fetchPromocao = async () => {
+      try {
+        const promocaoResponse = await api.get(`/api/v1/promocoes/${id}`);
+        const data = promocaoResponse.data;
+  
+        // Mapear os dados da API para o estado promocao
+        setPromocao({
+          id: data.id || 0,
+          nome: data.nome || "",
+          descricao: data.descricao || "",
+          tipo: data.tipo || "de_para",
+          valor_de: parseFloat(data.valor_de) || 0, // Converter string para número
+          valor_para: parseFloat(data.valor_para) || 0, // Converter string para número
+          desconto_percentual: parseFloat(data.desconto_percentual) || 0, // Converter string para número
+          data_inicio: data.data_inicio || "",
+          data_fim: data.data_fim || "",
+          ativa: data.ativa !== undefined ? data.ativa : true,
+          produto_ids: data.produtos ? data.produtos.map((produto: Produto) => produto.id) : [], // Mapear produtos para IDs
+        });
+      } catch (error) {
+        console.error("Erro ao carregar promoção:", error);
+      }
+    };
+  
+    fetchProdutos().then(() => {
+      if (id) {
+        fetchPromocao();
+      }
+    });
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -59,14 +72,42 @@ const PromocaoForm: React.FC = () => {
     }));
   };
 
+  const handleProdutoChange = (produtoId: number) => {
+    setPromocao((prev) => {
+      const alreadySelected = prev.produto_ids?.includes(produtoId);
+      return {
+        ...prev,
+        produto_ids: alreadySelected
+          ? prev.produto_ids?.filter((id) => id !== produtoId) // Remove o produto se já estiver selecionado
+          : [...(prev.produto_ids || []), produtoId], // Adiciona o produto se não estiver selecionado
+      };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    const payload = {
+      promocao: {
+        nome: promocao.nome,
+        descricao: promocao.descricao,
+        tipo: promocao.tipo,
+        valor_de: promocao.valor_de,
+        valor_para: promocao.valor_para,
+        desconto_percentual: promocao.desconto_percentual,
+        data_inicio: promocao.data_inicio,
+        data_fim: promocao.data_fim,
+        ativa: promocao.ativa,
+        produto_ids: promocao.produto_ids, // IDs dos produtos selecionados
+      },
+    };
+  
     try {
       if (id) {
-        await api.put(`/api/v1/promocoes/${id}`, promocao);
+        await api.put(`/api/v1/promocoes/${id}`, payload);
         toast.success("Promoção atualizada com sucesso!");
       } else {
-        await api.post("/api/v1/promocoes", promocao);
+        await api.post("/api/v1/promocoes", payload);
         toast.success("Promoção criada com sucesso!");
       }
       navigate("/promocoes");
@@ -176,24 +217,29 @@ const PromocaoForm: React.FC = () => {
                 />
               </div>
             )}
-            <div className="w-full">
-              <label htmlFor="produto_id" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Produto:
+            <div className="sm:col-span-2">
+              <label htmlFor="produto_ids" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Produtos:
               </label>
-              <select
-                name="produto_id"
-                id="produto_id"
-                value={promocao.produto_id}
-                onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-              >
-                <option value="">Selecione um produto</option>
+              <div className="grid grid-cols-2 gap-4">
                 {produtos.map((produto) => (
-                  <option key={produto.id} value={produto.id}>
-                    {produto.nome}
-                  </option>
+                  <div key={produto.id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`produto-${produto.id}`}
+                      checked={promocao.produto_ids?.includes(produto.id)}
+                      onChange={() => handleProdutoChange(produto.id)}
+                      className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`produto-${produto.id}`}
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      {produto.nome}
+                    </label>
+                  </div>
                 ))}
-              </select>
+              </div>
             </div>
             <div className="w-full">
               <label htmlFor="data_inicio" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">

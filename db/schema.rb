@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_191730) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_23_201824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -197,6 +197,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_191730) do
     t.index ["restaurante_id"], name: "index_produtos_on_restaurante_id"
   end
 
+  create_table "produtos_promocoes", id: false, force: :cascade do |t|
+    t.bigint "promocao_id", null: false
+    t.bigint "produto_id", null: false
+  end
+
   create_table "promocoes", force: :cascade do |t|
     t.string "nome"
     t.text "descricao"
@@ -210,7 +215,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_191730) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "restaurante_id"
-    t.integer "produto_id"
+  end
+
+  create_table "promocoes_produtos", force: :cascade do |t|
+    t.bigint "promocao_id", null: false
+    t.bigint "produto_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["produto_id"], name: "index_promocoes_produtos_on_produto_id"
+    t.index ["promocao_id"], name: "index_promocoes_produtos_on_promocao_id"
   end
 
   create_table "regioes_entregas", force: :cascade do |t|
@@ -288,6 +301,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_191730) do
   add_foreign_key "produto_acompanhamentos_adicionais", "acompanhamentos_adicionais", column: "acompanhamentos_adicionais_id"
   add_foreign_key "produto_acompanhamentos_adicionais", "produtos", column: "produtos_id"
   add_foreign_key "produtos", "restaurantes"
+  add_foreign_key "promocoes_produtos", "produtos"
+  add_foreign_key "promocoes_produtos", "promocoes"
   add_foreign_key "restaurantes", "enderecos"
   add_foreign_key "user_restaurantes", "restaurantes"
   add_foreign_key "user_restaurantes", "users"
