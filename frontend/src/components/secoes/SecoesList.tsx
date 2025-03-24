@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../../services/api";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 interface SecaoCardapio {
@@ -52,22 +51,6 @@ const SecoesList = () => {
 
   const handleEdit = (id: number) => {
     navigate(`/secoes/${id}/editar`);
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await api.delete(`/api/v1/secoes_cardapios/${id}`);
-
-      if (response.status === 200) {
-        toast.success("Seção excluída com sucesso!");
-        setSecoes((prev) => prev.filter((secao) => secao.id !== id));
-      } else {
-        toast.error("Erro ao excluir seção.");
-      }
-    } catch (error: any) {
-      console.error("Erro ao excluir seção:", error);
-      toast.error(error.response?.data?.error || "Erro ao excluir seção.");
-    }
   };
 
   if (loading) {
@@ -131,12 +114,19 @@ const SecoesList = () => {
               <button
                 type="button"
                 onClick={() => navigate("/secoes/new")}
-                className="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+                className="flex items-center justify-center text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
               >
                 <svg className="h-3.5 w-3.5 mr-1.5 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path clipRule="evenodd" fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                 </svg>
                 Adicionar Seção
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/produtos")}
+                className="flex items-center justify-center text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-green-800"
+              >
+                Produtos
               </button>
             </div>
           </div>
@@ -180,24 +170,6 @@ const SecoesList = () => {
                             />
                           </svg>
                           Editar
-                        </button>
-                        <button
-                          onClick={() => handleDelete(secao.id)}
-                          className="py-2 px-3 flex items-center text-sm font-medium text-center text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            className="w-4 h-4 mr-2 -ml-0.5"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M16 5V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v1H4a1 1 0 000 2h1v11a2 2 0 002 2h10a2 2 0 002-2V7h1a1 1 0 100-2h-4zM10 4h4v1h-4V4zm4 14H6V7h8v11z"
-                            />
-                          </svg>
-                          Excluir
                         </button>
                       </div>
                     </td>
