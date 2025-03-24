@@ -8,8 +8,8 @@ interface SectionNavigationProps {
 
 export function SectionNavigation({ sections, onSectionClick, activeSection }: SectionNavigationProps) {
   return (
-    <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 shadow-md pb-2 pt-3">
-      <div className="max-w-7xl mx-auto px-4 overflow-x-auto mt1">
+    <nav className="px-4 sm:px-6 lg:px-8 py-2">
+      <div className="overflow-x-auto">
         <div className="flex space-x-4">
           {sections.map((section) => (
             <button
@@ -26,6 +26,6 @@ export function SectionNavigation({ sections, onSectionClick, activeSection }: S
           ))}
         </div>
       </div>
-    </div>
+    </nav>
   );
-} 
+}

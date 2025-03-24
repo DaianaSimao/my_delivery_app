@@ -5,12 +5,13 @@ import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 interface MenuSectionProps {
   section: MenuSectionType;
   onItemClick: (item: MenuItem) => void;
+  id: string;
 }
 
-export function MenuSection({ section, onItemClick}: MenuSectionProps) {
+export function MenuSection({ section, onItemClick, id}: MenuSectionProps) {
   if (section.id === 'popular') {
     return (
-      <section className="mb-8">
+      <section id={id} className="mb-8">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{section.title}</h2>
         <PopularItemsCarousel items={section.items} onClick={(item) => onItemClick(item)} />
       </section>
@@ -18,7 +19,7 @@ export function MenuSection({ section, onItemClick}: MenuSectionProps) {
   }
 
   return (
-    <section className="mb-8">
+    <section id={id} className="mb-8">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{section.title}</h2>
       <div className="space-y-4">
         {section.items.map((item) => (
