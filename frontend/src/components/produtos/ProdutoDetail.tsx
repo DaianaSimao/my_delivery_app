@@ -25,6 +25,14 @@ interface Produto {
       }[];
     };
   }[];
+  produto_secoes: { // Adicione esta propriedade
+    id: number;
+    secoes_cardapio: {
+      id: number;
+      nome: string;
+      ordem: number;
+    };
+  }[];
 }
 
 const ProdutoDetail = () => {
@@ -37,7 +45,6 @@ const ProdutoDetail = () => {
     const fetchProduto = async () => {
       try {
         const response = await api.get(`/api/v1/produtos/${id}`);
-        console.log("Dados do produto:", response.data.data)
         setProduto(response.data.data);
       } catch (error) {
         console.error("Erro ao carregar produto:", error);
@@ -74,6 +81,27 @@ const ProdutoDetail = () => {
               Disponível: {produto.disponivel ? "Sim" : "Não"}
             </p>
           </div>
+
+          {/* Seções do Cardápio */}
+          <div className="sm:col-span-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Seções do Cardápio
+            </h3>
+            {produto.produto_secoes?.length > 0 ? (
+              <ul className="space-y-2">
+                {produto.produto_secoes.map((ps) => (
+                  <li key={ps.id} className="text-gray-700 dark:text-gray-300">
+                    {ps.secoes_cardapio.nome} (Ordem: {ps.secoes_cardapio.ordem})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700 dark:text-gray-300">
+                Este produto não está associado a nenhuma seção do cardápio.
+              </p>
+            )}
+          </div>
+
           <div className="sm:col-span-2">
             <button
               onClick={openModal}
@@ -82,7 +110,7 @@ const ProdutoDetail = () => {
               <img
                 src={sushiIcon}
                 alt="Ícone do restaurante"
-                className="h-8 w-auto mr-3 text-4xl" 
+                className="h-8 w-auto mr-3 text-4xl"
               />
               Acompanhamentos
             </button>

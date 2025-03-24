@@ -1,6 +1,6 @@
 class Api::V1::RestaurantesController < ApplicationController
   before_action :set_restaurante, only: %i[show update destroy regioes_entrega]
-  skip_before_action :authenticate_user!, only: %i[show regioes_entrega mais_pedidos]
+  skip_before_action :authenticate_user!, only: %i[show regioes_entrega mais_pedidos secoes_cardapio]
 
   def index
     @restaurantes = current_user.restaurantes
@@ -21,7 +21,7 @@ class Api::V1::RestaurantesController < ApplicationController
   end
 
   def regioes_entrega
-    regioes = @restaurante.regioes_entrega # Supondo que você tenha um relacionamento no modelo Restaurante
+    regioes = @restaurante.regioes_entrega
     render json: regioes.as_json
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Restaurante não encontrado" }, status: :not_found
@@ -31,18 +31,36 @@ class Api::V1::RestaurantesController < ApplicationController
     restaurante = Restaurante.find(params[:id])
     mais_pedidos = restaurante.produtos
                               .joins(:itens_pedidos)
-                              .where('produtos.disponivel = ?', true)
-                              .group('produtos.id')
-                              .order('COUNT(itens_pedidos.id) DESC')
-                              .limit(4) # Limita a 4 itens mais pedidos
+                              .where("produtos.disponivel = ?", true)
+                              .group("produtos.id")
+                              .order("COUNT(itens_pedidos.id) DESC")
+                              .limit(4)
 
     render json: { data: mais_pedidos }
+  end
+
+  def secoes_cardapio
+    restaurante = Restaurante.find(params[:id])
+    secoes = SecoesCardapio.where(restaurante_id: restaurante.id).includes(:produtos)
+
+    dados_formatados = secoes.map do |secao|
+      {
+        id: secao.id,
+        nome: secao.nome,
+        ordem: secao.ordem,
+        produtos: secao.produtos.where(disponivel: true).as_json
+      }
+    end
+
+    render json: { data: dados_formatados }
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Restaurante não encontrado" }, status: :not_found
   end
 
   def show
     @restaurante = Restaurante.includes(:endereco, :regioes_entrega).find(params[:id])
     render json: {
-      data: @restaurante.as_json(include:[ :regioes_entrega,:endereco]),}
+      data: @restaurante.as_json(include: [ :regioes_entrega, :endereco ])  }
   end
 
   def create
@@ -88,8 +106,8 @@ class Api::V1::RestaurantesController < ApplicationController
     params.require(:restaurante).permit(:id, :nome, :descricao, :categoria, :taxa_entrega,
                                         :tempo_medio_entrega, :avaliacao, :ativo,
                                         :abertura, :fechamento, :cnpj, :telefone, :email, :dias_funcionamento, :pedido_minimo,
-                                        endereco_attributes: [:id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ponto_referencia, :tipo, :uf],
-                                        regioes_entrega_attributes: [:id, :bairro, :cidade, :taxa_entrega, :_destroy, :ativo, :restaurante_id]
+                                        endereco_attributes: [ :id, :rua, :numero, :complemento, :bairro, :cidade, :estado, :cep, :ponto_referencia, :tipo, :uf ],
+                                        regioes_entrega_attributes: [ :id, :bairro, :cidade, :taxa_entrega, :_destroy, :ativo, :restaurante_id ]
     )
   end
 end

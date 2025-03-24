@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchMenu, fetchMaisPedidos } from '../../services/api'; // Importe o novo serviço
+import { fetchMaisPedidos, fetchSecoes } from '../../services/api';
 import { MenuSection } from './MenuSection';
 import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 import { Footer } from '../Footer';
 import { Cart } from '../carrinho/Cart';
 import type { CartItem } from '../../types';
 
-const MenuPage: React.FC = () => {
+interface MenuPageProps {
+  onSectionsLoad: (sections: MenuSectionType[]) => void;
+}
+
+const MenuPage: React.FC<MenuPageProps> = ({ onSectionsLoad }) => {
   const { restauranteId } = useParams<{ restauranteId: string }>();
   const [menuSections, setMenuSections] = useState<MenuSectionType[]>([]);
   const navigate = useNavigate();
@@ -22,27 +26,32 @@ const MenuPage: React.FC = () => {
           return;
         }
 
-        // Busca os itens mais pedidos e o cardápio completo
-        const [maisPedidos, cardapioCompleto] = await Promise.all([
+        const [maisPedidos, secoes] = await Promise.all([
           fetchMaisPedidos(restauranteId),
-          fetchMenu(restauranteId),
+          fetchSecoes(restauranteId),
         ]);
 
-        // Cria as seções do menu
         const sections: MenuSectionType[] = [
           {
             id: 'popular',
             title: 'Os Mais Pedidos',
             items: maisPedidos,
-          },
-          {
-            id: 'regular',
-            title: 'Cardápio Completo',
-            items: cardapioCompleto,
-          },
+          }
         ];
+        
+        secoes.forEach((secao: { id: number; nome: string; produtos: MenuItem[] }) => {
+          if (secao.produtos && secao.produtos.length > 0) {
+            sections.push({
+              id: secao.id.toString(),
+              title: secao.nome,
+              items: secao.produtos
+            });
+          }
+        });
 
         setMenuSections(sections);
+        onSectionsLoad(sections);
+        
       } catch (error) {
         console.error('Erro ao carregar o cardápio:', error);
       }
@@ -51,7 +60,8 @@ const MenuPage: React.FC = () => {
     if (restauranteId) {
       loadMenu();
     }
-  }, [restauranteId]);
+  }, [restauranteId, onSectionsLoad]);
+
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
     if (quantity < 1) return;
     setCartItems(
@@ -88,18 +98,23 @@ const MenuPage: React.FC = () => {
   }
 
   return (
-    <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-        {menuSections.map((section) => (
-          <MenuSection 
-            key={section.id} 
-            section={section} 
-            onItemClick={handleItemClick} 
-          />
-        ))}
-      </div>
-      <Footer onCartClick={() => navigate('/cart')} />
-    </>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {menuSections.map((section) => (
+            <MenuSection 
+              key={section.id}
+              section={section}
+              onItemClick={handleItemClick}
+              id={section.id}
+            />
+          ))}
+        </div>
+      </main>
+      <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900">
+        <Footer onCartClick={() => navigate('/cart')} />
+      </footer>
+    </div>
   );
 };
 

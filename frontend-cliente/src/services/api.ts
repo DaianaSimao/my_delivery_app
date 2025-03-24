@@ -148,3 +148,13 @@ export const fetchMaisPedidos = async (restauranteId: string | number) => {
     throw error;
   }
 };
+
+export const fetchSecoes = async (restauranteId: string | number) => {
+  try {
+    const response = await api.get(`/api/v1/restaurantes/${restauranteId}/secoes_cardapio`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar seções do cardápio:", error);
+    throw error;
+  }
+};

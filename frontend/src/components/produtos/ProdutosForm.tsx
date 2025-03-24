@@ -11,9 +11,15 @@ interface Produto {
   imagem_url: string;
   restaurante_id: number;
   acompanhamentos_selecionados: number[]; // IDs dos acompanhamentos selecionados
+  secoes_selecionadas: number[];
 }
 
 interface Acompanhamento {
+  id: number;
+  nome: string;
+}
+
+interface SecaoCardapio {
   id: number;
   nome: string;
 }
@@ -27,24 +33,30 @@ const ProdutosForm = () => {
     imagem_url: "",
     restaurante_id: 1,
     acompanhamentos_selecionados: [],
+    secoes_selecionadas: [],
   });
 
   const [acompanhamentos, setAcompanhamentos] = useState<Acompanhamento[]>([]);
+  const [secoes, setSecoes] = useState<SecaoCardapio[]>([]);
   const navigate = useNavigate();
 
   // Carrega a lista de acompanhamentos disponíveis
   useEffect(() => {
-    const fetchAcompanhamentos = async () => {
+    const fetchAcompanhamentosESecoes = async () => {
       try {
-        const response = await api.get("/api/v1/acompanhamentos");
-        setAcompanhamentos(response.data.data);
+        const [acompanhamentosResponse, secoesResponse] = await Promise.all([
+          api.get("/api/v1/acompanhamentos"),
+          api.get("/api/v1/secoes_cardapios"),
+        ]);
+        setAcompanhamentos(acompanhamentosResponse.data.data);
+        setSecoes(secoesResponse.data.data);
       } catch (error) {
-        console.error("Erro ao carregar acompanhamentos:", error);
-        toast.error("Erro ao carregar acompanhamentos.");
+        console.error("Erro ao carregar dados:", error);
+        toast.error("Erro ao carregar dados.");
       }
     };
 
-    fetchAcompanhamentos();
+    fetchAcompanhamentosESecoes();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -75,6 +87,15 @@ const ProdutosForm = () => {
     });
   };
 
+  const handleSecaoChange = (secaoId: number) => {
+    setProduto((prev) => ({
+      ...prev,
+      secoes_selecionadas: prev.secoes_selecionadas.includes(secaoId)
+        ? prev.secoes_selecionadas.filter((id) => id !== secaoId)
+        : [...prev.secoes_selecionadas, secaoId],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -88,6 +109,9 @@ const ProdutosForm = () => {
           restaurante_id: produto.restaurante_id,
           produto_acompanhamentos_attributes: produto.acompanhamentos_selecionados.map((id) => ({
             acompanhamento_id: id,
+          })),
+          produto_secoes_attributes: produto.secoes_selecionadas.map((id) => ({
+            secoes_cardapio_id: id,
           })),
         },
       };
@@ -105,6 +129,7 @@ const ProdutosForm = () => {
           imagem_url: "",
           restaurante_id: 1,
           acompanhamentos_selecionados: [],
+          secoes_selecionadas: [],
         });
       } else {
         toast.error("Erro ao cadastrar produto.");
@@ -144,6 +169,30 @@ const ProdutosForm = () => {
                 required
               />
             </div>
+            <div className="sm:col-span-2">
+            <label htmlFor="secoes" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Seções do Cardápio
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              {secoes.map((secao) => (
+                <div key={secao.id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`secao-${secao.id}`}
+                    checked={produto.secoes_selecionadas.includes(secao.id)}
+                    onChange={() => handleSecaoChange(secao.id)}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    htmlFor={`secao-${secao.id}`}
+                    className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    {secao.nome}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
             <div className="w-full">
               <label htmlFor="preco" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Preço</label>
               <input

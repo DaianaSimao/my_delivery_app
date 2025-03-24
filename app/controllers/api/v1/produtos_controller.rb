@@ -4,7 +4,7 @@ class Api::V1::ProdutosController < ApplicationController
 
   def index
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
-    @produtos = Produto.where(restaurante_id: restaurante.id)
+    @produtos = Produto.where(restaurante_id: restaurante.id).includes(:produto_secoes)
 
     # Filtra os produtos com base no termo de busca
     if params[:search].present?
@@ -13,7 +13,9 @@ class Api::V1::ProdutosController < ApplicationController
 
     @produtos =  @produtos.page(params[:page]).per(params[:per_page])
     render json: {
-      data: @produtos,
+      data: @produtos.as_json(
+        include: :produto_secoes
+      ),
       meta: {
         total_pages: @produtos.total_pages,
         total_count: @produtos.total_count,
@@ -57,6 +59,9 @@ class Api::V1::ProdutosController < ApplicationController
                 include: :item_acompanhamentos
               }
             }
+          },
+          produto_secoes: {
+            include: :secoes_cardapio
           }
         }
       )
@@ -95,6 +100,7 @@ class Api::V1::ProdutosController < ApplicationController
 
   def produto_params
     params.require(:produto).permit(:nome, :descricao, :preco, :imagem_url,
-    :disponivel, :restaurante_id, produto_acompanhamentos_attributes: [ :id, :acompanhamento_id, :_destroy ])
+    :disponivel, :restaurante_id, produto_acompanhamentos_attributes: [ :id, :acompanhamento_id, :_destroy ],
+    produto_secoes_attributes: [ :id, :secoes_cardapio_id, :_destroy ])
   end
 end

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :restaurantes do
         member do
           get "mais_pedidos", to: "restaurantes#mais_pedidos"
+          get "secoes_cardapio", to: "restaurantes#secoes_cardapio"
         end
       end
       resources :relatorios do
@@ -69,6 +70,7 @@ Rails.application.routes.draw do
         end
       end
       resources :promocoes
+      resources :secoes_cardapios
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
       get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
       get "cardapio/:restaurante_id", to: "produtos#cardapio"

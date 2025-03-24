@@ -10,8 +10,10 @@ interface Produto {
   disponivel: boolean;
   imagem_url: string;
   restaurante_id: number;
-  acompanhamentos_selecionados: number[]; // IDs dos acompanhamentos selecionados
-  produto_acompanhamentos: { id: number; acompanhamento_id: number }[]; // Armazena os IDs dos produto_acompanhamentos existentes
+  acompanhamentos_selecionados: number[];
+  produto_acompanhamentos: { id: number; acompanhamento_id: number }[];
+  secoes_selecionadas: number[];
+  produto_secoes: { id: number; secoes_cardapio_id: number }[];
 }
 
 interface Acompanhamento {
@@ -19,8 +21,13 @@ interface Acompanhamento {
   nome: string;
 }
 
+interface SecaoCardapio {
+  id: number;
+  nome: string;
+}
+
 const ProdutosEditForm = () => {
-  const { id } = useParams<{ id: string }>(); // Captura o ID do produto da URL
+  const { id } = useParams<{ id: string }>();
   const [produto, setProduto] = useState<Produto>({
     nome: "",
     preco: "",
@@ -30,22 +37,28 @@ const ProdutosEditForm = () => {
     restaurante_id: 1,
     acompanhamentos_selecionados: [],
     produto_acompanhamentos: [],
+    secoes_selecionadas: [],
+    produto_secoes: [],
   });
 
   const [acompanhamentos, setAcompanhamentos] = useState<Acompanhamento[]>([]);
+  const [secoes, setSecoes] = useState<SecaoCardapio[]>([]);
   const navigate = useNavigate();
 
-  // Carrega os dados do produto e a lista de acompanhamentos disponíveis
+  // Carrega os dados do produto, acompanhamentos e seções
   useEffect(() => {
     const fetchProdutoEAcompanhamentos = async () => {
       try {
         // Carrega os dados do produto
         const produtoResponse = await api.get(`/api/v1/produtos/${id}`);
         const produtoData = produtoResponse.data.data;
-
         // Carrega a lista de acompanhamentos
         const acompanhamentosResponse = await api.get("/api/v1/acompanhamentos");
         setAcompanhamentos(acompanhamentosResponse.data.data);
+
+        // Carrega a lista de seções
+        const secoesResponse = await api.get("/api/v1/secoes_cardapios");
+        setSecoes(secoesResponse.data.data);
 
         // Atualiza o estado com os dados do produto
         setProduto({
@@ -55,13 +68,15 @@ const ProdutosEditForm = () => {
           disponivel: produtoData.disponivel,
           imagem_url: produtoData.imagem_url,
           restaurante_id: produtoData.restaurante_id,
-          acompanhamentos_selecionados: produtoData.produto_acompanhamentos.map(
+          acompanhamentos_selecionados: produtoData.produto_acompanhamentos?.map(
             (pa: any) => pa.acompanhamento_id
-          ),
-          produto_acompanhamentos: produtoData.produto_acompanhamentos.map((pa: any) => ({
-            id: pa.id, // Armazena o ID do produto_acompanhamento
+          ) || [],
+          produto_acompanhamentos: produtoData.produto_acompanhamentos?.map((pa: any) => ({
+            id: pa.id,
             acompanhamento_id: pa.acompanhamento_id,
-          })),
+          })) || [],
+          secoes_selecionadas: produtoData.produto_secoes?.map((ps: any) => ps.secoes_cardapio_id) || [],
+          produto_secoes: produtoData.produto_secoes || [],
         });
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -100,25 +115,35 @@ const ProdutosEditForm = () => {
     });
   };
 
+  const handleSecaoChange = (secaoId: number) => {
+    setProduto((prev) => {
+      const alreadySelected = prev.secoes_selecionadas.includes(secaoId);
+      return {
+        ...prev,
+        secoes_selecionadas: alreadySelected
+          ? prev.secoes_selecionadas.filter((id) => id !== secaoId)
+          : [...prev.secoes_selecionadas, secaoId],
+      };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       // 1. Acompanhamentos que permanecem (selecionados ou novos)
       const selectedAttributes = produto.acompanhamentos_selecionados.map((acompanhamentoId) => {
-        // Verifica se o acompanhamento já existe na associação
         const produtoAcompanhamentoExistente = produto.produto_acompanhamentos.find(
           (pa) => pa.acompanhamento_id === acompanhamentoId
         );
-  
+
         return {
-          id: produtoAcompanhamentoExistente?.id || null, // se não existir, id será null e o Rails criará um novo registro
+          id: produtoAcompanhamentoExistente?.id || null,
           acompanhamento_id: acompanhamentoId,
           _destroy: false,
         };
       });
-  
-      // 2. Acompanhamentos que foram removidos:
-      // São aqueles que estavam associados originalmente, mas não estão mais entre os selecionados
+
+      // 2. Acompanhamentos que foram removidos
       const removedAttributes = produto.produto_acompanhamentos
         .filter((pa) => !produto.acompanhamentos_selecionados.includes(pa.acompanhamento_id))
         .map((pa) => ({
@@ -126,13 +151,35 @@ const ProdutosEditForm = () => {
           acompanhamento_id: pa.acompanhamento_id,
           _destroy: true,
         }));
-  
-      // Junta os dois arrays para enviar todos os atributos
+
+      // 3. Seções que foram adicionadas (novas)
+      const addedSecoes = produto.secoes_selecionadas
+        .filter((secaoId) => !produto.produto_secoes.some((ps) => ps.secoes_cardapio_id === secaoId))
+        .map((secaoId) => ({
+          secoes_cardapio_id: secaoId,
+          _destroy: false,
+        }));
+
+      // 4. Seções que foram removidas
+      const removedSecoes = produto.produto_secoes
+        .filter((ps) => !produto.secoes_selecionadas.includes(ps.secoes_cardapio_id))
+        .map((ps) => ({
+          id: ps.id,
+          secoes_cardapio_id: ps.secoes_cardapio_id,
+          _destroy: true,
+        }));
+
+      // Junta os arrays para enviar todos os atributos
       const produtoAcompanhamentosAttributes = [
         ...selectedAttributes,
         ...removedAttributes,
       ];
-  
+
+      const produtoSecoesAttributes = [
+        ...addedSecoes,
+        ...removedSecoes,
+      ];
+
       const payload = {
         produto: {
           nome: produto.nome,
@@ -142,14 +189,13 @@ const ProdutosEditForm = () => {
           imagem_url: produto.imagem_url,
           restaurante_id: produto.restaurante_id,
           produto_acompanhamentos_attributes: produtoAcompanhamentosAttributes,
+          produto_secoes_attributes: produtoSecoesAttributes,
         },
       };
-  
-      console.log("Payload enviado:", payload); // Confira o payload no console
-  
+
       // Envia a requisição PUT para atualizar o produto
       const response = await api.put(`/api/v1/produtos/${id}`, payload);
-  
+
       if (response.status === 200) {
         toast.success("Produto atualizado com sucesso!");
         navigate("/produtos");
@@ -165,7 +211,6 @@ const ProdutosEditForm = () => {
       toast.error(errorMessage);
     }
   };
-  
 
   const handleProdutosClick = () => {
     navigate("/produtos");
@@ -189,6 +234,30 @@ const ProdutosEditForm = () => {
                 placeholder="Nome do Produto"
                 required
               />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="secoes" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Seções do Cardápio
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                {secoes.map((secao) => (
+                  <div key={secao.id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`secao-${secao.id}`}
+                      checked={produto.secoes_selecionadas.includes(secao.id)}
+                      onChange={() => handleSecaoChange(secao.id)}
+                      className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`secao-${secao.id}`}
+                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      {secao.nome}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="w-full">
               <label htmlFor="preco" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Preço</label>
