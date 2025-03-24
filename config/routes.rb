@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :restaurantes do
         member do
           get "mais_pedidos", to: "restaurantes#mais_pedidos"
+          get "secoes_cardapio", to: "restaurantes#secoes_cardapio"
         end
       end
       resources :relatorios do

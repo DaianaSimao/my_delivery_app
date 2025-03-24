@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchMenu, fetchMaisPedidos } from '../../services/api'; // Importe o novo serviço
+import { fetchMaisPedidos, fetchSecoes } from '../../services/api';
 import { MenuSection } from './MenuSection';
 import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 import { Footer } from '../Footer';
@@ -22,27 +22,31 @@ const MenuPage: React.FC = () => {
           return;
         }
 
-        // Busca os itens mais pedidos e o cardápio completo
-        const [maisPedidos, cardapioCompleto] = await Promise.all([
+        const [maisPedidos, secoes] = await Promise.all([
           fetchMaisPedidos(restauranteId),
-          fetchMenu(restauranteId),
+          fetchSecoes(restauranteId),
         ]);
 
-        // Cria as seções do menu
         const sections: MenuSectionType[] = [
           {
             id: 'popular',
             title: 'Os Mais Pedidos',
             items: maisPedidos,
-          },
-          {
-            id: 'regular',
-            title: 'Cardápio Completo',
-            items: cardapioCompleto,
-          },
+          }
         ];
+        
+        secoes.forEach((secao: { id: number; nome: string; produtos: MenuItem[] }) => {
+          if (secao.produtos && secao.produtos.length > 0) {
+            sections.push({
+              id: secao.id.toString(),
+              title: secao.nome,
+              items: secao.produtos
+            });
+          }
+        });
 
         setMenuSections(sections);
+        
       } catch (error) {
         console.error('Erro ao carregar o cardápio:', error);
       }
@@ -52,6 +56,7 @@ const MenuPage: React.FC = () => {
       loadMenu();
     }
   }, [restauranteId]);
+
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
     if (quantity < 1) return;
     setCartItems(
