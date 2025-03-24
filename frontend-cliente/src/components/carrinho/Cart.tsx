@@ -1,6 +1,6 @@
 // components/carrinho/Cart.tsx
 import { useState } from 'react';
-import { ArrowLeft, Trash2, Pencil, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, Plus, Minus, Home } from 'lucide-react';
 import CustomerData from '../cliente/CustomerData';
 import type { CartItem } from '../../types';
 import { useNavigate } from 'react-router-dom';
@@ -143,6 +143,13 @@ export function Cart({
       <div className="bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
+            <a
+            href="/"
+            className="flex flex-col items-center text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400"
+            >
+              <Home className="h-6 w-6" />
+              <span className="text-sm mt-1">Início</span>
+            </a>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
