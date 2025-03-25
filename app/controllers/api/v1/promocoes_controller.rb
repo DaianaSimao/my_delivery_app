@@ -1,5 +1,6 @@
 class Api::V1::PromocoesController < ApplicationController
   before_action :set_promocao, only: [:show, :update, :destroy]
+  skip_before_action :authenticate_user!, only: [:show]
 
   def index
     restaurante = Restaurante.find(current_user.restaurante_ativo)

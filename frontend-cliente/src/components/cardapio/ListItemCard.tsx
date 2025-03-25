@@ -6,7 +6,6 @@ interface ListItemCardProps {
 }
 
 export function ListItemCard({ item, onClick }: ListItemCardProps) {
-  const displayPrice = item.preco
 
   return (
     <div 
@@ -16,23 +15,24 @@ export function ListItemCard({ item, onClick }: ListItemCardProps) {
       <div className="flex-1 p-4">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
           {item.nome}
-            <span className="ml-2 text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-2 py-1 rounded-full">
-              Popular
-            </span>
         </h3>
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{item.descricao}</p>
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-gray-900 dark:text-white">
-            R$ {displayPrice}
+            R$ {Number(item.preco).toFixed(2)}
           </span>
+          {item.preco_original && (
             <>
               <span className="text-sm text-gray-500 dark:text-gray-500 line-through">
-                R$ {item.preco}
+                R$ {Number(item.preco_original).toFixed(2)}
               </span>
               <span className="text-xs bg-primary-500 text-white px-2 py-1 rounded-full">
-                5 % OFF
+                {item.promocao?.tipo === 'desconto_percentual'
+                  ? `${item.promocao.desconto_percentual}% OFF`
+                  : 'PROMO'}
               </span>
             </>
+          )}
         </div>
       </div>
       

@@ -235,7 +235,7 @@ const PromocaoForm: React.FC = () => {
                       htmlFor={`produto-${produto.id}`}
                       className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                     >
-                      {produto.nome}
+                      {produto.nome} - R$ {produto.preco}
                     </label>
                   </div>
                 ))}

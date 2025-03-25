@@ -17,9 +17,9 @@ export const fetchMenu = async (restauranteId: string | number) => {
 };
 
 export const fetchProductDetails = async (id: number) => {
-  try {
-    const response = await api.get(`/api/v1/produtos/${id}`);
-    return response.data.data;
+  try {  
+    const response = await api.get(`/api/v1/cardapio/produto/${id}`);
+    return response.data.data; // Retorna diretamente o produto formatado
   }
   catch (error) {
     console.error("Erro ao buscar detalhes do produto:", error);
@@ -151,7 +151,17 @@ export const fetchMaisPedidos = async (restauranteId: string | number) => {
 
 export const fetchSecoes = async (restauranteId: string | number) => {
   try {
-    const response = await api.get(`/api/v1/restaurantes/${restauranteId}/secoes_cardapio`);
+    const response = await api.get(`/api/v1/restaurantes/${restauranteId}/secoes`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar seções do cardápio:", error);
+    throw error;
+  }
+};
+
+export const fetchPromocoesAtivas = async (restauranteId: string) => {
+  try {  
+    const response = await api.get(`/api/v1/restaurantes/${restauranteId}/promocoes`);
     return response.data.data;
   } catch (error) {
     console.error("Erro ao buscar seções do cardápio:", error);
