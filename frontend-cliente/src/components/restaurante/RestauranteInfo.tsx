@@ -4,8 +4,8 @@ import { fetchRestaurantInfo, fetchRegioesEntrega } from '../../services/api';
 import type { Restaurante, RegiaoEntrega } from '../../types';
 
 interface RestauranteInfoProps {
-  isDarkMode: boolean;
   onBack: () => void;
+  isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
 
@@ -23,7 +23,7 @@ const formatDiasFuncionamento = (dias: string | undefined): string => {
   return dias.split(',').join(', ');
 };
 
-const RestauranteInfo: React.FC<RestauranteInfoProps> = () => {
+const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode, onToggleDarkMode }) => {
   const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
   const [regioes, setRegioes] = useState<RegiaoEntrega[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,30 +56,6 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = () => {
 
     loadData();
   }, []);
-
-    const [darkMode, setDarkMode] = useState(() => {
-      // Obtém a preferência do tema do localStorage
-      const savedTheme = localStorage.getItem('darkMode');
-      return savedTheme ? JSON.parse(savedTheme) : true;
-    });
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode: any) => {
-      const newMode = !prevMode;
-      // Armazena a preferência do tema no localStorage
-      localStorage.setItem('darkMode', JSON.stringify(newMode));
-      return newMode;
-    });
-  };
-
 
   // Agrupar regiões por cidade
   const regioesPorCidade = regioes.reduce((acc, regiao) => {
@@ -134,15 +110,15 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = () => {
               <ArrowLeft className="h-6 w-6 text-gray-600 dark:text-gray-300" />
             </button>
             <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                {darkMode ? (
-                  <Sun className="w-6 h-6 text-gray-900 dark:text-white" />
-                ) : (
-                  <Moon className="w-6 h-6 text-gray-900 dark:text-white" />
-                )}
-              </button>
+              onClick={onToggleDarkMode}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              {isDarkMode ? (
+                <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              ) : (
+                <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              )}
+            </button>
           </div>
         </header>
         {/* Cabeçalho do restaurante */}

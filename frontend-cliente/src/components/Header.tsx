@@ -107,7 +107,7 @@ export function Header({
                 {formatTime(restaurantInfo.abertura)} - {formatTime(restaurantInfo.fechamento)}
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Pedido mínimo: R$ {restaurantInfo.pedido_minimo}
+                Pedido mínimo: R$ {Number(restaurantInfo.pedido_minimo).toFixed(2)}
               </span>
             </div>
           </div>

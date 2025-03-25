@@ -29,6 +29,8 @@ interface OrderItem {
 interface CustomerDataProps {
   cartItems: OrderItem[];
   onBack: () => void;
+  isDarkMode: boolean;
+  onToggleDarkMode: () => void;
 }
 
 interface Cliente {
@@ -40,13 +42,8 @@ interface Cliente {
   // Outras propriedades do cliente...
 }
 
-const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
+const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMode, onToggleDarkMode }) => {
   const { onCheckout } = useCart();
-  const [darkMode, setDarkMode] = useState(() => {
-    // Obtém a preferência do tema do localStorage
-    const savedTheme = localStorage.getItem('darkMode');
-    return savedTheme ? JSON.parse(savedTheme) : true;
-  });
   const [step, setStep] = useState<'data' | 'address' | 'payment'>('data');
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -113,23 +110,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const total = Number(subtotal) + Number(deliveryFee);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode: any) => {
-      const newMode = !prevMode;
-      // Armazena a preferência do tema no localStorage
-      localStorage.setItem('darkMode', JSON.stringify(newMode));
-      return newMode;
-    });
-  };
 
   const handleConfirmarDadosCliente = (editar: boolean) => {
     if (editar) {
@@ -322,7 +302,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
   };
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
+    <div>
       <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="px-4 py-6">
           <div className="flex justify-between items-center mb-6">
@@ -337,13 +317,13 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack }) => {
               <ArrowLeft className="w-6 h-6 text-gray-900 dark:text-white" />
             </button>
             <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              onClick={onToggleDarkMode}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              {darkMode ? (
-                <Sun className="w-6 h-6 text-gray-900 dark:text-white" />
+              {isDarkMode ? (
+                <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
               ) : (
-                <Moon className="w-6 h-6 text-gray-900 dark:text-white" />
+                <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
               )}
             </button>
           </div>
