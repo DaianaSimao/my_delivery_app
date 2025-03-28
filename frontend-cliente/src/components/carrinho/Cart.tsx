@@ -92,9 +92,11 @@ export function Cart({
                         R$ {item.price}
                       </p>
                       {item.options && item.options.length > 0 && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          {item.options.join(', ')}
-                        </p>
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 space-y-1">
+                          {item.options.map((option, index) => (
+                            <p key={index}>{option}</p>
+                          ))}
+                        </div>
                       )}
                     </div>
 
@@ -153,7 +155,7 @@ export function Cart({
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R$ {total}
+                R$ {Number(total).toFixed(2)}
               </p>
             </div>
             <button

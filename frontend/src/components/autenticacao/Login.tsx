@@ -59,8 +59,7 @@ const Login: React.FC = () => {
         <div
           className="hidden bg-cover lg:block lg:w-2/3"
           style={{
-            backgroundImage:
-              "url(https://image.freepik.com/foto-gratis/entrega-comida-rapida-pedir-comida-concepto-linea_136595-18630.jpg)",
+            backgroundImage: "url(/image/login.jpg)",
           }}
         >
           <div scope="row" className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40">

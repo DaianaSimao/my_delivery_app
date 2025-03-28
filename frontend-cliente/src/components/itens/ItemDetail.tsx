@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ArrowLeft,
   Share2,
@@ -106,26 +106,34 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
     });
   };
 
-  const totalPrice = Number(
-    Object.entries(selectedOptions).reduce((total, [optionId, quantity]) => {
-      const option = item?.produto_acompanhamentos
+  const calculateTotalPrice = useMemo(() => {
+    if (!item) return 0;
+    
+    const basePrice = Number(item.preco) || 0;
+    const accompanimentsTotal = Object.entries(selectedOptions).reduce((total, [optionId, quantity]) => {
+      if (!quantity) return total;
+      
+      const option = item.produto_acompanhamentos
         .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
         .find((opt) => opt.id === Number(optionId));
+      
       return total + (Number(option?.preco) || 0) * quantity;
-    }, item?.preco ? Number(item.preco) : 0).toFixed(2) // Usa item.preco (já com desconto se houver promoção)
-  );
+    }, 0);
+  
+    return Number((basePrice + accompanimentsTotal).toFixed(2));
+  }, [item, selectedOptions]);
 
   const handleSubmit = () => {
     if (item) {
       const cartItem: CartItem = {
         id: isEditMode ? originalItemId : `${item.id}-${new Date().getTime()}`,
         name: item.nome,
-        price: totalPrice,
+        price: calculateTotalPrice,
         quantity: isEditMode ? (itemToEdit?.quantity || 1) : 1,
         image: item.imagem_url,
-        preco: item.preco, // Preço unitário com promoção
-        preco_original: item.promocao ? item.preco_original : item.preco, // Original ou normal
-        promocao: item.promocao, // Mantém os dados da promoção
+        preco: item.preco,
+        preco_original: item.promocao ? item.preco_original : item.preco, 
+        promocao: item.promocao,
         options: Object.entries(selectedOptions)
           .filter(([_, quantity]) => quantity > 0)
           .map(([optionId, quantity]) => {
@@ -185,10 +193,10 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
               </button>
               <div className="flex gap-2">
                 <button
-                  onClick={toggleDarkMode} // Use toggleDarkMode do useTheme
+                  onClick={toggleDarkMode} 
                   className="p-2 bg-white/80 dark:bg-gray-800/80 rounded-full"
                 >
-                  {isDarkMode ? ( // Use isDarkMode do useTheme
+                  {isDarkMode ? (
                     <Sun className="w-6 h-6 text-gray-800 dark:text-white" />
                   ) : (
                     <Moon className="w-6 h-6 text-gray-800 dark:text-white" />
@@ -293,7 +301,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
                                   disabled={maxReached && !(selectedOptions[option.id] || 0)}
                                   className={`p-1 rounded-full ${
                                     maxReached && !(selectedOptions[option.id] || 0)
-                                      ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
+                                      ? 'bg-gray-300 dark:bg-red-800 cursor-not-allowed'
                                       : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                                   }`}
                                 >
@@ -332,7 +340,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R$ {totalPrice}
+                R$ {calculateTotalPrice}
               </p>
             </div>
             <button

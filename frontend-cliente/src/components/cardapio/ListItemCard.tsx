@@ -28,7 +28,7 @@ export function ListItemCard({ item, onClick }: ListItemCardProps) {
               </span>
               <span className="text-xs bg-primary-500 text-white px-2 py-1 rounded-full">
                 {item.promocao?.tipo === 'desconto_percentual'
-                  ? `${item.promocao.desconto_percentual}% OFF`
+                  ? `${Math.min(99, Math.floor(item.promocao.desconto_percentual))}% OFF`
                   : 'PROMO'}
               </span>
             </>

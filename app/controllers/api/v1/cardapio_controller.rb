@@ -7,8 +7,8 @@ class Api::V1::CardapioController < ApplicationController
     mais_pedidos = restaurante.produtos
                               .joins(:itens_pedidos)
                               .where(disponivel: true)
-                              .group('produtos.id')
-                              .order('COUNT(itens_pedidos.id) DESC')
+                              .group("produtos.id")
+                              .order("COUNT(itens_pedidos.id) DESC")
                               .limit(4)
 
     produtos_com_promocao = aplicar_promocoes(mais_pedidos, restaurante)
@@ -37,7 +37,7 @@ class Api::V1::CardapioController < ApplicationController
     # Carrega o produto com todos os relacionamentos necessários
     produto = Produto.includes(
       :produto_acompanhamentos, # Inclui os produto_acompanhamentos
-      produto_acompanhamentos: [:acompanhamento] # E para cada produto_acompanhamento, inclui o acompanhamento
+      produto_acompanhamentos: [ :acompanhamento ] # E para cada produto_acompanhamento, inclui o acompanhamento
     ).find(params[:id])
 
     # Carrega os item_acompanhamentos para cada acompanhamento
@@ -53,7 +53,7 @@ class Api::V1::CardapioController < ApplicationController
     promocoes_ativas = Promocao.where(
       restaurante_id: produto.restaurante_id,
       ativa: true
-    ).where('data_inicio <= ? AND data_fim >= ?', Date.current, Date.current)
+    ).where("data_inicio <= ? AND data_fim >= ?", Date.current, Date.current)
 
     # Verifica se há promoção para este produto
     promocao = promocoes_ativas.joins(:produtos).where(produtos: { id: produto.id }).first
@@ -79,7 +79,7 @@ class Api::V1::CardapioController < ApplicationController
               {
                 id: ia.id,
                 nome: ia.nome,
-                preco: ia.preco.to_f,
+                preco: ia.preco.to_f
               }
             end
           }
@@ -105,9 +105,9 @@ class Api::V1::CardapioController < ApplicationController
 
   def promocoes_cardapio
     restaurante = Restaurante.find(params[:restaurante_id])
-    
+
     promocoes = Promocao.where(restaurante_id: restaurante.id, ativa: true)
-                        .where('data_inicio <= ? AND data_fim >= ?', Date.current, Date.current)
+                        .where("data_inicio <= ? AND data_fim >= ?", Date.current, Date.current)
                         .includes(:produtos)
 
     produtos = promocoes.flat_map do |promocao|
@@ -124,7 +124,7 @@ class Api::V1::CardapioController < ApplicationController
             tipo: promocao.tipo,
             valor_de: promocao.valor_de,
             valor_para: promocao.valor_para,
-            desconto_percentual: promocao.desconto_percentual,
+            desconto_percentual: promocao.desconto_percentual.to_f,
             nome: promocao.nome
           },
           imagem_url: produto.imagem_url
@@ -139,15 +139,15 @@ class Api::V1::CardapioController < ApplicationController
 
   def calcular_preco_promocional(preco_original, promocao)
     case promocao.tipo
-    when 'de_para' then promocao.valor_para.to_f
-    when 'desconto_percentual' then preco_original * (1 - promocao.desconto_percentual.to_f / 100)
+    when "de_para" then promocao.valor_para.to_f
+    when "desconto_percentual" then preco_original * (1 - promocao.desconto_percentual.to_f / 100)
     else preco_original
     end
   end
 
   def aplicar_promocoes(produtos, restaurante)
     promocoes = Promocao.where(restaurante_id: restaurante.id, ativa: true)
-                        .where('data_inicio <= ? AND data_fim >= ?', Date.current, Date.current)
+                        .where("data_inicio <= ? AND data_fim >= ?", Date.current, Date.current)
                         .includes(:produtos)
 
     produtos.map do |produto|
@@ -158,15 +158,15 @@ class Api::V1::CardapioController < ApplicationController
 
   def calcular_precos(produto, promocao)
     preco_final = case promocao.tipo
-                  when 'de_para' then promocao.valor_para
-                  when 'desconto_percentual' then produto.preco * (1 - promocao.desconto_percentual / 100)
-                  else produto.preco
-                  end
+    when "de_para" then promocao.valor_para
+    when "desconto_percentual" then produto.preco * (1 - promocao.desconto_percentual / 100)
+    else produto.preco
+    end
 
     produto.as_json.merge(
       preco_original: produto.preco,
       preco: preco_final.round(2),
-      promocao: promocao.as_json(only: [:tipo, :valor_de, :valor_para, :desconto_percentual, :nome])
+      promocao: promocao.as_json(only: [ :tipo, :valor_de, :valor_para, :nome, :desconto_percentual ])
     )
   end
 end

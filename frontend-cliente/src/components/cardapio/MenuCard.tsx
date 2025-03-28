@@ -19,13 +19,14 @@ export function MenuCard({ item, onClick }: MenuCardProps) {
           alt={item.nome}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
-        {item.promocao && (
-          <div className="absolute top-2 right-2 bg-primary-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
-            {item.promocao.tipo === 'desconto_percentual' 
-              ? `${item.promocao.desconto_percentual}% OFF`
-              : 'PROMOÇÃO'}
-          </div>
-        )}
+{item.promocao && (
+  <div className="absolute top-2 right-2 bg-primary-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
+    {item.promocao.tipo === 'desconto_percentual' 
+      ? `${Math.min(99, Math.floor(item.promocao.desconto_percentual))}% OFF` 
+      : 'PROMOÇÃO'}
+  </div>
+)}
+
       </div>
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">{item.nome}</h3>
