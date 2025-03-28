@@ -29,24 +29,41 @@ interface ChartCardPropsType {
   title: string;
   value: string;
   chart: object;
+  periodo: number;
+  onPeriodoChange: (periodo: number) => void;
 }
 
 // Card de Métricas
 function MetricCard({ icon, title, value, description }: MetricCardPropsType) {
   return (
-    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
-      <CardBody className="p-4">
+    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+      <CardBody className="p-4" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
         <img src={icon} className="h-6 w-6 mb-5 dark:filter dark:invert" alt={title} />
         <Typography
           variant="small"
           className="text-gray-600 dark:text-gray-300 font-medium mb-1"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined} 
+          onPointerLeaveCapture={undefined}
         >
           {title}
         </Typography>
-        <Typography variant="h3" className="text-blue-gray-900 dark:text-white">
+        <Typography 
+          variant="h3" 
+          className="text-blue-gray-900 dark:text-white"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           {value}
         </Typography>
-        <Typography variant="small" className="text-gray-500 dark:text-gray-400">
+        <Typography 
+          variant="small" 
+          className="text-gray-500 dark:text-gray-400"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           {description}
         </Typography>
       </CardBody>
@@ -55,22 +72,34 @@ function MetricCard({ icon, title, value, description }: MetricCardPropsType) {
 }
 
 // Card de Gráfico
-function ChartCard({ title, value, chart }: ChartCardPropsType) {
+function ChartCard({ title, value, chart, periodo, onPeriodoChange }: ChartCardPropsType) {
   return (
-    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800 w-full h-fit">
+    <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800 w-full h-fit" placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
       <CardHeader
         floated={false}
         shadow={false}
         className="flex items-start justify-between rounded-none dark:bg-gray-800"
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         <div>
           <Typography
             variant="small"
             className="text-gray-600 dark:text-gray-300 font-medium mb-1"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           >
             {title}
           </Typography>
-          <Typography variant="h3" className="text-blue-gray-900 dark:text-white">
+          <Typography 
+            variant="h3" 
+            className="text-blue-gray-900 dark:text-white"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
             {value}
           </Typography>
         </div>
@@ -80,22 +109,48 @@ function ChartCard({ title, value, chart }: ChartCardPropsType) {
               size="sm"
               variant="outlined"
               className="flex items-center gap-1 border-gray-300 dark:border-gray-600 dark:text-gray-300"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
-              Últimos 7 dias
+              {periodo === 7 ? "Últimos 7 dias" : periodo === 30 ? "Últimos 30 dias" : "Últimos 90 dias"}
               <ChevronDownIcon
                 strokeWidth={4}
                 className="w-3 h-3 text-gray-900 dark:text-gray-300"
               />
             </Button>
           </MenuHandler>
-          <MenuList className="dark:bg-gray-700 dark:border-gray-600">
-            <MenuItem className="dark:text-gray-300 dark:hover:bg-gray-600">
+          <MenuList 
+            className="dark:bg-gray-700 dark:border-gray-600"
+            placeholder={undefined}
+            onPointerEnterCapture={undefined} 
+            onPointerLeaveCapture={undefined}
+          >
+            <MenuItem 
+              className="dark:text-gray-300 dark:hover:bg-gray-600"
+              onClick={() => onPeriodoChange(7)}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
               Últimos 7 dias
             </MenuItem>
-            <MenuItem className="dark:text-gray-300 dark:hover:bg-gray-600">
+            <MenuItem 
+              className="dark:text-gray-300 dark:hover:bg-gray-600"
+              onClick={() => onPeriodoChange(30)}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
               Últimos 30 dias
             </MenuItem>
-            <MenuItem className="dark:text-gray-300 dark:hover:bg-gray-600">
+            <MenuItem 
+              className="dark:text-gray-300 dark:hover:bg-gray-600"
+              onClick={() => onPeriodoChange(90)}
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
               Últimos 90 dias
             </MenuItem>
           </MenuList>
@@ -112,7 +167,7 @@ const chartsConfig = {
     toolbar: {
       show: false,
     },
-    foreColor: "#6B7280", // Cor do texto no modo claro
+    foreColor: "#6B7280",
   },
   title: {
     show: "",
@@ -129,14 +184,14 @@ const chartsConfig = {
     },
     labels: {
       style: {
-        colors: "#6B7280", // Cor do texto no modo claro
+        colors: "#6B7280",
       },
     },
   },
   yaxis: {
     labels: {
       style: {
-        colors: "#6B7280", // Cor do texto no modo claro
+        colors: "#6B7280",
       },
     },
   },
@@ -158,7 +213,7 @@ const chartsConfig = {
     opacity: 0.8,
   },
   tooltip: {
-    theme: "dark", // Tooltip no modo escuro
+    theme: "dark",
   },
 };
 
@@ -176,24 +231,30 @@ function Dashboard() {
     pedidos_semanais: [0, 0, 0, 0, 0, 0, 0],
     entregas_semanais: [0, 0, 0, 0, 0, 0, 0],
   });
+  const [periodo, setPeriodo] = useState(7);
+
+  const fetchDashboardData = async (novoPeriodo: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token de autenticação não encontrado.");
+      }
+
+      const response = await api.get(`/api/v1/relatorios/dashboard?periodo=${novoPeriodo}`);
+      setDashboardData(response.data.data);
+      setPeriodo(novoPeriodo);
+    } catch (err) {
+      console.error("Erro ao carregar dados do dashboard:", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Token de autenticação não encontrado.");
-        }
-
-        const response = await api.get("/api/v1/relatorios/dashboard");
-        setDashboardData(response.data.data);
-      } catch (err) {
-        console.error("Erro ao carregar dados do dashboard:", err);
-      }
-    };
-
-    fetchDashboardData();
+    fetchDashboardData(periodo);
   }, []);
+
+  const handlePeriodoChange = (novoPeriodo: number) => {
+    fetchDashboardData(novoPeriodo);
+  };
 
   // Dados dos cards de métricas
   const metricCardsData = [
@@ -239,7 +300,7 @@ function Dashboard() {
         ],
         options: {
           ...chartsConfig,
-          colors: ["#388e3c"], // Verde para vendas
+          colors: ["#388e3c"],
           stroke: {
             lineCap: "round",
             width: 2,
@@ -250,7 +311,11 @@ function Dashboard() {
           },
           xaxis: {
             ...chartsConfig.xaxis,
-            categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+            categories: Array.from({ length: periodo }, (_, i) => {
+              const data = new Date();
+              data.setDate(data.getDate() - (periodo - 1 - i));
+              return data.toLocaleDateString('pt-BR', { weekday: 'short' });
+            }),
           },
         },
       },
@@ -269,7 +334,7 @@ function Dashboard() {
         ],
         options: {
           ...chartsConfig,
-          colors: ["#2196F3"], // Azul para pedidos
+          colors: ["#2196F3"],
           stroke: {
             lineCap: "round",
             width: 2,
@@ -280,7 +345,11 @@ function Dashboard() {
           },
           xaxis: {
             ...chartsConfig.xaxis,
-            categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+            categories: Array.from({ length: periodo }, (_, i) => {
+              const data = new Date();
+              data.setDate(data.getDate() - (periodo - 1 - i));
+              return data.toLocaleDateString('pt-BR', { weekday: 'short' });
+            }),
           },
         },
       },
@@ -299,7 +368,7 @@ function Dashboard() {
         ],
         options: {
           ...chartsConfig,
-          colors: ["#FF9800"], // Laranja para entregas
+          colors: ["#FF9800"],
           stroke: {
             lineCap: "round",
             width: 2,
@@ -310,7 +379,11 @@ function Dashboard() {
           },
           xaxis: {
             ...chartsConfig.xaxis,
-            categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+            categories: Array.from({ length: periodo }, (_, i) => {
+              const data = new Date();
+              data.setDate(data.getDate() - (periodo - 1 - i));
+              return data.toLocaleDateString('pt-BR', { weekday: 'short' });
+            }),
           },
         },
       },
@@ -330,7 +403,12 @@ function Dashboard() {
         {/* Gráficos Principais */}
         <div className="col-span-4 lg:grid grid-cols-2 lg:space-y-0 space-y-5 gap-5">
           {chartCardsData.map((props, key) => (
-            <ChartCard key={key} {...props} />
+            <ChartCard 
+              key={key} 
+              {...props} 
+              periodo={periodo}
+              onPeriodoChange={handlePeriodoChange}
+            />
           ))}
         </div>
       </div>

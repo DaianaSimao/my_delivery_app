@@ -2,6 +2,7 @@ class Api::V1::RelatoriosController < ApplicationController
   def dashboard
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
     hoje = Time.now
+    periodo = params[:periodo] || 7
 
     inicio_intervalo = (hoje - 3.hours).beginning_of_day + 3.hours
     fim_intervalo = (hoje - 3.hours).end_of_day + 3.hours
@@ -26,9 +27,9 @@ class Api::V1::RelatoriosController < ApplicationController
     crescimento_ticket_medio = calcular_crescimento(ticket_medio, ticket_medio_anterior)
 
     # Dados para os gráficos
-    vendas_semanais = calcular_vendas_semanais(restaurante.id)
-    pedidos_semanais = calcular_pedidos_semanais(restaurante.id)
-    entregas_semanais = calcular_entregas_semanais(restaurante.id)
+    vendas_semanais = calcular_vendas_semanais(restaurante.id, periodo)
+    pedidos_semanais = calcular_pedidos_semanais(restaurante.id, periodo)
+    entregas_semanais = calcular_entregas_semanais(restaurante.id, periodo)
 
     render json: {
       data: {
@@ -63,13 +64,12 @@ class Api::V1::RelatoriosController < ApplicationController
     end
   end
 
-  def calcular_vendas_semanais(restaurante_id)
+  def calcular_vendas_semanais(restaurante_id, periodo)
     hoje = Time.now
-    inicio_semana = (hoje - 3.hours).beginning_of_week + 3.hours
-    fim_semana = (hoje - 3.hours).end_of_week + 3.hours
+    inicio_periodo = (hoje - 3.hours).beginning_of_day - (periodo.to_i - 1).days + 3.hours
 
-    vendas_por_dia = (0..6).map do |i|
-      inicio_dia = inicio_semana + i.days
+    vendas_por_dia = (0..periodo.to_i-1).map do |i|
+      inicio_dia = inicio_periodo + i.days
       fim_dia = inicio_dia.end_of_day
       Pedido.where(restaurante_id: restaurante_id, created_at: inicio_dia..fim_dia).sum(:valor_total).to_f
     end
@@ -77,13 +77,12 @@ class Api::V1::RelatoriosController < ApplicationController
     vendas_por_dia
   end
 
-  def calcular_pedidos_semanais(restaurante_id)
+  def calcular_pedidos_semanais(restaurante_id, periodo)
     hoje = Time.now
-    inicio_semana = (hoje - 3.hours).beginning_of_week + 3.hours
-    fim_semana = (hoje - 3.hours).end_of_week + 3.hours
+    inicio_periodo = (hoje - 3.hours).beginning_of_day - (periodo.to_i - 1).days + 3.hours
 
-    pedidos_por_dia = (0..6).map do |i|
-      inicio_dia = inicio_semana + i.days
+    pedidos_por_dia = (0..periodo.to_i-1).map do |i|
+      inicio_dia = inicio_periodo + i.days
       fim_dia = inicio_dia.end_of_day
       Pedido.where(restaurante_id: restaurante_id, created_at: inicio_dia..fim_dia).count
     end
@@ -91,13 +90,12 @@ class Api::V1::RelatoriosController < ApplicationController
     pedidos_por_dia
   end
 
-  def calcular_entregas_semanais(restaurante_id)
+  def calcular_entregas_semanais(restaurante_id, periodo)
     hoje = Time.now
-    inicio_semana = (hoje - 3.hours).beginning_of_week + 3.hours
-    fim_semana = (hoje - 3.hours).end_of_week + 3.hours
+    inicio_periodo = (hoje - 3.hours).beginning_of_day - (periodo.to_i - 1).days + 3.hours
 
-    entregas_por_dia = (0..6).map do |i|
-      inicio_dia = inicio_semana + i.days
+    entregas_por_dia = (0..periodo.to_i-1).map do |i|
+      inicio_dia = inicio_periodo + i.days
       fim_dia = inicio_dia.end_of_day
       Entrega.joins(:pedido).where(pedidos: { restaurante_id: restaurante_id }, created_at: inicio_dia..fim_dia, status: "Entregue").count
     end
