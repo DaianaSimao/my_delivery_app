@@ -18,12 +18,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :restaurantes do
-        member do
-          get "mais_pedidos", to: "restaurantes#mais_pedidos"
-          get "secoes_cardapio", to: "restaurantes#secoes_cardapio"
-        end
-      end
+      resources :restaurantes
       resources :relatorios do
         collection do
           get "dashboard"
@@ -71,6 +66,11 @@ Rails.application.routes.draw do
       end
       resources :promocoes
       resources :secoes_cardapios
+
+      get "restaurantes/:id/mais_pedidos", to: "cardapio#mais_pedidos"
+      get "restaurantes/:id/secoes", to: "cardapio#secoes_cardapio"
+      get "restaurantes/:restaurante_id/promocoes", to: "cardapio#promocoes_cardapio"
+      get "cardapio/produto/:id", to: "cardapio#produto_cardapio"
       post "switch_restaurant", to: "restaurantes#switch_restaurant"
       get "restaurantes_ativos", to: "restaurantes#restaurantes_ativos"
       get "cardapio/:restaurante_id", to: "produtos#cardapio"

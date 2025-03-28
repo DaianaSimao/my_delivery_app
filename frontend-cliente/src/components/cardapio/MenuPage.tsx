@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchMaisPedidos, fetchSecoes } from '../../services/api';
+import { fetchMaisPedidos, fetchSecoes, fetchPromocoesAtivas } from '../../services/api';
 import { MenuSection } from './MenuSection';
 import type { MenuItem, MenuSection as MenuSectionType } from '../../types';
 import { Footer } from '../Footer';
@@ -26,9 +26,10 @@ const MenuPage: React.FC<MenuPageProps> = ({ onSectionsLoad }) => {
           return;
         }
 
-        const [maisPedidos, secoes] = await Promise.all([
+        const [maisPedidos, secoes, promocoes] = await Promise.all([
           fetchMaisPedidos(restauranteId),
           fetchSecoes(restauranteId),
+          fetchPromocoesAtivas(restauranteId)
         ]);
 
         const sections: MenuSectionType[] = [
@@ -36,8 +37,16 @@ const MenuPage: React.FC<MenuPageProps> = ({ onSectionsLoad }) => {
             id: 'popular',
             title: 'Os Mais Pedidos',
             items: maisPedidos,
-          }
+          },
         ];
+
+        if (promocoes && promocoes.length > 0) {
+          sections.push({
+            id: 'promocoes',
+            title: 'Promoções',
+            items: promocoes,
+          });
+        }
         
         secoes.forEach((secao: { id: number; nome: string; produtos: MenuItem[] }) => {
           if (secao.produtos && secao.produtos.length > 0) {
@@ -61,7 +70,6 @@ const MenuPage: React.FC<MenuPageProps> = ({ onSectionsLoad }) => {
       loadMenu();
     }
   }, [restauranteId, onSectionsLoad]);
-
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
     if (quantity < 1) return;
     setCartItems(

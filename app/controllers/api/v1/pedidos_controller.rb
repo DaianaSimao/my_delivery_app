@@ -156,13 +156,13 @@ class Api::V1::PedidosController < ApplicationController
   # GET /api/v1/pedidos/:id/itens
   def itens
     itens_pedido = @pedido.itens_pedidos.includes(:produto, :acompanhamentos_pedidos)
-    render json: itens_pedido, include: [:produto, acompanhamentos_pedidos: { include: :item_acompanhamento }]
+    render json: itens_pedido, include: [ :produto, acompanhamentos_pedidos: { include: :item_acompanhamento } ]
   end
 
   # PUT /api/v1/pedidos/:id/itens
   def atualizar_itens
     itens_params = params.require(:itens).map do |item|
-      item.permit(:id, :quantidade, acompanhamentos_pedidos_attributes: [:id, :quantidade])
+      item.permit(:id, :quantidade, acompanhamentos_pedidos_attributes: [ :id, :quantidade ])
     end
 
     ActiveRecord::Base.transaction do
