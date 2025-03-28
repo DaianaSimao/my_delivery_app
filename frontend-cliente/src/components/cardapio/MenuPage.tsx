@@ -70,7 +70,6 @@ const MenuPage: React.FC<MenuPageProps> = ({ onSectionsLoad }) => {
       loadMenu();
     }
   }, [restauranteId, onSectionsLoad]);
-  console.log(menuSections);
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
     if (quantity < 1) return;
     setCartItems(
