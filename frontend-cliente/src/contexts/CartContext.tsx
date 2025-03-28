@@ -28,7 +28,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (restauranteId) {
       const savedRestauranteId = localStorage.getItem('restauranteId');
       if (savedRestauranteId !== restauranteId) {
-        clearCart(); // Limpa ao trocar de restaurante
+        clearCart();
         localStorage.setItem('restauranteId', restauranteId);
       }
     }

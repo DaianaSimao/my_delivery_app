@@ -33,7 +33,9 @@ export function Cart({
   };
 
   if (showCustomerDataForm) {
-    return <CustomerData cartItems={items} onBack={() => setShowCustomerDataForm(false)} />;
+    return <CustomerData cartItems={items} onBack={() => setShowCustomerDataForm(false)} isDarkMode={false} onToggleDarkMode={function (): void {
+      throw new Error('Function not implemented.');
+    } } />;
   }
 
   return (
