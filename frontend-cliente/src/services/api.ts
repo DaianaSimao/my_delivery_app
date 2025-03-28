@@ -1,13 +1,12 @@
 import axios, { AxiosInstance } from "axios";
 
-// Configura a URL base do axios
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000", // URL base da sua API
+  baseURL: "http://localhost:3000/api/v1",
 });
 
 export const fetchMenu = async (restauranteId: string | number) => {
   try {
-    const response = await api.get(`/api/v1/cardapio/${restauranteId}`);
+    const response = await api.get(`/cardapio/${restauranteId}`);
     return response.data.data;
   }
   catch (error) {
@@ -18,8 +17,8 @@ export const fetchMenu = async (restauranteId: string | number) => {
 
 export const fetchProductDetails = async (id: number) => {
   try {  
-    const response = await api.get(`/api/v1/cardapio/produto/${id}`);
-    return response.data.data; // Retorna diretamente o produto formatado
+    const response = await api.get(`/cardapio/produto/${id}`);
+    return response.data.data;
   }
   catch (error) {
     console.error("Erro ao buscar detalhes do produto:", error);
@@ -29,7 +28,7 @@ export const fetchProductDetails = async (id: number) => {
 
 export const fetchRestaurantInfo = async (restauranteId: string | number) => {
   try {
-    const response = await api.get(`/api/v1/restaurantes/${restauranteId}`);
+    const response = await api.get(`/restaurantes/${restauranteId}`);
     return response.data.data;
   }
   catch (error) {
@@ -40,7 +39,7 @@ export const fetchRestaurantInfo = async (restauranteId: string | number) => {
 
 export const fetchClienteByWhatsApp = async (whatsapp: string) => {
   try {
-    const response = await api.get(`/api/v1/clientes/?whatsapp=${whatsapp}`);
+    const response = await api.get(`/clientes/?whatsapp=${whatsapp}`);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar cliente:", error);
@@ -50,7 +49,7 @@ export const fetchClienteByWhatsApp = async (whatsapp: string) => {
 
 export const fetchEnderecoById = async (enderecoId: number) => {
   try {
-    const response = await api.get(`/api/v1/enderecos/${enderecoId}`);
+    const response = await api.get(`/enderecos/${enderecoId}`);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar endereço:", error);
@@ -60,7 +59,7 @@ export const fetchEnderecoById = async (enderecoId: number) => {
 
 export const fetchPedidoById = async (pedidoId: string | number) => {
   try {
-    const response = await api.get(`/api/v1/pedidos/rastreio_pedido/${pedidoId}`);
+    const response = await api.get(`/pedidos/rastreio_pedido/${pedidoId}`);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar pedido:", error);
@@ -70,7 +69,7 @@ export const fetchPedidoById = async (pedidoId: string | number) => {
 
 export const criarCliente = async (clienteData: any) => {
   try {
-    const response = await api.post("/api/v1/clientes", clienteData);
+    const response = await api.post("/clientes", clienteData);
     return response.data;
   } catch (error) {
     console.error("Erro ao criar cliente:", error);
@@ -80,7 +79,7 @@ export const criarCliente = async (clienteData: any) => {
 
 export const criarEndereco = async (dadosEndereco: any) => {
   try {
-    const response = await api.post('/api/v1/enderecos', dadosEndereco);
+    const response = await api.post('/enderecos', dadosEndereco);
     return response.data
   } catch (error) {
     console.error('Erro ao criar endereço:', error);
@@ -90,7 +89,7 @@ export const criarEndereco = async (dadosEndereco: any) => {
 
 export const criarPedido = async (pedidoData: any) => {
   try {
-    const response = await api.post("/api/v1/pedidos", pedidoData);
+    const response = await api.post("/pedidos", pedidoData);
     return response.data;
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
@@ -100,7 +99,7 @@ export const criarPedido = async (pedidoData: any) => {
 
 export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; sobrenome:string; telefone: string; }) => {
   try {
-    const response = await api.put(`/api/v1/clientes/${clienteId}`, dadosAtualizados);
+    const response = await api.put(`/clientes/${clienteId}`, dadosAtualizados);
     return response.data;
   } catch (error) {
     console.error("Erro ao atualizar cliente:", error);
@@ -164,7 +163,7 @@ export const fetchPromocoesAtivas = async (restauranteId: string) => {
     const response = await api.get(`/api/v1/restaurantes/${restauranteId}/promocoes`);
     return response.data.data;
   } catch (error) {
-    console.error("Erro ao buscar seções do cardápio:", error);
+    console.error("Erro ao buscar promoções ativas:", error);
     throw error;
   }
 };
