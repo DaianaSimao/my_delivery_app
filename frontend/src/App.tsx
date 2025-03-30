@@ -18,7 +18,7 @@ import EntregasList from "./components/entregas/EntregasList";
 import OrderNotifications from './components/pedidos/PedidoNotificacao';
 import AuthenticatedLayout from "./layouts/AuthenticatedLayout";
 import BemVindo from "./components/admin/BemVindo";
-import Dashboard from "./components/admin/Dashboard";
+import Dashboard from "./components/admin/Relatorios/Dashboard";
 import Restaurantes from "./components/restaurantes/Restaurantes";
 import RestauranteForm from "./components/restaurantes/RestauranteForm";
 import RestauranteEditForm from "./components/restaurantes/RestauranteEditForm";

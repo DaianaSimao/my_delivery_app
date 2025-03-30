@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
-
-interface Acompanhamento {
-  id: number;
-  nome: string;
-  quantidade_maxima: number;
-  item_acompanhamentos: ItemAcompanhamento[];
-}
-
-interface ItemAcompanhamento {
-  id: number;
-  nome: string;
-  preco: number | null;
-}
+import { Acompanhamento } from "../../types/Acompanhamento";
 
 const Acompanhamentos: React.FC = () => {
   const [acompanhamentos, setAcompanhamentos] = useState<Acompanhamento[]>([]);
@@ -211,7 +199,7 @@ const Acompanhamentos: React.FC = () => {
                       <div className="flex items-center space-x-4">
                       <button
                             type="button"
-                            onClick={() => handleEditarClick(acompanhamento.id)}
+                            onClick={() => acompanhamento.id && handleEditarClick(acompanhamento.id)}
                             className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                           >
                             <svg
