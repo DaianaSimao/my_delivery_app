@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from 'react-router-dom';
-
-interface Produto {
-  id: number;
-  nome: string;
-  preco: string;
-  descricao: string;
-  imagem_url: string;
-  disponivel: boolean;
-  produto_secoes: { id: number; secoes_cardapio_id: number }[];
-}
+import { Produto } from "../../types/Produto";
 
 interface SecaoCardapio {
   id: number;
@@ -217,7 +208,7 @@ const Produtos: React.FC = () => {
                       <div className="flex items-center space-x-4">
                         <button
                           type="button"
-                          onClick={() => handleEditarClick(produto.id)}
+                          onClick={() => produto.id !== undefined && handleEditarClick(produto.id)}
                           className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         >
                           <svg

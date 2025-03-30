@@ -2,27 +2,9 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
-interface Produto {
-  nome: string;
-  preco: string;
-  descricao: string;
-  disponivel: boolean;
-  imagem_url: string;
-  restaurante_id: number;
-  acompanhamentos_selecionados: number[]; // IDs dos acompanhamentos selecionados
-  secoes_selecionadas: number[];
-}
-
-interface Acompanhamento {
-  id: number;
-  nome: string;
-}
-
-interface SecaoCardapio {
-  id: number;
-  nome: string;
-}
+import { Produto } from "../../types/Produto";
+import { Acompanhamento } from "../../types/Acompanhamento";
+import { SecaoCardapio } from "../../types/SecaoCardapio";
 
 const ProdutosForm = () => {
   const [produto, setProduto] = useState<Produto>({
@@ -33,14 +15,15 @@ const ProdutosForm = () => {
     imagem_url: "",
     restaurante_id: 1,
     acompanhamentos_selecionados: [],
+    produto_acompanhamentos: [],
     secoes_selecionadas: [],
+    produto_secoes: [],
   });
 
   const [acompanhamentos, setAcompanhamentos] = useState<Acompanhamento[]>([]);
   const [secoes, setSecoes] = useState<SecaoCardapio[]>([]);
   const navigate = useNavigate();
 
-  // Carrega a lista de acompanhamentos disponíveis
   useEffect(() => {
     const fetchAcompanhamentosESecoes = async () => {
       try {
@@ -129,7 +112,9 @@ const ProdutosForm = () => {
           imagem_url: "",
           restaurante_id: 1,
           acompanhamentos_selecionados: [],
+          produto_acompanhamentos: [],
           secoes_selecionadas: [],
+          produto_secoes: [],
         });
       } else {
         toast.error("Erro ao cadastrar produto.");
@@ -252,8 +237,8 @@ const ProdutosForm = () => {
                     <input
                       type="checkbox"
                       id={`acompanhamento-${acompanhamento.id}`}
-                      checked={produto.acompanhamentos_selecionados.includes(acompanhamento.id)}
-                      onChange={() => handleAcompanhamentoChange(acompanhamento.id)}
+                      checked={acompanhamento.id !== undefined && produto.acompanhamentos_selecionados.includes(acompanhamento.id)}
+                      onChange={() => acompanhamento.id !== undefined && handleAcompanhamentoChange(acompanhamento.id)}
                       className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
