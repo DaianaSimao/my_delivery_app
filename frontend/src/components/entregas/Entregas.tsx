@@ -1,40 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from 'react-router-dom';
-
-interface Entrega {
-  id: number;
-  status: string;
-  created_at: string;
-  pedido: {
-    id: number;
-    status: string;
-    forma_pagamento: string;
-    valor_total: number;
-    observacoes: string;
-    cliente: {
-      id: number;
-      nome: string;
-      email: string;
-      telefone: string;
-      endereco: {
-        id: number;
-        rua: string;
-        numero: string;
-        bairro: string;
-        cidade: string;
-        estado: string;
-        cep: string;
-      };
-    };
-  };
-  entregador: {
-    id: number;
-    nome: string;
-    telefone: string;
-    veiculo: string;
-  };
-}
+import { Entrega } from "../../types/Entrega";
 
 const Entregas: React.FC = () => {
   const [entregas, setEntregas] = useState<Entrega[]>([]);

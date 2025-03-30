@@ -1,33 +1,5 @@
 import React from 'react';
-
-interface Entrega {
-  id: number;
-  status: string;
-  pedido_id: number;
-  pedido: {
-    id: number;
-    forma_pagamento: string;
-    observacoes: string;
-    cliente: {
-      nome: string;
-      telefone: string;
-      endereco: {
-        rua: string;
-        numero: string;
-        bairro: string;
-        cidade: string;
-        estado: string;
-        cep: string;
-      };
-    };
-  };
-  entregador?: {
-    id: number;
-    nome: string;
-    telefone: string;
-    veiculo: string;
-  };
-}
+import { Entrega } from '../../types/Entrega';
 
 interface ModalInformacoesEntregaProps {
   isOpen: boolean;
@@ -49,7 +21,6 @@ const ModalInformacoesEntrega: React.FC<ModalInformacoesEntregaProps> = ({
           Informações da Entrega
         </h2>
 
-        {/* Detalhes da Entrega */}
         <div className="space-y-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Pedido #{entrega.pedido_id}
@@ -76,9 +47,8 @@ const ModalInformacoesEntrega: React.FC<ModalInformacoesEntregaProps> = ({
           )}
         </div>
 
-        {/* Botão para Fechar o Modal */}
         <button
-          onClick={onClose} // Chama a função onClose diretamente
+          onClick={onClose}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors mt-4"
         >
           Fechar

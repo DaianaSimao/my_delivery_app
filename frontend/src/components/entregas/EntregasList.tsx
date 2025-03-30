@@ -5,20 +5,7 @@ import useEntregas from '../../hooks/useEntregas';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
-interface Entrega {
-  pedido: any;
-  id: number;
-  status: string;
-  pedido_id: number;
-  entregador_id?: number;
-  entregador?: {
-    id: number;
-    nome: string;
-    telefone: string;
-    veiculo: string;
-  };
-}
+import { Entrega } from '../../types/Entrega';
 
 const EntregasList: React.FC = () => {
   const { entregas, loading, error } = useEntregas();
