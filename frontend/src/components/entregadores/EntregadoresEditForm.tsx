@@ -2,19 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-
-interface Entregador {
-  id: number;
-  nome: string;
-  telefone: string;
-  veiculo: string;
-  placa: string;
-  ativo: boolean;
-  restaurante_id: number;
-}
+import { Entregador } from "../../types/Entregador";
 
 const EntregadoresEditForm = () => {
-  const { id } = useParams<{ id: string }>(); // Captura o ID do entregador da URL
+  const { id } = useParams<{ id: string }>();
   const [entregador, setEntregador] = useState<Entregador>({
     id: 0,
     nome: "",
@@ -22,7 +13,7 @@ const EntregadoresEditForm = () => {
     veiculo: "",
     placa: "",
     ativo: false,
-    restaurante_id: 0,
+    restaurante_id: "",
   });
 
   const navigate = useNavigate();

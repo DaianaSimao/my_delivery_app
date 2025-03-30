@@ -1,7 +1,7 @@
 import LogoutButton from "../autenticacao/LogoutButton";
 import styled from "styled-components";
 import { useState } from "react";
-import Switch from "../avulsos/Switch";
+import Switch from "../darkmodebutton/Switch";
 import { Utensils } from "lucide-react";
 import { useEffect } from "react";
 import SelecionaRestaurante from "../admin/SelecionaRestaurante";
