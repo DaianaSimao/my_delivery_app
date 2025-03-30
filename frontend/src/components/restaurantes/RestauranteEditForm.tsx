@@ -2,53 +2,8 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-
-interface Endereco {
-  id?: number;
-  rua: string;
-  numero: string;
-  complemento: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  tipo: string;
-  uf: string;
-}
-
-interface RegiaoEntrega {
-  id?: number;
-  bairro: string;
-  taxa_entrega: number;
-  _destroy?: boolean;
-  ativo: boolean;
-}
-
-interface Restaurante {
-  id?: number;
-  nome: string;
-  descricao: string;
-  categoria: string;
-  taxa_entrega: number;
-  tempo_medio_entrega: string;
-  avaliacao: number;
-  pedido_minimo: number;
-  ativo: boolean;
-  abertura: string;
-  fechamento: string;
-  cnpj: string;
-  telefone: string;
-  email: string;
-  endereco: Endereco;
-  regioes_entrega: RegiaoEntrega[];
-}
-
-interface Bairro {
-  id: number;
-  nome: string;
-  cidade: string;
-  uf: string;
-}
+import { Restaurante } from "../../types/Restaurante";
+import { Bairro } from "../../types/Bairro";
 
 // Função para formatar o horário (ISO 8601 -> HH:mm)
 const formatTime = (isoString: string): string => {
@@ -96,7 +51,6 @@ const RestauranteEditForm = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Carrega os dados do restaurante ao montar o componente
   useEffect(() => {
     const fetchRestaurante = async () => {
       try {
@@ -142,18 +96,18 @@ const RestauranteEditForm = () => {
 
   // Carrega as cidades com base no estado do endereço
   useEffect(() => {
-    if (restaurante.endereco) {
+    if (restaurante.endereco.uf) {
       api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.uf}`)
         .then((response) => {
           console.log("uf", restaurante.endereco.uf);
-          console.log("Cidades carregadas:", response.data); // Depuração
           setCidades(response.data);
+          console.log("Cidades carregadas:", response.data); // Depuração
         })
         .catch((error) => {
           console.error("Erro ao carregar cidades:", error);
         });
     }
-  }, [restaurante.endereco.estado ]);
+  }, [restaurante.endereco.uf ]);
 
   // Carrega os bairros com base na cidade selecionada
   useEffect(() => {
@@ -198,9 +152,14 @@ const RestauranteEditForm = () => {
   };
 
   const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked} = e.target;
+    const { name, type, checked, value } = e.target;
     const novasRegioes = [...restaurante.regioes_entrega];
-    novasRegioes[index] = { ...novasRegioes[index], [name]: checked };
+    
+    novasRegioes[index] = { 
+      ...novasRegioes[index], 
+      [name]: type === 'checkbox' ? checked : value 
+    };
+    
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       regioes_entrega: novasRegioes,
@@ -567,7 +526,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Estado */}
             <div className="w-full">
               <label htmlFor="endereco.estado" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Estado</label>
               <input
@@ -581,7 +539,6 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
-            {/* UF */}
             <div className="w-full">
               <label htmlFor="endereco.uf" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">UF</label>
               <input
@@ -595,7 +552,6 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
-            {/* CEP */}
             <div className="w-full">
               <label htmlFor="endereco.cep" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CEP</label>
               <input
@@ -611,10 +567,8 @@ const RestauranteEditForm = () => {
             </div>
           </div>
 
-          {/* Regiões de Entrega */}
           <div className="sm:col-span-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-4">Regiões de Entrega</h3>
-            {/* Dropdown de Cidades */}
             <div className="w-full">
               <label htmlFor="cidade" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Cidade
@@ -635,7 +589,6 @@ const RestauranteEditForm = () => {
               </select>
             </div>
 
-            {/* Dropdown de Bairros */}
             <div className="w-full">
               <label htmlFor="bairro" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Bairro
@@ -656,7 +609,6 @@ const RestauranteEditForm = () => {
               </select>
             </div>
 
-            {/* Botão para adicionar região */}
             <button
               type="button"
               onClick={adicionarRegiao}
@@ -665,9 +617,7 @@ const RestauranteEditForm = () => {
               + Adicionar Região
             </button>
 
-            {/* Lista de regiões de entrega */}
             {restaurante.regioes_entrega.map((regiao, index) => {
-              // Ignora regiões marcadas para exclusão
               if (regiao._destroy) return null;
 
               return (
@@ -709,7 +659,6 @@ const RestauranteEditForm = () => {
             })}
           </div>
 
-          {/* Botões */}
           <div className="flex gap-4 mt-4 sm:mt-6">
             <button
               type="submit"

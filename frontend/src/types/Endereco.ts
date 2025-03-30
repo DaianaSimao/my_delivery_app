@@ -1,5 +1,5 @@
 export interface Endereco {
-  id: number;
+  id?: number;
   rua: string;
   numero: string;
   complemento: string;
@@ -7,4 +7,6 @@ export interface Endereco {
   cidade: string;
   estado: string;
   cep: string;
+  tipo: string;
+  uf: string;
 }

@@ -2,48 +2,8 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
-interface Endereco {
-  rua: string;
-  numero: string;
-  complemento: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  uf: string;
-}
-
-interface RegiaoEntrega {
-  cidade: string;
-  bairro: string;
-  taxa_entrega: number;
-  ativo: boolean;
-}
-
-interface Restaurante {
-  nome: string;
-  descricao: string;
-  categoria: string;
-  taxa_entrega: number;
-  tempo_medio_entrega: string;
-  avaliacao: number;
-  ativo: boolean;
-  abertura: string;
-  fechamento: string;
-  cnpj: string;
-  telefone: string;
-  email: string;
-  endereco: Endereco;
-  regioes_entrega: RegiaoEntrega[];
-}
-
-interface Bairro {
-  id: number;
-  nome: string;
-  cidade: string;
-  uf: string;
-}
+import { Restaurante } from "../../types/Restaurante";
+import { Bairro } from "../../types/Bairro";
 
 const RestauranteForm = () => {
   const [restaurante, setRestaurante] = useState<Restaurante>({
@@ -53,6 +13,7 @@ const RestauranteForm = () => {
     taxa_entrega: 0.0,
     tempo_medio_entrega: "",
     avaliacao: 0.0,
+    pedido_minimo: 0.0,
     ativo: true,
     abertura: "",
     fechamento: "",
@@ -67,10 +28,12 @@ const RestauranteForm = () => {
       cidade: "",
       estado: "",
       cep: "",
+      tipo: "Restaurante",
       uf: "",
     },
     regioes_entrega: [],
   });
+
   const [cidades, setCidades] = useState<string[]>([]);
   const [bairros, setBairros] = useState<Bairro[]>([]);
   const [cidadeSelecionada, setCidadeSelecionada] = useState<string>("");
@@ -78,10 +41,9 @@ const RestauranteForm = () => {
 
   const navigate = useNavigate();
 
-  // Carrega as cidades com base no estado do endereço
   useEffect(() => {
-    if (restaurante.endereco.estado) {
-      api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.estado}`)
+    if (restaurante.endereco.uf) {
+      api.get(`/api/v1/bairros/cidades?uf=${restaurante.endereco.uf}`)
         .then((response) => {
           setCidades(response.data);
         })
@@ -89,12 +51,11 @@ const RestauranteForm = () => {
           console.error("Erro ao carregar cidades:", error);
         });
     }
-  }, [restaurante.endereco.estado]);
+  }, [restaurante.endereco.uf]);
 
-  // Carrega os bairros com base na cidade selecionada
   useEffect(() => {
     if (cidadeSelecionada) {
-      api.get(`/api/v1/bairros?cidade=${cidadeSelecionada}&uf=${restaurante.endereco.estado}`)
+      api.get(`/api/v1/bairros?cidade=${cidadeSelecionada}&uf=${restaurante.endereco.uf}`)
         .then((response) => {
           setBairros(response.data);
         })
@@ -108,8 +69,7 @@ const RestauranteForm = () => {
     const { name, value } = e.target;
 
     if (name.startsWith("endereco.")) {
-      // Atualiza campos aninhados de endereço
-      const enderecoField = name.split(".")[1]; // Extrai o nome do campo de endereço
+      const enderecoField = name.split(".")[1];
       setRestaurante((prevRestaurante) => ({
         ...prevRestaurante,
         endereco: {
@@ -118,7 +78,6 @@ const RestauranteForm = () => {
         },
       }));
     } else {
-      // Atualiza campos normais do restaurante
       setRestaurante((prevRestaurante) => ({
         ...prevRestaurante,
         [name]: value,
@@ -135,9 +94,14 @@ const RestauranteForm = () => {
   };
 
   const handleRegiaoChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
+    const { name, type, checked, value } = e.target;
     const novasRegioes = [...restaurante.regioes_entrega];
-    novasRegioes[index] = { ...novasRegioes[index], [name]: checked };
+    
+    novasRegioes[index] = { 
+      ...novasRegioes[index], 
+      [name]: type === 'checkbox' ? checked : value 
+    };
+    
     setRestaurante((prevRestaurante) => ({
       ...prevRestaurante,
       regioes_entrega: novasRegioes,
@@ -189,7 +153,6 @@ const RestauranteForm = () => {
       if (response.status === 201) {
         toast.success("Restaurante cadastrado com sucesso!");
         navigate("/restaurantes");
-        // Resetar o formulário
         setRestaurante({
           nome: "",
           descricao: "",
@@ -197,12 +160,14 @@ const RestauranteForm = () => {
           taxa_entrega: 0.0,
           tempo_medio_entrega: "",
           avaliacao: 0.0,
+          pedido_minimo: 0.0,
           ativo: true,
           abertura: "",
           fechamento: "",
           cnpj: "",
           telefone: "",
           email: "",
+          imagem_url: "",
           endereco: {
             rua: "",
             numero: "",
@@ -211,6 +176,7 @@ const RestauranteForm = () => {
             cidade: "",
             estado: "",
             cep: "",
+            tipo: "Restaurante",
             uf: "",
           },
           regioes_entrega: [],
@@ -545,7 +511,6 @@ const RestauranteForm = () => {
             + Adicionar Região
           </button>
 
-          {/* Lista de regiões de entrega */}
           {restaurante.regioes_entrega.map((regiao, index) => (
             <div key={index} className="flex items-center gap-2 mb-2 mt-4">
               <input
@@ -558,6 +523,7 @@ const RestauranteForm = () => {
               <input
                 type="number"
                 name="taxa_entrega"
+                id="taxa_entrega"
                 value={regiao.taxa_entrega}
                 onChange={(e) => handleRegiaoChange(index, e)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
