@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios"; // Importando o axios
+import api from "../../services/api";
 import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -14,22 +14,19 @@ const LogoutButton: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log("Token antes do logout:", token); // Debug
 
       if (!token) {
         console.error("Nenhum token encontrado para logout");
         return;
       }
 
-      // Usando o axios para fazer a requisição DELETE
-      const response = await axios.delete("http://localhost:3000/logout", {
+      const response = await api.delete("/logout", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
-      // Verifica se a requisição foi bem-sucedida
       if (response.status !== 200) {
         throw new Error("Erro ao realizar logout");
       }
