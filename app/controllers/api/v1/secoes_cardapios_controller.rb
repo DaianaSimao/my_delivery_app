@@ -5,7 +5,6 @@ class  Api::V1::SecoesCardapiosController < ApplicationController
   def index
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
     @secoes_cardapios = SecoesCardapio.where(restaurante_id: restaurante.id)
-    # Filtra os secoes_cardapios com base no termo de busca
     if params[:search].present?
       @secoes_cardapios = @secoes_cardapios.where("nome ILIKE ?", "%#{params[:search]}%")
     end
