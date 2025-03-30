@@ -1,25 +1,12 @@
-// src/components/SelecionaRestaurante.tsx
-"use client"; // Adicione esta linha no topo do arquivo
+"use client";
 
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useAuth } from "../../context/useAuth";
 import toast from "react-hot-toast";
-import { Label, Select } from "flowbite-react"; // Importe os componentes do Flowbite
+import { Label, Select } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-
-interface Restaurante {
-  id: string;
-  attributes: {
-    id: string;
-    nome: string;
-    descricao: string;
-    endereco: string;
-    telefone: string;
-    created_at: string;
-    updated_at: string;
-  };
-}
+import { Restaurante } from "../../types/Restaurante";
 
 const SelecionaRestaurante: React.FC = () => {
   const { restauranteId, switchRestaurant } = useAuth();
@@ -28,15 +15,13 @@ const SelecionaRestaurante: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Busca os restaurantes associados ao usuário
     const fetchRestaurantes = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await api.get("/api/v1/restaurantes_ativos", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        // Ajuste aqui: A API retorna um objeto com a propriedade `data`
-        setRestaurantes(response.data.data);
+        setRestaurantes(response.data);
       } catch (error) {
         console.error("Erro ao buscar restaurantes:", error);
         toast.error("Erro ao carregar restaurantes.");
@@ -61,10 +46,9 @@ const SelecionaRestaurante: React.FC = () => {
         { restaurante_id: novoRestauranteId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      switchRestaurant(novoRestauranteId); // Atualiza o restauranteId no contexto
+      switchRestaurant(novoRestauranteId);
       toast.success("Restaurante alterado com sucesso!");
-      navigate("/bem_vindo"); // Redireciona para a página inicial do admin
-      // Recarrega os dados após trocar de restaurante
+      navigate("/bem_vindo");
       await carregarPedidos();
       await carregarProdutos();
       await carregarEntregas();
@@ -89,7 +73,7 @@ const SelecionaRestaurante: React.FC = () => {
         </option>
         {restaurantes.map((restaurante) => (
           <option className=" text-gray-800 dark:text-gray-200" key={restaurante.id} value={restaurante.id}>
-            {restaurante?.attributes.nome}
+            {restaurante?.nome}
           </option>
         ))}
       </Select>

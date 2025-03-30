@@ -4,8 +4,7 @@ import { useState } from "react";
 import Switch from "../avulsos/Switch";
 import { Utensils } from "lucide-react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import SelecionaRestaurante from "../admin/SelecionaRestaurante"; // Importe o componente
+import SelecionaRestaurante from "../admin/SelecionaRestaurante";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/useAuth";
@@ -16,24 +15,16 @@ import pedidoIcon from "/icons/pedido_menu.svg";
 import entregaIcon from "/icons/entrega_menu.svg";
 import entregadorIcon from "/icons/entregador_menu.svg";
 import descontoIcon from "/icons/desconto.svg";
+import { Restaurante } from "../../types/Restaurante";
 
 interface SideBarProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
 
-interface Restaurante {
-  id: string;
-  nome: string;
-  descricao: string;
-  categoria: string;
-  taxa_entrega: string;
-}
-
 export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
-  const navigate = useNavigate();
   const { restauranteId } = useAuth();
 
   useEffect(() => {
@@ -45,24 +36,22 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
             Authorization: `Bearer ${token}`,
           },
         });
-        setRestaurante(response.data.data); // Atualiza o estado do restaurante
+        setRestaurante(response.data.data);
       } catch (error) {
         toast.error("Erro ao carregar restaurante");
       }
     };
 
     if (restauranteId) {
-      fetchRestaurante(); // Busca os dados do restaurante sempre que o restauranteId mudar
+      fetchRestaurante();
     }
   }, [restauranteId]); 
 
   return (
     <>
-      {/* Navbar */}
       <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
-            {/* Botão para alternar o sidebar */}
             <Switch onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
             <div className="flex items-center">
               <Utensils className="h-8 w-8 text-primary-500" />
@@ -111,7 +100,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
           </div>
         </div>
       </nav>
-      {/* Sidebar */}
+
       <aside
         id="logo-sidebar"
         className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform ${
@@ -121,7 +110,6 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
       >
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
-            {/* Adicione o SelecionaRestaurante aqui */}
             <li>
               <SelecionaRestaurante />
             </li>
