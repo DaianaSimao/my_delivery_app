@@ -1,22 +1,7 @@
 // src/hooks/usePedidos.ts
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-
-
-interface Pedido {
-  id: number;
-  status: string;
-  cliente: {
-    nome: string;
-  };
-  valor_total: number;
-  itens_pedidos: Array<{
-    produto: {
-      nome: string;
-    };
-    quantidade: number;
-  }>;
-}
+import { Pedido } from '../types/Pedido';
 
 const usePedidos = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);

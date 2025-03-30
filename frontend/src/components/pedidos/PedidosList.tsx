@@ -6,23 +6,7 @@ import usePedidos from '../../hooks/usePedidos';
 import api from '../../services/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { createConsumer } from '@rails/actioncable';
-
-interface Pedido {
-  id: number;
-  status: string;
-  cliente?: {
-    id?: number;
-    nome: string;
-    telefone?: string;
-  };
-  valor_total: number;
-  itens_pedidos: Array<{
-    produto: {
-      nome: string;
-    };
-    quantidade: number;
-  }>;
-}
+import { Pedido } from '../../types/Pedido';
 
 const PedidosList: React.FC = () => {
   const { pedidos, loading, error } = usePedidos();
@@ -130,7 +114,7 @@ const PedidosList: React.FC = () => {
 
   const handleCancel = async (pedidoId: number) => {
     const confirmCancel = await toast.promise(
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         toast(
           (t) => (
             <div>

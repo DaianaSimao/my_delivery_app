@@ -1,22 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
-import { useNavigate } from 'react-router-dom';
-
-interface Pedido {
-  id: number;
-  cliente: {
-    nome: string;
-    telefone: string;
-  };
-  valor_total: number;
-  status: string;
-  itens_pedidos: Array<{
-    produto: {
-      nome: string;
-    };
-    quantidade: number;
-  }>;
-}
+import { Pedido } from "../../types/Pedido";
 
 const Pedidos: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -31,7 +15,6 @@ const Pedidos: React.FC = () => {
   const [searchPedidoId, setSearchPedidoId] = useState("");
   const [statusSelecionados, setStatusSelecionados] = useState<string[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const navigate = useNavigate();
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -216,7 +199,7 @@ const Pedidos: React.FC = () => {
                       #{pedido.id}
                     </td>
                     <td className="px-4 py-3">
-                      {pedido.cliente.nome}
+                      {pedido.cliente?.nome}
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       R${Number(pedido.valor_total).toFixed(2)}

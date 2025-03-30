@@ -2,39 +2,28 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-
-interface Pagamento {
-  id: string;
-  metodo: "PIX" | "Dinheiro" | "Cartão de Crédito" | "Cartão de Débito";
-  status: "Pago" | "Aguardando pagamento";
-  valor: number;
-  troco?: number; // Troco é opcional (apenas para pagamento em dinheiro)
-}
+import { Pagamento } from "../../types/Pagamento";
 
 const PagamentoForm: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // ID do pedido
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  // Estado para os dados do pagamento
   const [pagamento, setPagamento] = useState<Pagamento>({
     id: "",
     metodo: "PIX",
     status: "Aguardando pagamento",
     valor: 0,
-    troco: 0, // Inicialize troco com 0
+    troco: 0,
   });
 
-  // Carrega os dados do pagamento ao montar o componente
   useEffect(() => {
     const carregarPagamento = async () => {
       try {
         const response = await api.get(`/api/v1/pedidos/${id}/pagamento`);
         if (response.status === 200) {
-          // Garanta que troco seja definido como 0 se for undefined ou null
           const dadosPagamento = response.data;
           setPagamento({
             ...dadosPagamento,
-            troco: dadosPagamento.troco || 0, // Define troco como 0 se for undefined ou null
+            troco: dadosPagamento.troco || 0,
           });
         } else {
           toast.error("Erro ao carregar dados do pagamento.");
@@ -48,7 +37,6 @@ const PagamentoForm: React.FC = () => {
     carregarPagamento();
   }, [id]);
 
-  // Atualiza o estado do pagamento quando os campos mudam
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -58,7 +46,6 @@ const PagamentoForm: React.FC = () => {
       [name]: value,
     }));
 
-    // Define o status automaticamente com base no método de pagamento
     if (name === "metodo") {
       const novoStatus =
         value === "Cartão de Crédito" || value === "Cartão de Débito"
@@ -71,7 +58,6 @@ const PagamentoForm: React.FC = () => {
     }
   };
 
-  // Salva as alterações
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -79,7 +65,7 @@ const PagamentoForm: React.FC = () => {
       const response = await api.put(`/api/v1/pagamentos/${pagamento.id}/`, pagamento);
       if (response.status === 200) {
         toast.success("Pagamento atualizado com sucesso!");
-        navigate(-1); // Volta para a página anterior
+        navigate(-1);
       } else {
         throw new Error("Erro ao atualizar pagamento.");
       }
@@ -89,9 +75,8 @@ const PagamentoForm: React.FC = () => {
     }
   };
 
-  // Cancela a edição
   const handleCancel = () => {
-    navigate(-1); // Volta para a página anterior
+    navigate(-1);
   };
 
   return (
@@ -102,7 +87,6 @@ const PagamentoForm: React.FC = () => {
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-            {/* Método de Pagamento */}
             <div className="sm:col-span-2">
               <label
                 htmlFor="metodo"
@@ -125,7 +109,6 @@ const PagamentoForm: React.FC = () => {
               </select>
             </div>
 
-            {/* Status */}
             <div className="sm:col-span-2">
               <label
                 htmlFor="status"
@@ -146,7 +129,6 @@ const PagamentoForm: React.FC = () => {
               </select>
             </div>
 
-            {/* Valor */}
             <div className="sm:col-span-2">
               <label
                 htmlFor="valor"
@@ -165,7 +147,6 @@ const PagamentoForm: React.FC = () => {
               />
             </div>
 
-            {/* Troco (visível apenas para pagamento em dinheiro) */}
             {pagamento.metodo === "Dinheiro" && (
               <div className="sm:col-span-2">
                 <label
@@ -178,7 +159,7 @@ const PagamentoForm: React.FC = () => {
                   type="number"
                   name="troco"
                   id="troco"
-                  value={pagamento.troco || 0} // Garanta que troco nunca seja undefined
+                  value={pagamento.troco || 0}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 />
@@ -186,7 +167,6 @@ const PagamentoForm: React.FC = () => {
             )}
           </div>
 
-          {/* Botões de ação */}
           <div className="flex gap-4 mt-4 sm:mt-6">
             <button
               type="submit"

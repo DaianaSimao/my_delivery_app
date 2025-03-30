@@ -1,32 +1,6 @@
 // utils/comandaGenerator.ts
 import { jsPDF } from 'jspdf';
-
-interface Pedido {
-  id: number;
-  created_at: string;
-  itens_pedidos: Array<{
-    produto: {
-      id: number;
-      nome: string;
-      preco: number;
-    };
-    acompanhamentos_pedidos?: Array<{
-      id: number;
-      item_acompanhamento: {
-        id: number;
-        nome: string;
-        preco: number;
-        acompanhamento: {
-          id: number;
-          nome: string;
-        };
-      };
-      quantidade: number;
-    }>;
-    quantidade: number;
-  }>;
-  observacoes?: string;
-}
+import { Pedido } from '../types/Pedido';
 
 export const gerarComandaPDF = (pedido: Pedido) => {
   const doc = new jsPDF({
