@@ -2,25 +2,17 @@ import React, { useState } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
-interface Entregador {
-  nome: string;
-  telefone: string;
-  veiculo: string;
-  placa: string;
-  ativo: boolean;
-  restaurante_id: number;
-}
+import { Entregador } from "../../types/Entregador";
 
 const EntregadoresForm = () => {
-  const restauranteId = Number(localStorage.getItem("restaurante_id"));
+  const restauranteId = localStorage.getItem("restauranteId");
   const [entregador, setEntregador] = useState<Entregador>({
     nome: "",
     telefone: "",
     veiculo: "",
     placa: "",
     ativo: true,
-    restaurante_id: restauranteId,
+    restaurante_id: "",
   });
 
 
@@ -51,8 +43,9 @@ const EntregadoresForm = () => {
         veiculo: entregador.veiculo,
         placa: entregador.placa,
         ativo: entregador.ativo,
-        restaurante_id: entregador.restaurante_id,
+        restaurante_id: restauranteId,
       };
+
       const response = await api.post("/api/v1/entregadores", payload);
 
       if (response.status === 201) {
@@ -64,7 +57,7 @@ const EntregadoresForm = () => {
           veiculo: "",
           placa: "",
           ativo: true,
-          restaurante_id: restauranteId,
+          restaurante_id: "",
         });
       } else {
         toast.error("Erro ao cadastrar entregador.");

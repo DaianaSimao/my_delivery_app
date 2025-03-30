@@ -2,17 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-
-interface Entregador {
-  id: number;
-  nome: string;
-  cpf: string;
-  telefone: string;
-  veiculo: string;
-  placa: string;
-  ativo: boolean;
-  resturante_id: number;
-}
+import { Entregador } from "../../types/Entregador";
 
 const EntregadorDetail = () => {
   const { id } = useParams<{ id: string }>();

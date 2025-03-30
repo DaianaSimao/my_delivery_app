@@ -4,6 +4,7 @@ import { useAuth } from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import restauranteIcon from "/icons/restaurante.svg";
+import api from "../../services/api";
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -15,8 +16,8 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/login",
+      const response = await api.post(
+        "/login",
         {
           user: {
             email,
@@ -62,7 +63,7 @@ const Login: React.FC = () => {
             backgroundImage: "url(/image/login.jpg)",
           }}
         >
-          <div scope="row" className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40">
+          <div className="flex items-center h-full px-20 bg-gray-900 bg-opacity-40">
             <div>
               <h2 className="text-4xl font-bold text-white flex items-center">
                 Delivery Express 

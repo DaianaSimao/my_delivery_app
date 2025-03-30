@@ -54,6 +54,6 @@ class Api::V1::EntregadoresController < ApplicationController
   end
 
   def entregador_params
-    params.require(:entregador).permit(:nome, :telefone, :veiculo, :ativo)
+    params.require(:entregador).permit(:nome, :telefone, :veiculo, :ativo, :placa, :restaurante_id)
   end
 end

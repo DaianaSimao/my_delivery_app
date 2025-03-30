@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
-
-interface SecaoCardapio {
-  id: number;
-  nome: string;
-  ordem: number;
-  restaurante_id: number;
-}
+import { SecaoCardapio } from "../../types/SecaoCardapio";
 
 const SecoesList = () => {
   const [secoes, setSecoes] = useState<SecaoCardapio[]>([]);

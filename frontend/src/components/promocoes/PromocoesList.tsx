@@ -83,8 +83,8 @@ const PromocoesList: React.FC = () => {
               <form
                 className="flex items-center"
                 onSubmit={(e) => {
-                  e.preventDefault(); // Evita o recarregamento da página
-                  handlePageChange(1); // Volta para a primeira página ao buscar
+                  e.preventDefault(); 
+                  handlePageChange(1);
                 }}
               >
                 <label htmlFor="simple-search" className="sr-only">Buscar</label>

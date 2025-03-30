@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-
-interface Entregador {
-  id: number;
-  nome: string;
-  telefone: string;
-  veiculo: string;
-}
+import { Entregador } from '../../types/Entregador';
 
 interface ModalDesignarEntregadorProps {
   isOpen: boolean;

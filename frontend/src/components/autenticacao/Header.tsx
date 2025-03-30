@@ -9,7 +9,6 @@ export function Header({ isDarkMode, onToggleDarkMode }: HeaderProps) {
   return (
     <header className="bg-white dark:bg-gray-800 shadow-sm">
       <div className="max-w-7xl mx-auto ">
-        {/* Top section */}
         <div className="py-4 justify-between items-center flex">
           <div className="flex items-center gap-4">
             <StyledWrapper>

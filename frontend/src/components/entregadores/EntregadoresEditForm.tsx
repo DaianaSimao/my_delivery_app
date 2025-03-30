@@ -2,19 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-
-interface Entregador {
-  id: number;
-  nome: string;
-  telefone: string;
-  veiculo: string;
-  placa: string;
-  ativo: boolean;
-  restaurante_id: number;
-}
+import { Entregador } from "../../types/Entregador";
 
 const EntregadoresEditForm = () => {
-  const { id } = useParams<{ id: string }>(); // Captura o ID do entregador da URL
+  const { id } = useParams<{ id: string }>();
   const [entregador, setEntregador] = useState<Entregador>({
     id: 0,
     nome: "",
@@ -22,7 +13,7 @@ const EntregadoresEditForm = () => {
     veiculo: "",
     placa: "",
     ativo: false,
-    restaurante_id: 0,
+    restaurante_id: "",
   });
 
   const navigate = useNavigate();
@@ -142,12 +133,12 @@ const EntregadoresEditForm = () => {
               <label htmlFor="placa" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Placa</label>
               <input
                 type="text"
-                name="telefone"
-                id="telefone"
+                name="placa"
+                id="placa"
                 value={entregador.placa}
                 onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="URL da Imagem"
+                placeholder="Placa do veiculo"
                 required
               />
             </div>

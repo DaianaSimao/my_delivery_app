@@ -20,7 +20,6 @@ const PedidoColumn: React.FC<PedidoColumnProps> = ({
   onCancel,
   onEdit,
 }) => {
-  // Definir cores para cada status
   const getColumnColor = (status: string) => {
     switch (status) {
       case 'Recebido':
@@ -35,7 +34,6 @@ const PedidoColumn: React.FC<PedidoColumnProps> = ({
         return 'bg-gray-100 dark:bg-gray-900';
     }
   };
-
   return (
     <Droppable droppableId={columnId}>
       {(provided) => (
@@ -47,7 +45,7 @@ const PedidoColumn: React.FC<PedidoColumnProps> = ({
           <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">{title}</h2>
           {pedidos.map((pedido, index) => (
             <PedidosCard
-              key={`${pedido.id}-${index}`} // Garante unicidade mesmo se ids repetirem
+              key={`${pedido.id}-${index}`}
               pedido={pedido}
               onStatusChange={onStatusChange}
               onCancel={onCancel}

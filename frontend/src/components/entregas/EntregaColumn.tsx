@@ -1,34 +1,6 @@
 import React from 'react';
 import EntregaCard from './EntregaCard';
-
-interface Entrega {
-  id: number;
-  status: string;
-  pedido_id: number;
-  pedido: {
-    id: number;
-    forma_pagamento: string;
-    observacoes: string;
-    cliente: {
-      nome: string;
-      telefone: string;
-    };
-    endereco: {
-      rua: string;
-      numero: string;
-      bairro: string;
-      cidade: string;
-      estado: string;
-      cep: string;
-    };
-  };
-  entregador?: {
-    id: number;
-    nome: string;
-    telefone: string;
-    veiculo: string;
-  };
-}
+import { Entrega } from '../../types/Entrega';
 
 interface EntregaColumnProps {
   columnId: string;

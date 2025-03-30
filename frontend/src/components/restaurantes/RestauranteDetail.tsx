@@ -4,43 +4,8 @@ import api from "../../services/api";
 import toast from "react-hot-toast";
 import restauranteIcon from "/icons/restaurante.svg";
 import DeliveryIcon from "/icons/delivery.svg";
+import { Restaurante } from "../../types/Restaurante";
 
-interface Endereco {
-  id: number;
-  rua: string;
-  numero: string;
-  complemento: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-}
-
-interface Restaurante {
-  id: number;
-  nome: string;
-  descricao: string;
-  categoria: string;
-  taxa_entrega: number;
-  tempo_medio_entrega: string;
-  avaliacao: number;
-  ativo: boolean;
-  abertura: string;
-  fechamento: string;
-  cnpj: string;
-  telefone: string;
-  email: string;
-  endereco: Endereco;
-  created_at?: string;
-  updated_at?: string;
-  regioes_entrega: {
-    id: number;
-    bairro: string;
-    taxa_entrega: number;
-  }[];
-}
-
-// Função para formatar o horário (ISO 8601 -> HH:mm)
 const formatTime = (isoString: string): string => {
   const date = new Date(isoString);
   const hours = date.getUTCHours().toString().padStart(2, '0');
@@ -61,7 +26,6 @@ const RestauranteDetail = () => {
     const fetchRestaurante = async () => {
       try {
         const response = await api.get(`/api/v1/restaurantes/${id}`);
-        console.log("Dados do restaurante:", response.data.data);
         setRestaurante(response.data.data);
       } catch (error) {
         console.error("Erro ao carregar restaurante:", error);
@@ -87,7 +51,6 @@ const RestauranteDetail = () => {
           />
           {restaurante.nome}</h2>
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-          {/* Informações Básicas */}
           <div className="sm:col-span-2">
             <p className="text-gray-700 dark:text-gray-300">{restaurante.descricao}</p>
           </div>
@@ -110,12 +73,12 @@ const RestauranteDetail = () => {
           </div>
           <div className="w-full">
             <p className="text-gray-900 dark:text-white">
-              Horário de Abertura: {formatTime(restaurante.abertura)} {/* Formata o horário */}
+              Horário de Abertura: {formatTime(restaurante.abertura)}
             </p>
           </div>
           <div className="w-full">
             <p className="text-gray-900 dark:text-white">
-              Horário de Fechamento: {formatTime(restaurante.fechamento)} {/* Formata o horário */}
+              Horário de Fechamento: {formatTime(restaurante.fechamento)}
             </p>
           </div>
           <div className="w-full">
@@ -157,7 +120,6 @@ const RestauranteDetail = () => {
           </div>
         </div>
 
-        {/* Botão Voltar */}
         <div className="flex gap-4 mt-4 sm:mt-6">
           <button
             type="button"

@@ -9,7 +9,7 @@ class Api::V1::BairrosController < ApplicationController
 
   def cidades
     uf = params[:uf]
-    cidades = Bairro.where(uf: uf).distinct.order(:cidade).pluck(:cidade)
+    cidades = Bairro.where(uf: uf.upcase).distinct.order(:cidade).pluck(:cidade)
     render json: cidades
   end
 end

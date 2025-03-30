@@ -1,42 +1,16 @@
 // utils/comandaGenerator.ts
 import { jsPDF } from 'jspdf';
-
-interface Pedido {
-  id: number;
-  created_at: string;
-  itens_pedidos: Array<{
-    produto: {
-      id: number;
-      nome: string;
-      preco: number;
-    };
-    acompanhamentos_pedidos?: Array<{
-      id: number;
-      item_acompanhamento: {
-        id: number;
-        nome: string;
-        preco: number;
-        acompanhamento: {
-          id: number;
-          nome: string;
-        };
-      };
-      quantidade: number;
-    }>;
-    quantidade: number;
-  }>;
-  observacoes?: string;
-}
+import { Pedido } from '../types/Pedido';
 
 export const gerarComandaPDF = (pedido: Pedido) => {
   const doc = new jsPDF({
     unit: 'mm',
-    format: [130, 270], // Tamanho personalizado para a comanda (130mm x 270mm)
+    format: [130, 270],
   });
 
   // Adiciona uma borda preta ao redor da comanda
   doc.setDrawColor(0); // Preto
-  doc.rect(3, 3, 124, 260); // Borda preta (3mm de margem)
+  doc.rect(2, 2, 126, 260); // Borda preta (3mm de margem)
 
   // Configurações do PDF
   doc.setFontSize(12);
@@ -57,10 +31,11 @@ export const gerarComandaPDF = (pedido: Pedido) => {
   doc.text(`Data e Hora: ${dataHoraPedido}`, 10, 25);
 
   // Itens do Pedido
-  doc.setFontSize(15);
-  doc.setFont('helvetica', 'bold');
-  doc.text('ITENS DO PEDIDO', 10, 35);
   doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  const totalItens = pedido.itens_pedidos.reduce((acc, item) => acc + item.quantidade, 0);
+  doc.text(`ITENS DO PEDIDO - TOTAL: ${totalItens}`, 10, 35);
+  doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
 
   let yOffset = 45;
@@ -69,7 +44,7 @@ export const gerarComandaPDF = (pedido: Pedido) => {
   pedido.itens_pedidos.forEach((item) => {
     // Adiciona o número do item antes do nome do produto
     doc.text(
-      `ITEM ${itemCount}: ${item.quantidade}x ${item.produto.nome.toUpperCase()} - R$ ${(item.quantidade * item.produto.preco).toFixed(2)}`,
+      ` ${item.quantidade}x ${item.produto.nome.toUpperCase()} - R$ ${(item.quantidade * item.produto.preco).toFixed(2)}`,
       10,
       yOffset
     );
@@ -90,9 +65,9 @@ export const gerarComandaPDF = (pedido: Pedido) => {
 
       // Exibe os acompanhamentos agrupados
       Object.entries(acompanhamentosAgrupados).forEach(([tipo, acompanhamentos]) => {
-        doc.setFontSize(15);
+        doc.setFontSize(13);
         doc.setFont('helvetica', 'bold');
-        doc.text(`ACOMPANHAMENTO: ${tipo}`, 10, yOffset);
+        doc.text(`ACP: ${tipo}`, 10, yOffset);
         yOffset += 10;
 
         doc.setFontSize(13);

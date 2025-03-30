@@ -2,44 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-
-interface ItemPedido {
-  id: number;
-  produto: {
-    id: number;
-    nome: string;
-    preco: number;
-    acompanhamentos?: Array<{
-      id: number;
-      nome: string;
-      quantidade_maxima: number;
-      item_acompanhamentos?: Array<{
-        id: number;
-        nome: string;
-        preco: number;
-      }>;
-    }>;
-  };
-  quantidade: number;
-  acompanhamentos_pedidos?: Array<{
-    id: number;
-    item_acompanhamento: {
-      id: number;
-      nome: string;
-      preco: number;
-    };
-    quantidade: number;
-    preco_unitario: number;
-  }>;
-}
+import { ItemPedido } from '../../types/ItemPedido';
 
 const ItensForm: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // ID do pedido
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
   const [itensPedido, setItensPedido] = useState<ItemPedido[]>([]);
 
-  // Carrega os itens do pedido ao montar o componente
   useEffect(() => {
     const carregarItensPedido = async () => {
       try {
@@ -58,7 +27,6 @@ const ItensForm: React.FC = () => {
     carregarItensPedido();
   }, [id]);
 
-  // Atualiza a quantidade de um item do pedido
   const handleQuantidadeChange = (itemId: number, quantidade: number) => {
     setItensPedido((prev) =>
       prev.map((item) =>
@@ -67,7 +35,6 @@ const ItensForm: React.FC = () => {
     );
   };
 
-  // Atualiza a quantidade de um acompanhamento
   const handleAcompanhamentoQuantidadeChange = (
     itemId: number,
     acompanhamentoId: number,
@@ -89,12 +56,10 @@ const ItensForm: React.FC = () => {
     );
   };
 
-  // Salva as alterações
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      // Envia as alterações para o backend
       const response = await api.put(`/api/v1/pedidos/${id}/atualizar_itens`, {
         itens: itensPedido.map((item) => ({
           id: item.id,
@@ -107,7 +72,7 @@ const ItensForm: React.FC = () => {
       });
       if (response.status === 200) {
         toast.success('Itens do pedido atualizados com sucesso!');
-        navigate(-1); // Volta para a página anterior
+        navigate(-1);
       } else {
         throw new Error('Erro ao atualizar itens do pedido.');
       }
@@ -117,9 +82,8 @@ const ItensForm: React.FC = () => {
     }
   };
 
-  // Cancela a edição
   const handleCancel = () => {
-    navigate(-1); // Volta para a página anterior
+    navigate(-1);
   };
 
   return (
@@ -131,12 +95,10 @@ const ItensForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           {itensPedido.map((item) => (
             <div key={item.id} className="mb-6 p-4 border rounded-lg">
-              {/* Nome do Produto */}
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {item.produto.nome}
               </h3>
 
-              {/* Quantidade do Produto */}
               <div className="mt-2">
                 <label
                   htmlFor={`quantidade-${item.id}`}
@@ -157,7 +119,6 @@ const ItensForm: React.FC = () => {
                 />
               </div>
 
-              {/* Acompanhamentos */}
               {item.acompanhamentos_pedidos &&
                 item.acompanhamentos_pedidos.length > 0 && (
                   <div className="mt-4">
@@ -194,7 +155,6 @@ const ItensForm: React.FC = () => {
             </div>
           ))}
 
-          {/* Botões de ação */}
           <div className="flex gap-4 mt-4 sm:mt-6">
             <button
               type="submit"

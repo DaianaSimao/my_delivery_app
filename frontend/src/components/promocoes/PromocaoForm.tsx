@@ -38,19 +38,18 @@ const PromocaoForm: React.FC = () => {
         const promocaoResponse = await api.get(`/api/v1/promocoes/${id}`);
         const data = promocaoResponse.data;
   
-        // Mapear os dados da API para o estado promocao
         setPromocao({
           id: data.id || 0,
           nome: data.nome || "",
           descricao: data.descricao || "",
           tipo: data.tipo || "de_para",
-          valor_de: parseFloat(data.valor_de) || 0, // Converter string para número
-          valor_para: parseFloat(data.valor_para) || 0, // Converter string para número
-          desconto_percentual: parseFloat(data.desconto_percentual) || 0, // Converter string para número
+          valor_de: parseFloat(data.valor_de) || 0,
+          valor_para: parseFloat(data.valor_para) || 0,
+          desconto_percentual: parseFloat(data.desconto_percentual) || 0,
           data_inicio: data.data_inicio || "",
           data_fim: data.data_fim || "",
           ativa: data.ativa !== undefined ? data.ativa : true,
-          produto_ids: data.produtos ? data.produtos.map((produto: Produto) => produto.id) : [], // Mapear produtos para IDs
+          produto_ids: data.produtos ? data.produtos.map((produto: Produto) => produto.id) : [],
         });
       } catch (error) {
         console.error("Erro ao carregar promoção:", error);
@@ -78,8 +77,8 @@ const PromocaoForm: React.FC = () => {
       return {
         ...prev,
         produto_ids: alreadySelected
-          ? prev.produto_ids?.filter((id) => id !== produtoId) // Remove o produto se já estiver selecionado
-          : [...(prev.produto_ids || []), produtoId], // Adiciona o produto se não estiver selecionado
+          ? prev.produto_ids?.filter((id) => id !== produtoId) 
+          : [...(prev.produto_ids || []), produtoId],
       };
     });
   };
@@ -98,7 +97,7 @@ const PromocaoForm: React.FC = () => {
         data_inicio: promocao.data_inicio,
         data_fim: promocao.data_fim,
         ativa: promocao.ativa,
-        produto_ids: promocao.produto_ids, // IDs dos produtos selecionados
+        produto_ids: promocao.produto_ids,
       },
     };
   
@@ -227,8 +226,8 @@ const PromocaoForm: React.FC = () => {
                     <input
                       type="checkbox"
                       id={`produto-${produto.id}`}
-                      checked={promocao.produto_ids?.includes(produto.id)}
-                      onChange={() => handleProdutoChange(produto.id)}
+                      checked={produto.id !== undefined && promocao.produto_ids?.includes(produto.id)}
+                      onChange={() => produto.id !== undefined && handleProdutoChange(produto.id)}
                       className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label

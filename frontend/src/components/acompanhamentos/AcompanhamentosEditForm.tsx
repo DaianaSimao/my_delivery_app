@@ -2,50 +2,37 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-
-interface ItemAcompanhamento {
-  id?: number; // ID é opcional (para novos itens)
-  nome: string;
-  preco: string;
-  _destroy?: boolean; // Flag para marcar o item para remoção
-}
-
-interface Acompanhamento {
-  nome: string;
-  quantidade_maxima: number;
-  itens: ItemAcompanhamento[];
-}
+import { Acompanhamento } from '../../types/Acompanhamento';
 
 const AcompanhamentosEditForm = () => {
-  const { id } = useParams<{ id: string }>(); // Captura o ID do acompanhamento da URL
+  const { id } = useParams<{ id: string }>();
   const [acompanhamento, setAcompanhamento] = useState<Acompanhamento>({
     nome: '',
     quantidade_maxima: 1,
-    itens: [],
+    item_acompanhamentos: [],
   });
 
   const navigate = useNavigate();
 
-  // Carrega os dados do acompanhamento existente
   useEffect(() => {
     const fetchAcompanhamento = async () => {
       try {
         const response = await api.get(`/api/v1/acompanhamentos/${id}`);
-        console.log("Dados recebidos:", response.data); // Verifique os dados no console
+        console.log("Dados recebidos:", response.data);
         const data = response.data.data;
 
         if (data) {
           setAcompanhamento({
-            nome: data.nome || '', // Define um valor padrão caso data.nome seja undefined
-            quantidade_maxima: data.quantidade_maxima || 1, // Define um valor padrão
-            itens: data.item_acompanhamentos
+            nome: data.nome || '',
+            quantidade_maxima: data.quantidade_maxima || 1,
+            item_acompanhamentos: data.item_acompanhamentos
               ? data.item_acompanhamentos.map((item: any) => ({
-                  id: item.id, // Inclui o ID do item existente
-                  nome: item.nome || '', // Define um valor padrão
-                  preco: item.preco || '', // Define um valor padrão
-                  _destroy: false, // Inicializa como false
+                  id: item.id,
+                  nome: item.nome || '', 
+                  preco: item.preco || '', 
+                  _destroy: false,
                 }))
-              : [], // Define um array vazio caso item_acompanhamentos seja undefined
+              : [],
           });
         } else {
           toast.error('Dados do acompanhamento não encontrados.');
@@ -69,7 +56,7 @@ const AcompanhamentosEditForm = () => {
 
   const handleItemChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const novosItens = [...acompanhamento.itens];
+    const novosItens = [...acompanhamento.item_acompanhamentos];
     novosItens[index] = { ...novosItens[index], [name]: value };
     setAcompanhamento((prev) => ({
       ...prev,
@@ -80,12 +67,12 @@ const AcompanhamentosEditForm = () => {
   const adicionarItem = () => {
     setAcompanhamento((prev) => ({
       ...prev,
-      itens: [...prev.itens, { nome: '', preco: '', _destroy: false }], // Novo item sem ID
+      itens: [...prev.item_acompanhamentos, { nome: '', preco: '', _destroy: false }], // Novo item sem ID
     }));
   };
 
   const marcarItemParaRemocao = (index: number) => {
-    const novosItens = [...acompanhamento.itens];
+    const novosItens = [...acompanhamento.item_acompanhamentos];
     novosItens[index]._destroy = true; // Marca o item para remoção
     setAcompanhamento((prev) => ({
       ...prev,
@@ -104,7 +91,7 @@ const AcompanhamentosEditForm = () => {
         acompanhamento: {
           nome: acompanhamento.nome,
           quantidade_maxima: acompanhamento.quantidade_maxima,
-          item_acompanhamentos_attributes: acompanhamento.itens.map((item) => ({
+          item_acompanhamentos_attributes: acompanhamento.item_acompanhamentos.map((item) => ({
             id: item.id || null, // Inclui o ID se existir, ou null para novos itens
             nome: item.nome,
             preco: item.preco || null, // Envia null se o preço não for informado
@@ -170,7 +157,7 @@ const AcompanhamentosEditForm = () => {
               <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Itens do Acompanhamento:
               </label>
-              {acompanhamento.itens.map((item, index) => (
+              {acompanhamento.item_acompanhamentos.map((item, index) => (
                 !item._destroy && ( // Renderiza apenas os itens que não estão marcados para remoção
                   <div key={index} className="flex items-center gap-2 mb-2">
                     <input

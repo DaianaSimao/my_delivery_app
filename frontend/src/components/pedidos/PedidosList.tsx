@@ -6,23 +6,7 @@ import usePedidos from '../../hooks/usePedidos';
 import api from '../../services/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { createConsumer } from '@rails/actioncable';
-
-interface Pedido {
-  id: number;
-  status: string;
-  cliente?: {
-    id?: number;
-    nome: string;
-    telefone?: string;
-  };
-  valor_total: number;
-  itens_pedidos: Array<{
-    produto: {
-      nome: string;
-    };
-    quantidade: number;
-  }>;
-}
+import { Pedido } from '../../types/Pedido';
 
 const PedidosList: React.FC = () => {
   const { pedidos, loading, error } = usePedidos();
@@ -102,18 +86,27 @@ const PedidosList: React.FC = () => {
       setData((prevData) => {
         const updatedData = { ...prevData };
 
+        const pedidoAtual = Object.values(prevData)
+          .flat()
+          .find(p => p.id === pedidoId);
+
         Object.keys(updatedData).forEach((status) => {
           updatedData[status as keyof typeof updatedData] = updatedData[status as keyof typeof updatedData].filter((pedido) => pedido.id !== pedidoId);
         });
 
+        const pedidoAtualizado = {
+          ...response.data.data,
+          cliente: pedidoAtual?.cliente || response.data.data.cliente
+        };
+
         if (newStatus === 'Recebido') {
-          updatedData.Recebido.unshift(response.data.data);
+          updatedData.Recebido.unshift(pedidoAtualizado);
         } else if (newStatus === 'Em Análise') {
-          updatedData.Em_Análise.unshift(response.data.data);
+          updatedData.Em_Análise.unshift(pedidoAtualizado);
         } else if (newStatus === 'Em Preparação') {
-          updatedData.Em_Preparação.unshift(response.data.data);
+          updatedData.Em_Preparação.unshift(pedidoAtualizado);
         } else if (newStatus === 'Expedido') {
-          updatedData.Expedido.unshift(response.data.data);
+          updatedData.Expedido.unshift(pedidoAtualizado);
         } else {
           console.error(`Status "${newStatus}" não existe no estado.`);
         }
@@ -130,7 +123,7 @@ const PedidosList: React.FC = () => {
 
   const handleCancel = async (pedidoId: number) => {
     const confirmCancel = await toast.promise(
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         toast(
           (t) => (
             <div>

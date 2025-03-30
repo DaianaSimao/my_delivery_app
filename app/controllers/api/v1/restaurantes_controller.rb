@@ -17,7 +17,7 @@ class Api::V1::RestaurantesController < ApplicationController
 
   def restaurantes_ativos
     @restaurantes = current_user.restaurantes.where(ativo: true).includes(:endereco)
-    render json: RestauranteSerializer.new(@restaurantes).serializable_hash.to_json
+    render json: @restaurantes.as_json(include: :endereco)
   end
 
   def regioes_entrega

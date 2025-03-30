@@ -10,16 +10,16 @@ interface SecaoCardapio {
 }
 
 const SecoesForm = () => {
-  const { id } = useParams<{ id: string }>(); // Captura o ID da seção (se estiver editando)
+  const { id } = useParams<{ id: string }>();
+  const restauranteId = localStorage.getItem("restauranteId");
   const [secao, setSecao] = useState<SecaoCardapio>({
     nome: "",
     ordem: 0,
-    restaurante_id: 1, // Defina o ID do restaurante conforme necessário
+    restaurante_id: Number(restauranteId),
   });
 
   const navigate = useNavigate();
 
-  // Carrega os dados da seção se estiver em modo de edição
   useEffect(() => {
     if (id) {
       const fetchSecao = async () => {
@@ -48,23 +48,21 @@ const SecoesForm = () => {
     e.preventDefault();
     try {
       if (id) {
-        // Modo de edição: atualiza a seção existente
         console.log("Atualizando seção:", secao);
         const response = await api.put(`/api/v1/secoes_cardapios/${id}`, {secao_cardapio: secao} );
         if (response.status === 200) {
           toast.success("Seção atualizada com sucesso!");
-          navigate("/secoes"); // Redireciona para a lista de seções
+          navigate("/secoes");
         } else {
           toast.error("Erro ao atualizar seção.");
         }
       } else {
-        // Modo de criação: cria uma nova seção
         console.log("Criando seção:", secao);
         const response = await api.post("/api/v1/secoes_cardapios", {secao_cardapio: secao} );
 
         if (response.status === 201) {
           toast.success("Seção cadastrada com sucesso!");
-          navigate("/secoes"); // Redireciona para a lista de seções
+          navigate("/secoes");
         } else {
           toast.error("Erro ao cadastrar seção.");
         }

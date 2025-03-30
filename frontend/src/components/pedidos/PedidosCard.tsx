@@ -2,56 +2,8 @@ import React, { useState } from 'react';
 import PedidoModal from './PedidoModal';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { gerarComandaPDF } from '../../utils/comandaCozinhaGenerator'; // Importe a função utilitária
-
-interface Pedido {
-  id: number;
-  status: string;
-  cliente?: {
-    id: number;
-    nome: string;
-    telefone: string;
-  };
-  valor_total: number;
-  itens_pedidos: Array<{
-    produto: {
-      id: number;
-      nome: string;
-      preco: number;
-    };
-    acompanhamentos_pedidos?: Array<{
-      id: number;
-      item_acompanhamento: {
-        id: number;
-        nome: string;
-        preco: number;
-        acompanhamento: {
-          id: number;
-          nome: string;
-        };
-      };
-      quantidade: number;
-    }>;
-    quantidade: number;
-  }>;
-  created_at: string;
-  forma_pagamento: string;
-  endereco?: {
-    rua: string;
-    numero: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-  };
-  pagamento: {
-    id: number;
-    metodo: string;
-    status: string;
-    valor: string;
-  };
-  observacoes?: string;
-}
+import { gerarComandaPDF } from '../../utils/comandaCozinhaGenerator';
+import { Pedido } from '../../types/Pedido';
 
 interface PedidosCardProps {
   pedido: Pedido;
@@ -60,19 +12,17 @@ interface PedidosCardProps {
   onEdit: (pedidoId: number) => void;
 }
 
-const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCancel, onEdit }) => {
+const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCancel}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const statusOptions = ['Recebido', 'Em Análise', 'Em Preparação', 'Expedido'];
 
-  // Verifica se o pedido está definido
   if (!pedido) {
     return <p className="text-red-500">Erro: Pedido não encontrado.</p>;
   }
 
-  // Formata a data do pedido
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR', {
@@ -88,20 +38,17 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
     }
   };
 
-  // Função para baixar a comanda em PDF
   const handleDownloadComanda = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Impede que o clique no botão abra o modal
-    gerarComandaPDF(pedido); // Usa a função utilitária
+    e.stopPropagation();
+    gerarComandaPDF(pedido);
   };
 
   return (
     <>
-      {/* Card do Pedido */}
       <div
         className="p-4 mb-4 rounded-lg shadow-md border-l-4 bg-white dark:bg-gray-800 relative cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        {/* Dropdown de Ações */}
         <div className="absolute top-2 right-2">
           <button
             onClick={(e) => {
@@ -123,7 +70,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg">
               <div className="py-1">
-                {/* Mudar Status */}
                 <div className="relative">
                   <button
                     onClick={(e) => {
@@ -165,7 +111,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
                   )}
                 </div>
 
-                {/* Cancelar */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -209,7 +154,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
           )}
         </div>
 
-        {/* Conteúdo do Card */}
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Pedido #{pedido.id} - {pedido.status}
@@ -222,7 +166,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
           </p>
         </div>
 
-        {/* Botão para Baixar Comanda */}
         <button
           onClick={handleDownloadComanda}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
@@ -230,7 +173,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
           📝 Baixar Comanda
         </button>
 
-        {/* Detalhes do Pedido */}
         <div className="mt-4">
           <p className="text-sm font-medium text-gray-900 dark:text-white">Itens:</p>
           {pedido.itens_pedidos && pedido.itens_pedidos.length > 0 ? (
@@ -247,7 +189,6 @@ const PedidosCard: React.FC<PedidosCardProps> = ({ pedido, onStatusChange, onCan
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <PedidoModal pedido={pedido} onClose={() => setIsModalOpen(false)} />
       )}

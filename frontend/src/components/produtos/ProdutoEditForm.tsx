@@ -2,29 +2,9 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-
-interface Produto {
-  nome: string;
-  preco: string;
-  descricao: string;
-  disponivel: boolean;
-  imagem_url: string;
-  restaurante_id: number;
-  acompanhamentos_selecionados: number[];
-  produto_acompanhamentos: { id: number; acompanhamento_id: number }[];
-  secoes_selecionadas: number[];
-  produto_secoes: { id: number; secoes_cardapio_id: number }[];
-}
-
-interface Acompanhamento {
-  id: number;
-  nome: string;
-}
-
-interface SecaoCardapio {
-  id: number;
-  nome: string;
-}
+import { Produto } from "../../types/Produto";
+import { Acompanhamento } from "../../types/Acompanhamento";
+import { SecaoCardapio } from "../../types/SecaoCardapio";
 
 const ProdutosEditForm = () => {
   const { id } = useParams<{ id: string }>();
@@ -154,7 +134,7 @@ const ProdutosEditForm = () => {
 
       // 3. Seções que foram adicionadas (novas)
       const addedSecoes = produto.secoes_selecionadas
-        .filter((secaoId) => !produto.produto_secoes.some((ps) => ps.secoes_cardapio_id === secaoId))
+        .filter((secaoId) => !produto.produto_secoes.some((ps) => ps.secoes_cardapio.id === secaoId))
         .map((secaoId) => ({
           secoes_cardapio_id: secaoId,
           _destroy: false,
@@ -162,10 +142,10 @@ const ProdutosEditForm = () => {
 
       // 4. Seções que foram removidas
       const removedSecoes = produto.produto_secoes
-        .filter((ps) => !produto.secoes_selecionadas.includes(ps.secoes_cardapio_id))
+        .filter((ps) => !produto.secoes_selecionadas.includes(ps.secoes_cardapio.id))
         .map((ps) => ({
           id: ps.id,
-          secoes_cardapio_id: ps.secoes_cardapio_id,
+          secoes_cardapio_id: ps.secoes_cardapio.id,
           _destroy: true,
         }));
 
@@ -318,8 +298,8 @@ const ProdutosEditForm = () => {
                     <input
                       type="checkbox"
                       id={`acompanhamento-${acompanhamento.id}`}
-                      checked={produto.acompanhamentos_selecionados.includes(acompanhamento.id)}
-                      onChange={() => handleAcompanhamentoChange(acompanhamento.id)}
+                      checked={acompanhamento.id !== undefined && produto.acompanhamentos_selecionados.includes(acompanhamento.id)}
+                      onChange={() => acompanhamento.id !== undefined && handleAcompanhamentoChange(acompanhamento.id)}
                       className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
