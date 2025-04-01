@@ -39,11 +39,9 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode, onToggleD
           throw new Error('ID do restaurante não encontrado.');
         }
 
-        // Carrega os dados do restaurante
         const restauranteData = await fetchRestaurantInfo(restauranteId);
         setRestaurante(restauranteData);
         
-        // Carrega as regiões de entrega
         const regioesData = await fetchRegioesEntrega(restauranteId);
         setRegioes(regioesData);
       } catch (error) {
@@ -57,7 +55,6 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode, onToggleD
     loadData();
   }, []);
 
-  // Agrupar regiões por cidade
   const regioesPorCidade = regioes.reduce((acc, regiao) => {
     if (!regiao.ativo) return acc;
     
@@ -121,7 +118,6 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode, onToggleD
             </button>
           </div>
         </header>
-        {/* Cabeçalho do restaurante */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {restaurante.nome}
@@ -147,7 +143,6 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode, onToggleD
           )}
         </div>
 
-        {/* Informações de contato e funcionamento */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">

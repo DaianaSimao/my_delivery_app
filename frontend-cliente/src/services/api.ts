@@ -1,19 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 
-const api: AxiosInstance = axios.create({
+export const api: AxiosInstance = axios.create({
   baseURL: "http://localhost:3000/api/v1",
 });
 
-export const fetchMenu = async (restauranteId: string | number) => {
-  try {
-    const response = await api.get(`/cardapio/${restauranteId}`);
-    return response.data.data;
-  }
-  catch (error) {
-    console.error("Erro ao buscar cardápio:", error);
-    throw error;
-  }
-};
 
 export const fetchProductDetails = async (id: number) => {
   try {  

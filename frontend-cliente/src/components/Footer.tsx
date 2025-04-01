@@ -24,7 +24,6 @@ export function Footer({ onCartClick }: FooterProps) {
             <span className="text-sm mt-1">Início</span>
           </a>
 
-          {/* Botão central para Order Tracking */}
           <button
             onClick={handleOrderTrackingClick}
             className="flex flex-col items-center text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400"

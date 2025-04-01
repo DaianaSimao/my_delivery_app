@@ -59,7 +59,6 @@ export function Cart({
         </div>
       </header>
 
-      {/* Itens do carrinho */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-7xl mx-auto space-y-4">
           {items.map((item) => (
@@ -68,7 +67,6 @@ export function Cart({
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4"
             >
               <div className="flex gap-4">
-                {/* Imagem e botão de editar */}
                 <div className="relative">
                   <img
                     src={item.image}
@@ -83,7 +81,6 @@ export function Cart({
                   </button>
                 </div>
 
-                {/* Detalhes do item */}
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div>
@@ -102,7 +99,6 @@ export function Cart({
                       )}
                     </div>
 
-                    {/* Controles de quantidade */}
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
@@ -133,7 +129,6 @@ export function Cart({
             </div>
           ))}
 
-          {/* Botão para adicionar mais produtos */}
           <button
             onClick={onAddMore}
             className="w-full py-3 bg-white dark:bg-gray-800 text-primary-500 font-semibold rounded-lg shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -143,7 +138,6 @@ export function Cart({
         </div>
       </div>
 
-      {/* Rodapé com total e botão de avançar */}
       <div className="bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -162,7 +156,7 @@ export function Cart({
             </div>
             <button
               onClick={handleCheckout}
-              disabled={items.length === 0} // Desabilita o botão se o carrinho estiver vazio
+              disabled={items.length === 0}
               className={`px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg transition-colors ${
                 items.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600'
               }`}

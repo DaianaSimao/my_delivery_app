@@ -1,13 +1,5 @@
 import React from 'react';
-
-interface OrderItem {
-  id: any;
-  name: string;
-  quantity: number;
-  price: number;
-  options?: string[];
-  acompanhamentos?: string[];
-}
+import { OrderItem } from '../../types/OrderItem';
 
 interface OrderSummaryProps {
   cartItems: OrderItem[];

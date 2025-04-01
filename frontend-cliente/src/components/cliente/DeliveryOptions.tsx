@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Home, CreditCard, Wallet, QrCode, DollarSign } from 'lucide-react';
+import { MapPin, Home, CreditCard, Wallet, QrCode, DollarSign, Loader2 } from 'lucide-react';
 
 interface DeliveryOptionsProps {
   selectedDelivery: string | null;
@@ -8,6 +8,7 @@ interface DeliveryOptionsProps {
   onPaymentChange: (payment: string) => void;
   onTrocoChange: (troco: string) => void;
   onSubmit: () => void;
+  isProcessingOrder?: boolean;
 }
 
 const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
@@ -17,6 +18,7 @@ const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
   onPaymentChange,
   onTrocoChange,
   onSubmit,
+  isProcessingOrder = false,
 }) => {
   const deliveryOptions = [
     {
@@ -115,9 +117,18 @@ const DeliveryOptions: React.FC<DeliveryOptionsProps> = ({
       {selectedDelivery && selectedPayment && (
         <button
           onClick={onSubmit}
-          className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+          disabled={isProcessingOrder}
+          className={`w-full px-6 py-3 bg-red-600 text-white font-medium rounded-lg transition-colors
+            ${isProcessingOrder ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'}`}
         >
-          Finalizar Pedido
+          {isProcessingOrder ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Processando...
+            </span>
+          ) : (
+            'Finalizar Pedido'
+          )}
         </button>
       )}
     </div>

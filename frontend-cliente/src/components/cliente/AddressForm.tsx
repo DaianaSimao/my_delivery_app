@@ -11,7 +11,7 @@ interface AddressFormProps {
     neighborhood: string;
     city: string;
     addressType: string;
-    regioes_entrega_id: number // Adicionado
+    regioes_entrega_id: number 
   };
   onStreetChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -41,8 +41,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
   ];
 
   const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Evita o comportamento padrão do formulário
-    onSubmit(e); // Chama a função onSubmit passada como prop
+    e.preventDefault();
+    onSubmit(e);
   };
 
   return (
@@ -70,7 +70,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         />
       )}
 
-      <form onSubmit={handleFormSubmit} className="space-y-4"> {/* onSubmit no formulário */}
+      <form onSubmit={handleFormSubmit} className="space-y-4">
         <div>
           <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Rua
@@ -146,7 +146,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             {addressTypes.map((type) => (
               <button
                 key={type.id}
-                type="button" // Botão do tipo "button" para evitar submissão do formulário
+                type="button"
                 onClick={() => onAddressTypeChange(type.id)}
                 className={`p-4 rounded-lg border ${
                   formData.addressType === type.id
@@ -166,7 +166,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             ))}
           </div>
         </div>
-        {/* Campos do formulário */}
+
         <button
           type="submit"
           className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"

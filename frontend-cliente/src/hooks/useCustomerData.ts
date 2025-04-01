@@ -1,53 +1,81 @@
-import { useState } from 'react';
-import { fetchClienteByWhatsApp } from '../services/api';
-
-interface Cliente {
-  id: string;
-  nome: string;
-  telefone: string;
-  endereco_id: number;
-  sobrenome: string;
-}
+import { useState, useCallback } from 'react';
+import { CustomerService } from '../services/customerService';
+import { 
+  ICustomer, 
+  ICustomerFormData, 
+  ICustomerValidation 
+} from '../types/CustomerTypes';
+import { toast } from 'react-hot-toast';
 
 const useCustomerData = () => {
-  const [clienteEncontrado, setClienteEncontrado] = useState<Cliente | null>(null);
+  const [clienteEncontrado, setClienteEncontrado] = useState<ICustomer | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showClienteModal, setShowClienteModal] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ICustomerFormData>({
     whatsapp: '',
     firstName: '',
     lastName: '',
   });
 
-  const buscarCliente = async (whatsapp: string) => {
-    const cliente = await fetchClienteByWhatsApp(whatsapp);
-    if (cliente) {
-      setClienteEncontrado(cliente);
-      setShowClienteModal(true); // Abre o modal apenas se o cliente for encontrado
-      const [firstName, ...lastNameArray] = cliente.nome.split(' ');
-      const lastName = lastNameArray.join(' ');
-      setFormData({
-        whatsapp: cliente.telefone,
-        firstName,
-        lastName,
-      });
-    } else {
-      setClienteEncontrado(null); // Garante que o estado seja limpo se o cliente não for encontrado
+  const validateForm = (data: ICustomerFormData): ICustomerValidation => {
+    const errors: ICustomerValidation['errors'] = {};
+    let isValid = true;
+
+    if (!data.whatsapp.trim()) {
+      errors.whatsapp = 'WhatsApp é obrigatório';
+      isValid = false;
     }
+
+    if (!data.firstName.trim()) {
+      errors.firstName = 'Nome é obrigatório';
+      isValid = false;
+    }
+
+    if (!data.lastName.trim()) {
+      errors.lastName = 'Sobrenome é obrigatório';
+      isValid = false;
+    }
+
+    return { isValid, errors };
   };
 
-  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const buscarCliente = useCallback(async (whatsapp: string) => {
+    try {
+      const cliente = await CustomerService.findCustomerByWhatsApp(whatsapp);
+      if (cliente) {
+        setClienteEncontrado(cliente);
+        setShowClienteModal(true);
+        setFormData({
+          whatsapp: cliente.telefone,
+          firstName: cliente.nome,
+          lastName: cliente.sobrenome,
+        });
+      } else {
+        setClienteEncontrado(null);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+      setClienteEncontrado(null);
+    }
+  }, []);
+
+  const handleWhatsappChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFormData({ ...formData, whatsapp: value });
-    buscarCliente(value);
-  };
+    setFormData(prev => ({ ...prev, whatsapp: value }));
+    
+    if (value.replace(/\D/g, '').length >= 9) {
+      buscarCliente(value);
+    }
+  }, [buscarCliente]);
 
   const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, firstName: e.target.value });
+    setFormData(prev => ({ ...prev, firstName: e.target.value }));
   };
 
   const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, lastName: e.target.value });
+    setFormData(prev => ({ ...prev, lastName: e.target.value }));
   };
 
   return {
@@ -58,9 +86,10 @@ const useCustomerData = () => {
     handleWhatsappChange,
     handleFirstNameChange,
     handleLastNameChange,
-    showClienteModal, // Retorne o estado do modal
-    setShowClienteModal, // Retorne a função para controlar o modal
-    setClienteEncontrado
+    showClienteModal,
+    setShowClienteModal,
+    setClienteEncontrado,
+    validateForm
   };
 };
 
