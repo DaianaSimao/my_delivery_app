@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import  { Header } from './Header';
 import MenuPage from './cardapio/MenuPage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { MenuSection } from '../types';
 
 export const CardapioLayout: React.FC = () => {
@@ -16,6 +16,31 @@ export const CardapioLayout: React.FC = () => {
   if (restauranteId) {
     localStorage.setItem('restauranteId', restauranteId);
   }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.querySelector('header');
+      const headerHeight = header?.offsetHeight || 0;
+      const scrollPosition = window.scrollY + headerHeight + 50; 
+
+      for (const section of menuSections) {
+        const element = document.getElementById(section.id);
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const bottom = top + rect.height;
+
+        if (scrollPosition >= top && scrollPosition < bottom) {
+          setActiveSection(section.id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [menuSections]);
 
   const handleSectionClick = (sectionId: string) => {
     setActiveSection(sectionId);
