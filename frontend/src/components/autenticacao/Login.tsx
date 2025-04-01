@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       console.log(error);
       let errorMessage = "Erro ao realizar login. Verifique suas credenciais.";
       if (axios.isAxiosError(error)) {
-        console.error('Erro do axios:', error.response);  // Log para depurar o erro
+        console.error('Erro do axios:', error.response);
         if (error.response) {
           errorMessage = error.response.data || errorMessage;
         }

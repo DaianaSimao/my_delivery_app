@@ -13,6 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchProductDetails } from '../../services/api';
 import type { MenuItem, CartItem } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
+import { formatPrice } from '../../utils/formatters';
 
 interface ItemDetailsProps {
   onAddToCart: (item: CartItem) => void;
@@ -139,7 +140,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
             const option = item.produto_acompanhamentos
               .flatMap(({ acompanhamento }) => acompanhamento.item_acompanhamentos)
               .find((opt) => opt.id === Number(optionId));
-            return `${option?.nome} (${quantity}x) - R$ ${option?.preco}`;
+            return `${option?.nome} (${quantity}x) - R$ ${formatPrice(Number(option?.preco))}`;
           }),
         observation: observation,
         acompanhamentos: Object.entries(selectedOptions)
@@ -213,24 +214,27 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               {item.nome}
             </h1>
-            <p className="text-lg font-semibold text-red-600 dark:text-red-400 mt-2">
+            <p className="text-lg font-semibold text-red-600 dark:text-red-400 mt-2 flex items-center flex-wrap gap-2">
               {item.promocao ? (
                 <>
-                  <span className="text-gray-900 dark:text-white">
-                    R$ {Number(item.preco).toFixed(2)} {/* PREÇO PROMOCIONAL como principal */}
+                  <span className="text-gray-900 dark:text-white inline-flex items-center">
+                    <span className="inline-block">R$</span>
+                    <span className="inline-block ml-1">{formatPrice(Number(item.preco))}</span>
                   </span>
-                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
-                    R$ {Number(item.preco_original).toFixed(2)} {/* PREÇO ORIGINAL riscado */}
+                  <span className="text-sm text-gray-500 dark:text-gray-400 line-through inline-flex items-center">
+                    <span className="inline-block">R$</span>
+                    <span className="inline-block ml-1">{formatPrice(Number(item.preco_original))}</span>
                   </span>
-                  <span className="ml-2 text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-1 rounded-full">
                     {item.promocao.tipo === 'desconto_percentual' 
                       ? `${item.promocao.desconto_percentual}% OFF` 
                       : 'PROMOÇÃO'}
                   </span>
                 </>
               ) : (
-                <span className="text-gray-900 dark:text-white">
-                  R$ {Number(item.preco).toFixed(2)} {/* Preço normal quando não há promoção */}
+                <span className="text-gray-900 dark:text-white inline-flex items-center">
+                  <span className="inline-block">R$</span>
+                  <span className="inline-block ml-1">{formatPrice(Number(item.preco))}</span>
                 </span>
               )}
             </p>
@@ -279,8 +283,9 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
                                     {option.nome}
                                   </h4>
                                   {option.preco && (
-                                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                                      + R$ {option.preco}
+                                    <p className="text-sm font-medium text-red-600 dark:text-red-400 inline-flex items-center">
+                                      <span className="inline-block">+ R$</span>
+                                      <span className="inline-block ml-1">{formatPrice(Number(option.preco))}</span>
                                     </p>
                                   )}
                                 </div>
@@ -338,8 +343,9 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
           <div className="max-w-lg mx-auto flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R$ {calculateTotalPrice}
+              <p className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center">
+                <span className="inline-block">R$</span>
+                <span className="inline-block ml-1">{formatPrice(calculateTotalPrice)}</span>
               </p>
             </div>
             <button

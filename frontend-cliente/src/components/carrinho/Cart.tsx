@@ -4,6 +4,7 @@ import { ArrowLeft, Trash2, Pencil, Plus, Minus, Home } from 'lucide-react';
 import CustomerData from '../cliente/CustomerData';
 import type { CartItem } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { formatPrice } from '../../utils/formatters';
 
 interface CartProps {
   items: CartItem[];
@@ -88,7 +89,7 @@ export function Cart({
                         {item.quantity}x {item.name}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        R$ {item.price}
+                        R$ {formatPrice(item.price)}
                       </p>
                       {item.options && item.options.length > 0 && (
                         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 space-y-1">
@@ -151,7 +152,7 @@ export function Cart({
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
-                R$ {Number(total).toFixed(2)}
+                R$ {formatPrice(total)}
               </p>
             </div>
             <button

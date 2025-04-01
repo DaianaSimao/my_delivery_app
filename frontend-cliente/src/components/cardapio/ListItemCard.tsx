@@ -1,4 +1,5 @@
 import type { MenuItem } from '../../types';
+import { formatPrice } from '../../utils/formatters';
 
 interface ListItemCardProps {
   item: MenuItem;
@@ -19,12 +20,12 @@ export function ListItemCard({ item, onClick }: ListItemCardProps) {
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{item.descricao}</p>
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-gray-900 dark:text-white">
-            R$ {Number(item.preco).toFixed(2)}
+            R$ {formatPrice(Number(item.preco))}
           </span>
           {item.preco_original && (
             <>
               <span className="text-sm text-gray-500 dark:text-gray-500 line-through">
-                R$ {Number(item.preco_original).toFixed(2)}
+                R$ {formatPrice(Number(item.preco_original))}
               </span>
               <span className="text-xs bg-primary-500 text-white px-2 py-1 rounded-full">
                 {item.promocao?.tipo === 'desconto_percentual'
