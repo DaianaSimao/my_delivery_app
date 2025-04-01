@@ -19,8 +19,6 @@ export function SectionNavigation({ sections, onSectionClick, activeSection }: S
       const containerWidth = container.offsetWidth;
       const buttonWidth = button.offsetWidth;
       const buttonLeft = button.offsetLeft;
-      
-      // Calculate scroll position to center the button
       const scrollTo = buttonLeft - (containerWidth / 2) + (buttonWidth / 2);
       
       container.scrollTo({

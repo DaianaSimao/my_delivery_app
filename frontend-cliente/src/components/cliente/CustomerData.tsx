@@ -15,16 +15,8 @@ import { atualizarCliente, atualizarEndereco, criarEndereco, criarPedido, atuali
 import toast from 'react-hot-toast';
 import { useCart } from '../../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
-
-interface OrderItem {
-  id: any;
-  name: string;
-  quantity: number;
-  price: number;
-  options?: string[];
-  observation?: string;
-  acompanhamentos: any[];
-}
+import { OrderItem } from '../../types/OrderItem';
+import { Cliente } from '../../types/Cliente';
 
 interface CustomerDataProps {
   cartItems: OrderItem[];
@@ -33,21 +25,13 @@ interface CustomerDataProps {
   onToggleDarkMode: () => void;
 }
 
-interface Cliente {
-  id: any;
-  nome?: string; // Propriedades opcionais
-  telefone?: string;
-  endereco_id?: number;
-  sobrenome?: string;
-  // Outras propriedades do cliente...
-}
-
 const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMode, onToggleDarkMode }) => {
   const { onCheckout } = useCart();
   const [step, setStep] = useState<'data' | 'address' | 'payment'>('data');
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showTrocoModal, setShowTrocoModal] = useState(false);
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
 
   const navigate = useNavigate();
 
@@ -88,7 +72,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
   useEffect(() => {
     if (cartItems.length === 0 && !isOrderFinalized) {
       toast.error('Seu carrinho está vazio. Adicione itens para prosseguir.');
-      navigate('/cart'); // Redireciona para a página do carrinho
+      navigate('/cart');
     }
   }, [cartItems, navigate, isOrderFinalized]);
 
@@ -98,7 +82,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
       fetchRegioesEntrega(restauranteId)
         .then((data) => {
           setRegioesEntrega(data);
-          // Atualiza a taxa de entrega com base no regioes_entrega_id inicial, se houver
+          
           if (addressFormData.regioes_entrega_id) {
             const regiao = data.find((r: any) => r.id === addressFormData.regioes_entrega_id);
             setDeliveryFee(regiao ? regiao.taxa_entrega : 0);
@@ -113,13 +97,11 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
 
   const handleConfirmarDadosCliente = (editar: boolean) => {
     if (editar) {
-      // Entra no modo de edição
       setIsEditing(true);
     } else {
-      // Confirma sem editar, avança para o próximo passo
       setStep('address');
     }
-    setShowClienteModal(false); // Fecha o modal
+    setShowClienteModal(false);
   };
 
 
@@ -128,7 +110,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
 
     if (clienteEncontrado && isEditing) {
       try {
-        // Atualiza os dados no backend
         await atualizarCliente(clienteEncontrado.id, {
           nome: customerFormData.firstName,
           sobrenome: customerFormData.lastName,
@@ -137,9 +118,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
         toast.success('Cliente atualizado com sucesso!');
       } catch (error) {
         console.error('Erro ao atualizar cliente:', error);
-        // Mostra o erro no toast
         toast.error('Erro ao atualizar cliente. Tente novamente.');
-        return; // Sai da função para evitar avançar para o próximo passo
+        return;
       }
     } else if (!clienteEncontrado) {
       try {
@@ -153,12 +133,10 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
         toast.success('Cliente criado com sucesso!');
       } catch (error) {
         console.error('Erro ao criar cliente:', error);
-        // Mostra o erro no toast
         toast.error('Erro ao criar cliente. Tente novamente.');
-        return; // Sai da função para evitar avançar para o próximo passo
+        return;
       }
     }
-    // Avança para o próximo passo apenas se não houve erro
     setStep('address');
   };
 
@@ -169,10 +147,9 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
     const cliente: Cliente | null = clienteEncontrado && 'nome' in clienteEncontrado
       ? clienteEncontrado
       : clienteId
-      ? { id: clienteId } // Cria um objeto Cliente básico com apenas o ID
+      ? { id: clienteId }
       : null;
 
-    // Verifica se o cliente foi encontrado ou criado
     if (!cliente) {
       toast.error('Cliente não encontrado. Por favor, preencha os dados do cliente.');
       return;
@@ -185,7 +162,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
       ponto_referencia: addressFormData.reference,
       bairro: addressFormData.neighborhood,
       cidade: addressFormData.city,
-      regioes_entrega_id: addressFormData.regioes_entrega_id, // Adicionado
+      regioes_entrega_id: addressFormData.regioes_entrega_id,
       tipo: addressFormData.addressType,
     };
 
@@ -204,7 +181,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
       }
       const regiao = regioesEntrega.find((r) => r.id === addressFormData.regioes_entrega_id);
       setDeliveryFee(regiao ? regiao.taxa_entrega : 0);
-      // Avança para o próximo passo
       setStep('payment');
     } catch (error) {
       console.error('Erro ao salvar endereço:', error);
@@ -213,92 +189,86 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
   };
 
   const handleFinalizarPedido = async () => {
-    // Verifica se todos os campos obrigatórios estão preenchidos
-    const clienteId =
-      typeof clienteEncontrado === "object" && clienteEncontrado !== null
-        ? clienteEncontrado.id
-        : localStorage.getItem("clienteId");
-
-    if (!clienteId) {
-      toast.error("Cliente não encontrado. Por favor, preencha os dados do cliente.");
-      return;
-    }
-
-    const restauranteId = localStorage.getItem('restauranteId');
-    if (!clienteId || !selectedPayment || !selectedDelivery) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
-    const troco = selectedPayment === 'cash' ? parseFloat(trocoValue) : 0;
-    // Estrutura os itens do pedido
-    const itensPedidos = cartItems.map((item) => {
-      // Extrai o ID do produto (parte antes do hífen)
-      const produtoId = item.id.split('-')[0];
-
-      // Mapeia os acompanhamentos a partir das options
-      const acompanhamentos = item.acompanhamentos.map((option) => ({
-        item_acompanhamento_id: option.id, // ID do acompanhamento
-        quantidade: option.quantidade, // Quantidade selecionada
-        preco_unitario: option.preco || 0, // Preço do acompanhamento (ou 0 se não houver preço)
-      }));
-
-      return {
-        produto_id: produtoId, // ID do produto (apenas a parte antes do hífen)
-        quantidade: item.quantity, // Quantidade do item
-        preco_unitario: item.price, // Preço unitário do item
-        observacao: item.observation, // Observações (opcional)
-        acompanhamentos_pedidos_attributes: acompanhamentos || [], // Acompanhamentos (ou array vazio se não houver)
-      };
-    });
-    // Estrutura o pagamento
-    const pagamento = {
-      metodo: selectedPayment,
-      status: selectedPayment === "cash" || selectedPayment === "pix" ? "Aguardando Pagamento" : "Pago",
-      valor: total,
-      troco: selectedPayment === "cash" ? troco - total : 0,
-    };
-
-    // Estrutura o pedido completo
-    const pedido = {
-      restaurante_id: restauranteId,
-      status: "Recebido",
-      forma_pagamento: selectedPayment,
-      troco: pagamento.troco - total ,
-      cliente_id: clienteId,
-      itens_pedidos_attributes: itensPedidos,
-      pagamento_attributes: pagamento,
-      valor_total: total,
-      forma_entrega: selectedDelivery,
-      troco_para: selectedPayment === "cash" ? troco : 0,
-    };
-
+    if (isProcessingOrder) return;
+    
     try {
-      // Envia os dados para o backend
+      setIsProcessingOrder(true);
+      
+      const clienteId =
+        typeof clienteEncontrado === "object" && clienteEncontrado !== null
+          ? clienteEncontrado.id
+          : localStorage.getItem("clienteId");
+
+      if (!clienteId) {
+        toast.error("Cliente não encontrado. Por favor, preencha os dados do cliente.");
+        return;
+      }
+
+      const restauranteId = localStorage.getItem('restauranteId');
+      if (!clienteId || !selectedPayment || !selectedDelivery) {
+        toast.error('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+
+      const troco = selectedPayment === 'cash' ? parseFloat(trocoValue) : 0;
+      const itensPedidos = cartItems.map((item) => {
+        const produtoId = item.id.split('-')[0];
+        const acompanhamentos = item.acompanhamentos.map((option) => ({
+          item_acompanhamento_id: option.id,
+          quantidade: option.quantidade,
+          preco_unitario: option.preco || 0,
+        }));
+
+        return {
+          produto_id: produtoId,
+          quantidade: item.quantity,
+          preco_unitario: item.price,
+          observacao: item.observation,
+          acompanhamentos_pedidos_attributes: acompanhamentos || [],
+        };
+      });
+      const pagamento = {
+        metodo: selectedPayment,
+        status: selectedPayment === "cash" || selectedPayment === "pix" ? "Aguardando Pagamento" : "Pago",
+        valor: total,
+        troco: selectedPayment === "cash" ? troco - total : 0,
+      };
+
+      const pedido = {
+        restaurante_id: restauranteId,
+        status: "Recebido",
+        forma_pagamento: selectedPayment,
+        troco: pagamento.troco - total ,
+        cliente_id: clienteId,
+        itens_pedidos_attributes: itensPedidos,
+        pagamento_attributes: pagamento,
+        valor_total: total,
+        forma_entrega: selectedDelivery,
+        troco_para: selectedPayment === "cash" ? troco : 0,
+      };
+
       const pedidoCriado = await criarPedido(pedido);
       if (!pedidoCriado) {
         throw new Error("Erro ao enviar o pedido.");
       }
       toast.success('Pedido finalizado com sucesso!');
-
-      // Salvar pedido completo no localStorage
       localStorage.setItem('pedido', JSON.stringify(pedidoCriado));
-      
-      // Salvar apenas o ID do pedido para recuperação posterior
       localStorage.setItem('pedidoId', pedidoCriado.data.id.toString());
 
       setIsOrderFinalized(true);
-      
-      onCheckout(); // Limpa o carrinho e redireciona
+      onCheckout();
       navigate('/order-tracking');
     } catch (error) {
       console.error("Erro ao enviar o pedido:", error);
       toast.error("Erro ao enviar o pedido. Tente novamente.");
+    } finally {
+      setIsProcessingOrder(false);
     }
   };
 
   const handleBack = () => {
-    setIsOrderFinalized(false); // Reseta o estado ao voltar
-    onBack(); // Chama a função onBack original
+    setIsOrderFinalized(false);
+    onBack();
   };
 
   return (
@@ -354,7 +324,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
             onNeighborhoodChange={(neighborhood: string, regioes_entrega_id: number, city: string) => {
               handleNeighborhoodChange(neighborhood, regioes_entrega_id, city);
               const regiao = regioesEntrega.find((r) => r.id === regioes_entrega_id);
-              setDeliveryFee(regiao ? regiao.taxa_entrega : 0); // Atualiza a taxa ao mudar a região
+              setDeliveryFee(regiao ? regiao.taxa_entrega : 0);
             }}
             onCityChange={handleCityChange}
             onAddressTypeChange={handleAddressTypeChange}
@@ -378,6 +348,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
                 onPaymentChange={handlePaymentChange}
                 onTrocoChange={handleTrocoChange}
                 onSubmit={handleFinalizarPedido}
+                isProcessingOrder={isProcessingOrder}
               />
             </>
           )}
@@ -385,8 +356,8 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
         {showClienteModal && clienteEncontrado && (
           <ConfirmationModal
             clienteEncontrado={clienteEncontrado}
-            onEdit={() => handleConfirmarDadosCliente(true)} // Entra no modo de edição
-            onConfirm={() => handleConfirmarDadosCliente(false)} // Confirma sem editar
+            onEdit={() => handleConfirmarDadosCliente(true)}
+            onConfirm={() => handleConfirmarDadosCliente(false)}
           />
         )}
 

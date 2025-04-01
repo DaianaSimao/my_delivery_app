@@ -50,8 +50,8 @@ const AppContent: React.FC = () => {
   };
 
   const handleEditItem = (item: CartItem) => {
-    setItemToEdit(item); // Definir o item que está sendo editado
-    navigate(`/item/${item.id.split('-')[0]}`); // Navegar para a página de edição
+    setItemToEdit(item); 
+    navigate(`/item/${item.id.split('-')[0]}`);
   };
 
   const handleAddMore = () => navigate(`/cardapio/${restauranteId}`);

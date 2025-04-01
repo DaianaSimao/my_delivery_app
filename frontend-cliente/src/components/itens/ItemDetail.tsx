@@ -38,7 +38,6 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({ onAddToCart, itemToEdit, onEd
           const data = await fetchProductDetails(Number(itemId));
           setItem({
             ...data,
-            // Garante que preco_original existe mesmo sem promoção
             preco_original: data.preco_original || data.preco
           });
           console.log('Detalhes do produto:', data);

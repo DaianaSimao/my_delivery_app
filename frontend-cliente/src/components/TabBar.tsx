@@ -1,4 +1,3 @@
-import React from 'react';
 import type { MenuSection } from '../types';
 
 interface TabBarProps {
@@ -11,7 +10,7 @@ export function TabBar({ sections, activeSection, onSectionChange }: TabBarProps
   const scrollToSection = (sectionId: string) => {
     const section = document.querySelector(`section[data-section-id="${sectionId}"]`);
     if (section) {
-      const headerOffset = 120; // Adjust based on your header height
+      const headerOffset = 120;
       const elementPosition = section.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 

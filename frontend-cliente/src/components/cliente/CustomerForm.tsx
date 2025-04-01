@@ -1,11 +1,9 @@
 import React from 'react';
+import { ICustomerFormData, ICustomerValidation } from '../../types/CustomerTypes';
 
 interface CustomerFormProps {
-  formData: {
-    whatsapp: string;
-    firstName: string;
-    lastName: string;
-  };
+  formData: ICustomerFormData;
+  validation?: ICustomerValidation;
   onWhatsappChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFirstNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLastNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,6 +12,7 @@ interface CustomerFormProps {
 
 const CustomerForm: React.FC<CustomerFormProps> = ({
   formData,
+  validation,
   onWhatsappChange,
   onFirstNameChange,
   onLastNameChange,
@@ -30,12 +29,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
           id="whatsapp"
           value={formData.whatsapp}
           onChange={onWhatsappChange}
-          className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                    focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                    px-4 py-2"
+          className={`mt-1 block w-full rounded-lg border 
+            ${validation?.errors.whatsapp ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'}
+            bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+            focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+            px-4 py-2`}
           required
         />
+        {validation?.errors.whatsapp && (
+          <p className="mt-1 text-sm text-red-500">{validation.errors.whatsapp}</p>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -47,12 +50,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             id="firstName"
             value={formData.firstName}
             onChange={onFirstNameChange}
-            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                      px-4 py-2"
+            className={`mt-1 block w-full rounded-lg border 
+              ${validation?.errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'}
+              bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+              focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+              px-4 py-2`}
             required
           />
+          {validation?.errors.firstName && (
+            <p className="mt-1 text-sm text-red-500">{validation.errors.firstName}</p>
+          )}
         </div>
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -63,12 +70,16 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             id="lastName"
             value={formData.lastName}
             onChange={onLastNameChange}
-            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-700 
-                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                      focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
-                      px-4 py-2"
+            className={`mt-1 block w-full rounded-lg border 
+              ${validation?.errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'}
+              bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+              focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent
+              px-4 py-2`}
             required
           />
+          {validation?.errors.lastName && (
+            <p className="mt-1 text-sm text-red-500">{validation.errors.lastName}</p>
+          )}
         </div>
       </div>
       <button
