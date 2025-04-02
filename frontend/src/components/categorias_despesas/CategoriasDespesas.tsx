@@ -40,6 +40,10 @@ const CategoriasDespesas: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const handleEditarClick = (categoriaId: number) => {
+    navigate(`/categorias_despesas/${categoriaId}/editar`);
+  };
+
   if (loading) {
     return <div>Carregando...</div>;
   }
@@ -85,8 +89,30 @@ const CategoriasDespesas: React.FC = () => {
                 {categorias.map((categoria) => (
                   <tr key={categoria.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <td className="px-4 py-3">{categoria.nome}</td>
-                    <td className="px-4 py-3">
-                      <button onClick={() => navigate(`/categorias_despesas/${categoria.id}/edit`)} className="text-blue-600 hover:underline">Editar</button>
+                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <div className="flex items-center space-x-4">
+                          <button
+                            type="button"
+                            onClick={() => categoria.id && handleEditarClick(categoria.id)}
+                            className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-2 -ml-0.5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Editar
+                          </button>
+                        </div>
                     </td>
                   </tr>
                 ))}

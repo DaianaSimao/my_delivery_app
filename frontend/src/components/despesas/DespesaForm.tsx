@@ -130,18 +130,22 @@ const DespesaForm: React.FC = () => {
               />
             </div>
             <div className="w-full">
-              <label htmlFor="status" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label htmlFor="status" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Status
               </label>
-              <input
-                type="text"
+              <select
                 name="status"
                 id="status"
-                value={despesa?.status}
+                value={despesa?.status || ""}
                 onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 required
-              />
+              >
+                <option value="">Selecione um status</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Pago">Pago</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
             </div>
             <div className="w-full">
               <label htmlFor="observacoes" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
