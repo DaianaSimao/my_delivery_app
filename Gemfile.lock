@@ -135,6 +135,8 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    groupdate (6.5.1)
+      activesupport (>= 7)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.0)
@@ -419,6 +421,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   fast_jsonapi
+  groupdate
   kamal
   kaminari
   pg (~> 1.1)

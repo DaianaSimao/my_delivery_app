@@ -42,6 +42,7 @@ import DespesaForm from "./components/despesas/DespesaForm";
 import CategoriasDespesas from "./components/categorias_despesas/CategoriasDespesas";
 import CategoriaDespesaForm from "./components/categorias_despesas/CategoriaDespesaForm";
 import DespesaDetails from "./components/despesas/DespesaDetails";
+import RelatorioFinanceiro from "./components/admin/Relatorios/RelatorioFinanceiro";
 const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -102,6 +103,7 @@ const AppContent: React.FC = () => {
             <Route path="/entregas" element={<EntregasList />} />
             <Route path="/listar_entregas" element={<Entregas />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/relatorio_financeiro" element={<RelatorioFinanceiro />} />
             <Route path="/restaurantes" element={<Restaurantes />} />
             <Route path="/restaurantes/new" element={<RestauranteForm />} />
             <Route path="/restaurantes/:id/editar" element={<RestauranteEditForm />} />
