@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from 'react-router-dom';
 import { Produto } from "../../types/Produto";
-
-interface SecaoCardapio {
-  id: number;
-  nome: string;
-}
+import { SecaoCardapio } from "../../types/SecaoCardapio";
 
 const Produtos: React.FC = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -21,7 +17,7 @@ const Produtos: React.FC = () => {
   const navigate = useNavigate();
 
   const handleAcompanhamentosClick = () => {
-    navigate('/acompanhamentos'); // Redireciona para o formulário de acompanhamentos
+    navigate('/acompanhamentos'); 
   };
 
   const handleProdutosClick = () => {
@@ -29,7 +25,7 @@ const Produtos: React.FC = () => {
   };
 
   const handleEditarClick = (produtoId: number) => {
-    navigate(`/produtos/${produtoId}/editar`); // Redireciona para a página de edição
+    navigate(`/produtos/${produtoId}/editar`); 
   };
 
   useEffect(() => {
@@ -89,7 +85,6 @@ const Produtos: React.FC = () => {
     return <div className="text-center py-8 text-red-500 mt-5">{error}</div>;
   }
 
-  // Função para obter o nome da seção pelo ID
   const getNomeSecao = (secaoId: number) => {
     const secao = secoes.find((s) => s.id === secaoId);
     return secao ? secao.nome : "Seção não encontrada";
@@ -122,8 +117,8 @@ const Produtos: React.FC = () => {
               <form
                 className="flex items-center"
                 onSubmit={(e) => {
-                  e.preventDefault(); // Evita o recarregamento da página
-                  handlePageChange(1); // Volta para a primeira página ao buscar
+                  e.preventDefault(); 
+                  handlePageChange(1); 
                 }}
               >
                 <label htmlFor="simple-search" className="sr-only">Buscar</label>

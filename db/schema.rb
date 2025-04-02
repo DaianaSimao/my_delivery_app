@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_23_211106) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_25_011714) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_211106) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "categorias_despesas", force: :cascade do |t|
+    t.string "nome", null: false
+    t.text "descricao"
+    t.boolean "ativo", default: true
+    t.bigint "restaurante_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id"], name: "index_categorias_despesas_on_restaurante_id"
+  end
+
   create_table "clientes", force: :cascade do |t|
     t.string "nome"
     t.string "telefone"
@@ -69,6 +79,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_211106) do
     t.string "sobrenome"
     t.bigint "endereco_id"
     t.index ["endereco_id"], name: "index_clientes_on_endereco_id"
+  end
+
+  create_table "despesas", force: :cascade do |t|
+    t.string "descricao", null: false
+    t.decimal "valor", precision: 10, scale: 2, null: false
+    t.date "data", null: false
+    t.string "status", default: "Pendente"
+    t.text "observacoes"
+    t.bigint "categorias_despesa_id", null: false
+    t.bigint "restaurante_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["categorias_despesa_id"], name: "index_despesas_on_categorias_despesa_id"
+    t.index ["restaurante_id"], name: "index_despesas_on_restaurante_id"
   end
 
   create_table "enderecos", force: :cascade do |t|
@@ -109,6 +133,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_211106) do
     t.decimal "taxa_entrega"
     t.index ["entregador_id"], name: "index_entregas_on_entregador_id"
     t.index ["pedido_id"], name: "index_entregas_on_pedido_id"
+  end
+
+  create_table "horario_funcionamentos", force: :cascade do |t|
+    t.bigint "restaurante_id", null: false
+    t.string "dia_semana", null: false
+    t.time "abertura", null: false
+    t.time "fechamento", null: false
+    t.boolean "ativo", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["restaurante_id"], name: "index_horario_funcionamentos_on_restaurante_id"
   end
 
   create_table "item_acompanhamentos", force: :cascade do |t|
@@ -289,11 +324,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_23_211106) do
   add_foreign_key "acompanhamentos_pedidos", "item_acompanhamentos"
   add_foreign_key "acompanhamentos_pedidos", "itens_pedidos"
   add_foreign_key "avaliacoes", "pedidos"
+  add_foreign_key "categorias_despesas", "restaurantes"
   add_foreign_key "clientes", "enderecos"
+  add_foreign_key "despesas", "categorias_despesas"
+  add_foreign_key "despesas", "restaurantes"
   add_foreign_key "enderecos", "regioes_entregas"
   add_foreign_key "entregadores", "restaurantes"
   add_foreign_key "entregas", "entregadores"
   add_foreign_key "entregas", "pedidos"
+  add_foreign_key "horario_funcionamentos", "restaurantes"
   add_foreign_key "item_acompanhamentos", "acompanhamentos"
   add_foreign_key "itens_pedidos", "pedidos"
   add_foreign_key "itens_pedidos", "produtos"

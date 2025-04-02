@@ -37,7 +37,11 @@ import PromocaoDetail from "./components/promocoes/PromocaoDetail";
 import PromocaoForm from "./components/promocoes/PromocaoForm";
 import SecoesForm from "./components/secoes/SecoesForm";
 import SecoesList from "./components/secoes/SecoesList";
-
+import DespesasList from "./components/despesas/Despesas";
+import DespesaForm from "./components/despesas/DespesaForm";
+import CategoriasDespesas from "./components/categorias_despesas/CategoriasDespesas";
+import CategoriaDespesaForm from "./components/categorias_despesas/CategoriaDespesaForm";
+import DespesaDetails from "./components/despesas/DespesaDetails";
 const AppContent: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -116,6 +120,13 @@ const AppContent: React.FC = () => {
             <Route path="/secoes" element={<SecoesList />} />
             <Route path="/secoes/new" element={<SecoesForm />} />
             <Route path="/secoes/:id/editar" element={<SecoesForm />} />
+            <Route path="/despesas" element={<DespesasList />} />
+            <Route path="/despesas/new" element={<DespesaForm />} />
+            <Route path="/despesas/:id/editar" element={<DespesaForm />} />
+            <Route path="/despesas/:id" element={<DespesaDetails />} />
+            <Route path="/categorias_despesas" element={<CategoriasDespesas />} />
+            <Route path="/categorias_despesas/new" element={<CategoriaDespesaForm />} />
+            <Route path="/categorias_despesas/:id/editar" element={<CategoriaDespesaForm />} />
             <Route path="/*" element={<Navigate to="/bem_vindo" />} />
           </Route>
         </Route>

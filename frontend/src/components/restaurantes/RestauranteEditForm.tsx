@@ -241,8 +241,8 @@ const RestauranteEditForm = () => {
           email: restaurante.email,
           pedido_minimo: restaurante.pedido_minimo,
           tempo_medio_entrega: restaurante.tempo_medio_entrega,
-          abertura: new Date(`1970-01-01T${restaurante.abertura}Z`).toISOString(), // Converte de volta para ISO 8601
-          fechamento: new Date(`1970-01-01T${restaurante.fechamento}Z`).toISOString(), // Converte de volta para ISO 8601
+          abertura: new Date(`1970-01-01T${restaurante.abertura}Z`).toISOString(),
+          fechamento: new Date(`1970-01-01T${restaurante.fechamento}Z`).toISOString(),
           taxa_entrega: parseFloat(restaurante.taxa_entrega.toString()),
           avaliacao: parseFloat(restaurante.avaliacao.toString()),
           endereco_attributes: restaurante.endereco,
@@ -329,7 +329,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Categoria */}
             <div className="w-full">
               <label htmlFor="categoria" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Categoria</label>
               <input
@@ -344,7 +343,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Pedido minimo */}
             <div className="w-full">
               <label htmlFor="taxa_entrega" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pedido</label>
               <input
@@ -359,7 +357,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Tempo Médio de Entrega */}
             <div className="w-full">
               <label htmlFor="tempo_medio_entrega" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tempo Médio de Entrega</label>
               <input
@@ -374,7 +371,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Horário de Abertura */}
             <div className="w-full">
               <label htmlFor="abertura" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Horário de Abertura</label>
               <input
@@ -388,7 +384,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Horário de Fechamento */}
             <div className="w-full">
               <label htmlFor="fechamento" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Horário de Fechamento</label>
               <input
@@ -402,7 +397,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* CNPJ */}
             <div className="w-full">
               <label htmlFor="cnpj" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CNPJ</label>
               <input
@@ -417,7 +411,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Telefone */}
             <div className="w-full">
               <label htmlFor="telefone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Telefone</label>
               <input
@@ -432,7 +425,6 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Email */}
             <div className="w-full">
               <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
               <input
@@ -447,12 +439,9 @@ const RestauranteEditForm = () => {
               />
             </div>
 
-            {/* Endereço */}
             <div className="sm:col-span-2">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Endereço</h3>
             </div>
-
-            {/* Rua */}
             <div className="w-full">
               <label htmlFor="endereco.rua" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rua</label>
               <input
@@ -466,8 +455,6 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
-
-            {/* Número */}
             <div className="w-full">
               <label htmlFor="endereco.numero" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Número</label>
               <input
@@ -481,8 +468,6 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
-
-            {/* Complemento */}
             <div className="w-full">
               <label htmlFor="endereco.complemento" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Complemento</label>
               <input
@@ -495,8 +480,6 @@ const RestauranteEditForm = () => {
                 placeholder="Complemento"
               />
             </div>
-
-            {/* Bairro */}
             <div className="w-full">
               <label htmlFor="endereco.bairro" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bairro</label>
               <input
@@ -510,8 +493,6 @@ const RestauranteEditForm = () => {
                 required
               />
             </div>
-
-            {/* Cidade */}
             <div className="w-full">
               <label htmlFor="endereco.cidade" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cidade</label>
               <input

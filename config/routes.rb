@@ -18,7 +18,15 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :restaurantes
+      resources :restaurantes do
+        resources :categorias_despesas do
+          collection do
+            get "lista", to: "categorias_despesas#lista"
+          end
+        end
+        resources :despesas
+        get "despesas/relatorio", to: "despesas#relatorio"
+      end
       resources :relatorios do
         collection do
           get "dashboard"
