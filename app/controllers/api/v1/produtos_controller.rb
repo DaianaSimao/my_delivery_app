@@ -6,7 +6,6 @@ class Api::V1::ProdutosController < ApplicationController
     restaurante = current_user.restaurantes.find(current_user.restaurante_ativo)
     @produtos = Produto.where(restaurante_id: restaurante.id).includes(:produto_secoes)
 
-    # Filtra os produtos com base no termo de busca
     if params[:search].present?
       @produtos = @produtos.where("nome ILIKE ?", "%#{params[:search]}%")
     end
@@ -28,7 +27,6 @@ class Api::V1::ProdutosController < ApplicationController
     restaurante = Restaurante.find(params[:restaurante_id])
     @produtos = Produto.includes(produto_acompanhamentos: { acompanhamento: :item_acompanhamentos }).where(restaurante_id: restaurante.id, disponivel: true)
 
-    # Filtra os produtos com base no termo de busca
     if params[:search].present?
       @produtos = @produtos.where("nome ILIKE ?", "%#{params[:search]}%")
     end

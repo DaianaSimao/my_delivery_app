@@ -44,6 +44,9 @@ const DespesaDetails: React.FC = () => {
             <p className="text-gray-900 dark:text-white">Status: {despesa?.status ? "Pago" : "Pendente"}</p>
           </div>
           <div className="w-full">
+            <p className="text-gray-900 dark:text-white">Observações: {despesa?.observacoes}</p>
+          </div>
+          <div className="w-full">
             <p className="text-gray-900 dark:text-white">
               Categoria: {despesa?.categorias_despesa_id}
             </p>

@@ -7,8 +7,8 @@ module Api
       def index
         @categorias_despesas = @restaurante.categorias_despesas
 
-        if params[:nome].present?
-          @categorias_despesas = @categorias_despesas.where("nome ILIKE ?", "%#{params[:nome]}%")
+        if params[:search].present?
+          @categorias_despesas = @categorias_despesas.where("nome ILIKE ?", "%#{params[:search]}%")
         end
 
         @categorias_despesas = @categorias_despesas.page(params[:page]).per(params[:per_page])
