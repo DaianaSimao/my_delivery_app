@@ -11,7 +11,7 @@ interface AddressFormProps {
     neighborhood: string;
     city: string;
     addressType: string;
-    regioes_entrega_id: number 
+    regioes_entrega_id: number;
   };
   onStreetChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

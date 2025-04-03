@@ -22,11 +22,15 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
         <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Número de WhatsApp
+          Número de WhatsApp 
         </label>
         <input
           type="tel"
           id="whatsapp"
+          placeholder='(XX) 9XXXX-XXXX'
+          pattern="^\(\d{2}\) \d{1}\d{4}-\d{4}$"
+          maxLength={15}
+          minLength={15}
           value={formData.whatsapp}
           onChange={onWhatsappChange}
           className={`mt-1 block w-full rounded-lg border 

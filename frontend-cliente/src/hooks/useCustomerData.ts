@@ -41,12 +41,15 @@ const useCustomerData = () => {
 
   const buscarCliente = useCallback(async (whatsapp: string) => {
     try {
-      const cliente = await CustomerService.findCustomerByWhatsApp(whatsapp);
+      const numbersOnly = whatsapp.replace(/\D/g, '');
+      
+      const cliente = await CustomerService.findCustomerByWhatsApp(numbersOnly);
       if (cliente) {
         setClienteEncontrado(cliente);
         setShowClienteModal(true);
+        
         setFormData({
-          whatsapp: cliente.telefone,
+          whatsapp: formatPhoneNumber(cliente.telefone),
           firstName: cliente.nome,
           lastName: cliente.sobrenome,
         });
@@ -61,12 +64,37 @@ const useCustomerData = () => {
     }
   }, []);
 
-  const handleWhatsappChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormData(prev => ({ ...prev, whatsapp: value }));
+  // Função para formatar o número de telefone no padrão brasileiro (XX) XXXXX-XXXX
+  const formatPhoneNumber = (value: string): string => {
+    // Remove todos os caracteres não numéricos
+    const numbers = value.replace(/\D/g, '');
     
-    if (value.replace(/\D/g, '').length >= 9) {
-      buscarCliente(value);
+    // Aplica a formatação conforme o usuário digita
+    if (numbers.length <= 2) {
+      return numbers.length ? `(${numbers}` : '';
+    } else if (numbers.length <= 7) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    } else {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+    }
+  };
+
+  const handleWhatsappChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    
+    // Limita o input a 15 caracteres (tamanho máximo da formatação (XX) XXXXX-XXXX)
+    if (inputValue.length > 15) return;
+    
+    const formattedValue = formatPhoneNumber(inputValue);
+    
+    // Atualiza o estado com o valor formatado para exibição
+    setFormData(prev => ({ ...prev, whatsapp: formattedValue }));
+    
+    // Extrai apenas os números para verificar se tem a quantidade necessária para busca
+    const numbersOnly = inputValue.replace(/\D/g, '');
+    if (numbersOnly.length >= 11) {
+      // Envia apenas os números para o backend
+      buscarCliente(numbersOnly);
     }
   }, [buscarCliente]);
 

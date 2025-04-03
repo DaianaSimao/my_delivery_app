@@ -57,9 +57,18 @@ export const fetchPedidoById = async (pedidoId: string | number) => {
   }
 };
 
+const formatarTelefoneParaBackend = (telefone: string): string => {
+  return telefone.replace(/\D/g, '');
+};
+
 export const criarCliente = async (clienteData: any) => {
   try {
-    const response = await api.post("/clientes", clienteData);
+    const dadosFormatados = {
+      ...clienteData,
+      telefone: formatarTelefoneParaBackend(clienteData.telefone)
+    };
+    
+    const response = await api.post("/clientes", dadosFormatados);
     return response.data;
   } catch (error) {
     console.error("Erro ao criar cliente:", error);
@@ -89,7 +98,12 @@ export const criarPedido = async (pedidoData: any) => {
 
 export const atualizarCliente = async (clienteId: string, dadosAtualizados: { nome: string; sobrenome:string; telefone: string; }) => {
   try {
-    const response = await api.put(`/clientes/${clienteId}`, dadosAtualizados);
+    const dadosFormatados = {
+      ...dadosAtualizados,
+      telefone: formatarTelefoneParaBackend(dadosAtualizados.telefone)
+    };
+    
+    const response = await api.put(`/clientes/${clienteId}`, dadosFormatados);
     return response.data;
   } catch (error) {
     console.error("Erro ao atualizar cliente:", error);
@@ -120,7 +134,6 @@ export const atualizarEndereco = async (enderecoId: number, dadosAtualizados: an
 export const fetchRegioesEntrega = async (restauranteId: string | number) => {
   try {
     const response = await api.get(`/restaurantes/regioes_entrega/${restauranteId}`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar regiões de entrega:', error);

@@ -10,7 +10,7 @@ class Endereco < ApplicationRecord
   private
   def regiao_obrigatoria_para_clientes
     if self.tipo != "Restaurante" && regioes_entrega_id.blank?
-      errors.add("Região de entrega é obrigatório")
+      errors.add(:base, "Região de entrega é obrigatória.")
     end
   end
 end

@@ -180,11 +180,22 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
         }
       }
       const regiao = regioesEntrega.find((r) => r.id === addressFormData.regioes_entrega_id);
+
       setDeliveryFee(regiao ? regiao.taxa_entrega : 0);
       setStep('payment');
-    } catch (error) {
+    }catch (error) {
       console.error('Erro ao salvar endereço:', error);
-      toast.error('Erro ao salvar endereço. Tente novamente.');
+      
+      // Verifica se é um erro Axios e tem response data
+      if (error instanceof Error && (error as any).isAxiosError && (error as any).response?.data?.errors) {
+        // Exibe todos os erros retornados pelo backend
+        (error as any).response.data.errors.forEach((errMsg: string) => {
+          toast.error(errMsg);
+        });
+      } else {
+        // Erro genérico caso não seja um erro Axios com response
+        toast.error('Erro ao salvar endereço. Tente novamente.');
+      }
     }
   };
 

@@ -50,7 +50,7 @@ const useAddress = (enderecoId?: number) => {
     setFormData((prev) => ({
       ...prev,
       neighborhood,
-      regioes_entrega_id, // Atualiza o ID da região
+      regioes_entrega_id,
       city,
     }));
   };
