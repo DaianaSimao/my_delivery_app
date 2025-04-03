@@ -1,0 +1,334 @@
+pt-BR:
+  activerecord:
+    models:
+      acompanhamento:
+        one: "Acompanhamento"
+        other: "Acompanhamentos"
+      acompanhamentos_adicional:
+        one: "Adicional"
+        other: "Adicionais"
+      acompanhamentos_pedido:
+        one: "Acompanhamento do Pedido"
+        other: "Acompanhamentos do Pedido"
+      avaliacao:
+        one: "Avaliação"
+        other: "Avaliações"
+      bairro:
+        one: "Bairro"
+        other: "Bairros"
+      categorias_despesa:
+        one: "Categoria de Despesa"
+        other: "Categorias de Despesas"
+      cliente:
+        one: "Cliente"
+        other: "Clientes"
+      despesa:
+        one: "Despesa"
+        other: "Despesas"
+      endereco:
+        one: "Endereço"
+        other: "Endereços"
+      entregador:
+        one: "Entregador"
+        other: "Entregadores"
+      entrega:
+        one: "Entrega"
+        other: "Entregas"
+      horario_funcionamento:
+        one: "Horário de Funcionamento"
+        other: "Horários de Funcionamento"
+      item_acompanhamento:
+        one: "Item de Acompanhamento"
+        other: "Itens de Acompanhamento"
+      itens_pedido:
+        one: "Item do Pedido"
+        other: "Itens do Pedido"
+      pagamento:
+        one: "Pagamento"
+        other: "Pagamentos"
+      pedido:
+        one: "Pedido"
+        other: "Pedidos"
+      produto:
+        one: "Produto"
+        other: "Produtos"
+      promocao:
+        one: "Promoção"
+        other: "Promoções"
+      restaurante:
+        one: "Restaurante"
+        other: "Restaurantes"
+      secoes_cardapio:
+        one: "Seção do Cardápio"
+        other: "Seções do Cardápio"
+      user:
+        one: "Usuário"
+        other: "Usuários"
+      regioes_entrega:
+        one: "Região de Entrega"
+        other: "Regiões de Entrega"
+
+    attributes:
+      acompanhamento:
+        nome: "Nome"
+        quantidade_maxima: "Quantidade Máxima"
+        tipo: "Tipo"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      acompanhamentos_adicional:
+        nome: "Nome"
+        preco: "Preço"
+        tipo: "Tipo"
+        disponivel: "Disponível"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      acompanhamentos_pedido:
+        item_acompanhamento: "Item de Acompanhamento"
+        item_acompanhamento_id: "Item de Acompanhamento"
+        itens_pedido: "Item do Pedido"
+        itens_pedido_id: "Item do Pedido"
+        quantidade: "Quantidade"
+        preco_unitario: "Preço Unitário"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      avaliacao:
+        pedido: "Pedido"
+        pedido_id: "Pedido"
+        nota: "Nota"
+        comentario: "Comentário"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      bairro:
+        uf: "UF"
+        nome: "Nome"
+        cidade: "Cidade"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      categorias_despesa:
+        nome: "Nome"
+        descricao: "Descrição"
+        ativo: "Ativo"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      cliente:
+        nome: "Nome"
+        sobrenome: "Sobrenome"
+        telefone: "Telefone"
+        endereco: "Endereço"
+        endereco_id: "Endereço"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      despesa:
+        descricao: "Descrição"
+        valor: "Valor"
+        data: "Data"
+        status: "Status"
+        observacoes: "Observações"
+        categorias_despesa: "Categoria de Despesa"
+        categorias_despesa_id: "Categoria de Despesa"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      endereco:
+        rua: "Rua"
+        numero: "Número"
+        complemento: "Complemento"
+        bairro: "Bairro"
+        cidade: "Cidade"
+        estado: "Estado"
+        uf: "UF"
+        cep: "CEP"
+        tipo: "Tipo"
+        ponto_referencia: "Ponto de Referência"
+        regioes_entrega: "Região de Entrega"
+        regioes_entrega_id: "Região de Entrega"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      entregador:
+        nome: "Nome"
+        telefone: "Telefone"
+        veiculo: "Veículo"
+        placa: "Placa"
+        ativo: "Ativo"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      entrega:
+        pedido: "Pedido"
+        pedido_id: "Pedido"
+        entregador: "Entregador"
+        entregador_id: "Entregador"
+        status: "Status"
+        taxa_entrega: "Taxa de Entrega"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      horario_funcionamento:
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        dia_semana: "Dia da Semana"
+        abertura: "Horário de Abertura"
+        fechamento: "Horário de Fechamento"
+        ativo: "Ativo"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      item_acompanhamento:
+        nome: "Nome"
+        preco: "Preço"
+        acompanhamento: "Acompanhamento"
+        acompanhamento_id: "Acompanhamento"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      itens_pedido:
+        pedido: "Pedido"
+        pedido_id: "Pedido"
+        produto: "Produto"
+        produto_id: "Produto"
+        quantidade: "Quantidade"
+        preco_unitario: "Preço Unitário"
+        observacao: "Observação"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      pagamento:
+        pedido: "Pedido"
+        pedido_id: "Pedido"
+        metodo: "Método de Pagamento"
+        status: "Status"
+        valor: "Valor"
+        troco: "Troco"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      pedido:
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        cliente: "Cliente"
+        cliente_id: "Cliente"
+        status: "Status"
+        forma_pagamento: "Forma de Pagamento"
+        forma_entrega: "Forma de Entrega"
+        troco_para: "Troco Para"
+        valor_total: "Valor Total"
+        taxa_entrega: "Taxa de Entrega"
+        observacoes: "Observações"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      produto:
+        nome: "Nome"
+        descricao: "Descrição"
+        preco: "Preço"
+        categoria: "Categoria"
+        disponivel: "Disponível"
+        destaque: "Destaque"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        secoes_cardapio: "Seção do Cardápio"
+        secoes_cardapio_id: "Seção do Cardápio"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      promocao:
+        nome: "Nome"
+        descricao: "Descrição"
+        desconto: "Desconto"
+        data_inicio: "Data de Início"
+        data_fim: "Data de Fim"
+        ativa: "Ativa"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      restaurante:
+        nome: "Nome"
+        descricao: "Descrição"
+        categoria: "Categoria"
+        taxa_entrega: "Taxa de Entrega"
+        tempo_entrega_estimado: "Tempo de Entrega Estimado"
+        valor_minimo_pedido: "Valor Mínimo do Pedido"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      secoes_cardapio:
+        nome: "Nome"
+        descricao: "Descrição"
+        ordem: "Ordem"
+        ativa: "Ativa"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+      
+      user:
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação de Senha"
+        current_password: "Senha Atual"
+        remember_me: "Lembrar-me"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+        restaurante_ativo: "Restaurante Ativo"
+      
+      regioes_entrega:
+        nome: "Nome"
+        taxa_entrega: "Taxa de Entrega"
+        tempo_estimado: "Tempo Estimado"
+        restaurante: "Restaurante"
+        restaurante_id: "Restaurante"
+        created_at: "Criado em"
+        updated_at: "Atualizado em"
+
+    # Mensagens de erro para validações específicas
+    errors:
+      messages:
+        record_invalid: "Validação falhou: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Não é possível excluir o registro pois existe um %{record} dependente"
+          has_many: "Não é possível excluir o registro pois existem %{record} dependentes"
+        
+      models:
+        pedido:
+          attributes:
+            status:
+              invalid: "Status inválido"
+            valor_total:
+              greater_than_or_equal_to: "deve ser maior ou igual a zero"
+        
+        pagamento:
+          attributes:
+            metodo:
+              invalid: "Método de pagamento inválido"
+            status:
+              invalid: "Status de pagamento inválido"
+        
+        entrega:
+          attributes:
+            status:
+              invalid: "Status de entrega inválido"
+        
+        despesa:
+          attributes:
+            valor:
+              greater_than: "deve ser maior que zero"
+            status:
+              inclusion: "deve ser Pendente, Paga ou Cancelada"

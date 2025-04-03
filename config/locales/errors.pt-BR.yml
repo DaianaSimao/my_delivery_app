@@ -1,0 +1,112 @@
+pt-BR:
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: "deve ser aceito"
+      blank: "não pode ficar em branco"
+      confirmation: "não é igual à confirmação"
+      empty: "não pode ficar vazio"
+      equal_to: "deve ser igual a %{count}"
+      even: "deve ser par"
+      exclusion: "não está disponível"
+      greater_than: "deve ser maior que %{count}"
+      greater_than_or_equal_to: "deve ser maior ou igual a %{count}"
+      inclusion: "não está incluído na lista"
+      invalid: "não é válido"
+      less_than: "deve ser menor que %{count}"
+      less_than_or_equal_to: "deve ser menor ou igual a %{count}"
+      model_invalid: "A validação falhou: %{errors}"
+      not_a_number: "não é um número"
+      not_an_integer: "não é um número inteiro"
+      odd: "deve ser ímpar"
+      other_than: "deve ser diferente de %{count}"
+      present: "deve ficar em branco"
+      required: "é obrigatório(a)"
+      taken: "já está em uso"
+      too_long:
+        one: "é muito longo (máximo: 1 caracter)"
+        other: "é muito longo (máximo: %{count} caracteres)"
+      too_short:
+        one: "é muito curto (mínimo: 1 caracter)"
+        other: "é muito curto (mínimo: %{count} caracteres)"
+      wrong_length:
+        one: "não possui o tamanho esperado (1 caracter)"
+        other: "não possui o tamanho esperado (%{count} caracteres)"
+      
+      # Mensagens específicas para aplicação
+      item_not_available: "item não está disponível"
+      restaurant_closed: "restaurante está fechado"
+      minimum_order_not_reached: "valor mínimo do pedido não foi atingido"
+      invalid_payment_method: "método de pagamento inválido"
+      invalid_delivery_method: "método de entrega inválido"
+      delivery_region_not_available: "região de entrega não disponível"
+      insufficient_stock: "estoque insuficiente"
+      invalid_status_transition: "transição de status inválida"
+      order_already_processed: "pedido já foi processado"
+      payment_already_processed: "pagamento já foi processado"
+      delivery_already_assigned: "entrega já foi atribuída"
+      invalid_credentials: "credenciais inválidas"
+      unauthorized_access: "acesso não autorizado"
+      resource_not_found: "recurso não encontrado"
+      
+  # Mensagens específicas para controllers
+  controllers:
+    pedidos:
+      created: "Pedido criado com sucesso"
+      updated: "Pedido atualizado com sucesso"
+      destroyed: "Pedido excluído com sucesso"
+      status_updated: "Status do pedido atualizado com sucesso"
+      items_updated: "Itens do pedido atualizados com sucesso"
+      not_found: "Pedido não encontrado"
+      error_updating: "Erro ao atualizar pedido: %{error}"
+      
+    despesas:
+      created: "Despesa criada com sucesso"
+      updated: "Despesa atualizada com sucesso"
+      destroyed: "Despesa removida com sucesso"
+      not_found: "Despesa não encontrada"
+      
+    clientes:
+      created: "Cliente criado com sucesso"
+      updated: "Cliente atualizado com sucesso"
+      destroyed: "Cliente excluído com sucesso"
+      not_found: "Cliente não encontrado"
+      
+    entregadores:
+      created: "Entregador criado com sucesso"
+      updated: "Entregador atualizado com sucesso"
+      destroyed: "Entregador excluído com sucesso"
+      not_found: "Entregador não encontrado"
+      
+    entregas:
+      created: "Entrega criada com sucesso"
+      updated: "Entrega atualizada com sucesso"
+      destroyed: "Entrega excluída com sucesso"
+      assigned: "Entrega atribuída com sucesso"
+      status_updated: "Status da entrega atualizado com sucesso"
+      not_found: "Entrega não encontrada"
+      
+    pagamentos:
+      created: "Pagamento criado com sucesso"
+      updated: "Pagamento atualizado com sucesso"
+      destroyed: "Pagamento excluído com sucesso"
+      status_updated: "Status do pagamento atualizado com sucesso"
+      not_found: "Pagamento não encontrado"
+      
+    produtos:
+      created: "Produto criado com sucesso"
+      updated: "Produto atualizado com sucesso"
+      destroyed: "Produto excluído com sucesso"
+      not_found: "Produto não encontrado"
+      
+    restaurantes:
+      created: "Restaurante criado com sucesso"
+      updated: "Restaurante atualizado com sucesso"
+      destroyed: "Restaurante excluído com sucesso"
+      not_found: "Restaurante não encontrado"
+      
+    users:
+      created: "Usuário criado com sucesso"
+      updated: "Usuário atualizado com sucesso"
+      destroyed: "Usuário excluído com sucesso"
+      not_found: "Usuário não encontrado"

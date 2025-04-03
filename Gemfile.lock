@@ -422,6 +422,7 @@ DEPENDENCIES
   faker
   fast_jsonapi
   groupdate
+  i18n
   kamal
   kaminari
   pg (~> 1.1)
