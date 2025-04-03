@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-import sushiIcon from "/icons/sushi.svg";
+import acompanhamentoIcon from "/icons/acompanhamento.svg";
 
 interface Produto {
   id: number;
@@ -82,7 +82,6 @@ const ProdutoDetail = () => {
             </p>
           </div>
 
-          {/* Seções do Cardápio */}
           <div className="sm:col-span-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Seções do Cardápio
@@ -108,7 +107,7 @@ const ProdutoDetail = () => {
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <img
-                src={sushiIcon}
+                src={acompanhamentoIcon}
                 alt="Ícone do restaurante"
                 className="h-8 w-auto mr-3 text-4xl"
               />
@@ -127,7 +126,6 @@ const ProdutoDetail = () => {
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 mt-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">

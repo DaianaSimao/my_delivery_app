@@ -41,25 +41,25 @@ function Dashboard() {
 
   const metricCardsData = [
     {
-      icon: "/icons/sales.svg",
+      icon: "/icons/entradas.svg",
       title: "Vendas Hoje",
       value: `R$ ${dashboardData.vendas_do_dia.toFixed(2)}`,
       description: `${dashboardData.crescimento_vendas}% em relação a ontem`,
     },
     {
-      icon: "/icons/orders.svg",
+      icon: "/icons/pedido_menu.svg",
       title: "Pedidos Hoje",
       value: dashboardData.pedidos_total.toString(),
       description: `${dashboardData.crescimento_pedidos}% em relação a ontem`,
     },
     {
-      icon: "/icons/stats.svg",
+      icon: "/icons/metrica.svg",
       title: "Ticket Médio",
       value: `R$ ${dashboardData.ticket_medio}`,
       description: `${dashboardData.crescimento_ticket_medio}% em relação a ontem`,
     },
     {
-      icon: "/icons/delivery.svg",
+      icon: "/icons/entregas.svg",
       title: "Entregas Hoje",
       value: dashboardData.entregas_total.toString(),
       description: `${dashboardData.crescimento_entregas}% em relação a ontem`,

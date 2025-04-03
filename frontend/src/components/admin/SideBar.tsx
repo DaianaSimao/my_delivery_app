@@ -16,7 +16,8 @@ import entregaIcon from "/icons/entrega_menu.svg";
 import entregadorIcon from "/icons/entregador_menu.svg";
 import descontoIcon from "/icons/desconto.svg";
 import { Restaurante } from "../../types/Restaurante";
-
+import despesasIcon from "/icons/despesas.svg";
+import financeiroIcon from "/icons/financeiro.svg";
 interface SideBarProps {
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
@@ -120,10 +121,36 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               >
                 <img
                   src={dashboardIcon}
-                  alt="Ícone do pagamento"
+                  alt="Ícone do dashboard"
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="ms-3">Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/relatorio_financeiro"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <img
+                  src={financeiroIcon}
+                  alt="Ícone do dashboard"
+                  className="h-6 w-auto mr-1 text-4xl" 
+                />
+                <span className="ms-3">Relatório Financeiro</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/despesas"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <img
+                  src={despesasIcon}
+                  alt="Ícone de despesas"
+                  className="h-6 w-auto mr-1 text-4xl" 
+                />
+                <span className="ms-3">Despesas</span>
               </a>
             </li>
             <li>
@@ -133,7 +160,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               >
                 <img
                   src={produtoIcon}
-                  alt="Ícone do pagamento"
+                  alt="Ícone de produtos"
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Produtos</span>
@@ -156,7 +183,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               <a href="/pedidos" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
               <img
                   src={pedidoIcon}
-                  alt="Ícone do pagamento"
+                  alt="Ícone de pedidos"
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Pedidos</span>
@@ -169,7 +196,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               >
                 <img
                   src={entregaIcon}
-                  alt="Ícone do pagamento"
+                  alt="Ícone de entregas"
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Entregas</span>
@@ -182,7 +209,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               >
                 <img
                   src={restauranteIcon}
-                  alt="Ícone do pagamento"
+                  alt="Ícone de restaurantes"
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Restaurantes</span>
@@ -195,7 +222,7 @@ export function SideBar({  isDarkMode, onToggleDarkMode }: SideBarProps) {
               >
                 <img
                   src={entregadorIcon}
-                  alt="Ícone do pagamento"
+                  alt="Ícone de entregadores"
                   className="h-6 w-auto mr-1 text-4xl" 
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Entregadores</span>
