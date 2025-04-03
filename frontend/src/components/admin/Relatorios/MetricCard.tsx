@@ -6,7 +6,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({ icon, title, value, desc
   return (
     <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
       <CardBody className="p-4">
-        <img src={icon} className="h-6 w-6 mb-5 dark:filter dark:invert" alt={title} />
+        <img src={icon} className="h-8 w-8 mb-3 dark:filter dark:invert" alt={title} />
         <Typography
           variant="small"
           className="text-gray-600 dark:text-gray-300 font-medium mb-1"
