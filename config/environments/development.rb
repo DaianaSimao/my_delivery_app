@@ -30,7 +30,7 @@ Rails.application.configure do
   config.active_storage.service = :amazon
 
   # Configure default URL options for Active Storage
-  config.active_storage.default_url_options = { host: "192.168.2.24", port: 3000 }
+  config.active_storage.default_url_options = { host: "localhost", port: 3000 }
 
   # Desativar o processamento em segundo plano para o Active Storage
   config.active_storage.queues.analysis = nil
