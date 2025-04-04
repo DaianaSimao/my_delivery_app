@@ -59,8 +59,7 @@ class Api::V1::RelatoriosController < ApplicationController
       0
     elsif anterior == 0
       100
-    elsif anterior > atual
-
+    else
       (((atual - anterior) / anterior) * 100).round(2)
     end
   end
