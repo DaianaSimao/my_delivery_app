@@ -26,8 +26,15 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on Amazon S3 (Backblaze B2) (see config/storage.yml for options).
+  config.active_storage.service = :amazon
+
+  # Configure default URL options for Active Storage
+  config.active_storage.default_url_options = { host: "192.168.2.24", port: 3000 }
+
+  # Desativar o processamento em segundo plano para o Active Storage
+  config.active_storage.queues.analysis = nil
+  config.active_storage.queues.purge = nil
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -44,18 +51,14 @@ Rails.application.configure do
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
 
-  # Highlight code that triggered database queries in logs.
-  config.active_record.verbose_query_logs = true
+  # Reduzir verbosidade dos logs
+  config.active_record.verbose_query_logs = false
+  config.active_record.query_log_tags_enabled = false
+  config.active_job.verbose_enqueue_logs = false
+  
 
-  # Append comments with runtime information tags to SQL queries in logs.
-  config.active_record.query_log_tags_enabled = true
-
-  # Highlight code that enqueued background job in logs.
-  config.active_job.verbose_enqueue_logs = true
   config.hosts.clear
-  # Raises error for missing translations.
-  # config.i18n.raise_on_missing_translations = true
-
+  
   # Annotate rendered view with file names.
   config.action_view.annotate_rendered_view_with_filenames = true
 

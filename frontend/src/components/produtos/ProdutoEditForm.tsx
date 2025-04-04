@@ -25,22 +25,18 @@ const ProdutosEditForm = () => {
   const [secoes, setSecoes] = useState<SecaoCardapio[]>([]);
   const navigate = useNavigate();
 
-  // Carrega os dados do produto, acompanhamentos e seções
+ 
   useEffect(() => {
     const fetchProdutoEAcompanhamentos = async () => {
       try {
-        // Carrega os dados do produto
         const produtoResponse = await api.get(`/api/v1/produtos/${id}`);
         const produtoData = produtoResponse.data.data;
-        // Carrega a lista de acompanhamentos
         const acompanhamentosResponse = await api.get("/api/v1/acompanhamentos");
         setAcompanhamentos(acompanhamentosResponse.data.data);
 
-        // Carrega a lista de seções
         const secoesResponse = await api.get("/api/v1/secoes_cardapios");
         setSecoes(secoesResponse.data.data);
 
-        // Atualiza o estado com os dados do produto
         setProduto({
           nome: produtoData.nome,
           preco: produtoData.preco,
@@ -73,6 +69,16 @@ const ProdutosEditForm = () => {
       ...prevProduto,
       [name]: value,
     }));
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProduto((prevProduto) => ({
+        ...prevProduto,
+        imagem: file,
+      }));
+    }
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +129,7 @@ const ProdutosEditForm = () => {
         };
       });
 
-      // 2. Acompanhamentos que foram removidos
+
       const removedAttributes = produto.produto_acompanhamentos
         .filter((pa) => !produto.acompanhamentos_selecionados.includes(pa.acompanhamento_id))
         .map((pa) => ({
@@ -132,7 +138,7 @@ const ProdutosEditForm = () => {
           _destroy: true,
         }));
 
-      // 3. Seções que foram adicionadas (novas)
+
       const addedSecoes = produto.secoes_selecionadas
         .filter((secaoId) => !produto.produto_secoes.some((ps) => ps.secoes_cardapio.id === secaoId))
         .map((secaoId) => ({
@@ -140,7 +146,6 @@ const ProdutosEditForm = () => {
           _destroy: false,
         }));
 
-      // 4. Seções que foram removidas
       const removedSecoes = produto.produto_secoes
         .filter((ps) => !produto.secoes_selecionadas.includes(ps.secoes_cardapio.id))
         .map((ps) => ({
@@ -149,7 +154,6 @@ const ProdutosEditForm = () => {
           _destroy: true,
         }));
 
-      // Junta os arrays para enviar todos os atributos
       const produtoAcompanhamentosAttributes = [
         ...selectedAttributes,
         ...removedAttributes,
@@ -160,21 +164,47 @@ const ProdutosEditForm = () => {
         ...removedSecoes,
       ];
 
-      const payload = {
-        produto: {
-          nome: produto.nome,
-          preco: produto.preco,
-          descricao: produto.descricao,
-          disponivel: produto.disponivel,
-          imagem_url: produto.imagem_url,
-          restaurante_id: produto.restaurante_id,
-          produto_acompanhamentos_attributes: produtoAcompanhamentosAttributes,
-          produto_secoes_attributes: produtoSecoesAttributes,
-        },
+      const formData = new FormData();
+      
+      formData.append('produto[nome]', produto.nome);
+      formData.append('produto[preco]', produto.preco);
+      formData.append('produto[descricao]', produto.descricao);
+      formData.append('produto[disponivel]', produto.disponivel.toString());
+      formData.append('produto[restaurante_id]', produto.restaurante_id.toString());
+      
+        
+      if (produto.imagem_url) {
+        formData.append('produto[imagem_url]', produto.imagem_url);
+      }
+      
+      if (produto.imagem) {
+        formData.append('produto[imagem]', produto.imagem);
+      }
+      
+      
+      produtoAcompanhamentosAttributes.forEach((attr, index) => {
+        if (attr.id) {
+          formData.append(`produto[produto_acompanhamentos_attributes][${index}][id]`, attr.id.toString());
+        }
+        formData.append(`produto[produto_acompanhamentos_attributes][${index}][acompanhamento_id]`, attr.acompanhamento_id.toString());
+        formData.append(`produto[produto_acompanhamentos_attributes][${index}][_destroy]`, attr._destroy.toString());
+      });
+      
+      produtoSecoesAttributes.forEach((attr: any, index) => {
+        if (attr.id) {
+          formData.append(`produto[produto_secoes_attributes][${index}][id]`, attr.id.toString());
+        }
+        formData.append(`produto[produto_secoes_attributes][${index}][secoes_cardapio_id]`, attr.secoes_cardapio_id.toString());
+        formData.append(`produto[produto_secoes_attributes][${index}][_destroy]`, attr._destroy.toString());
+      });
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       };
 
-      // Envia a requisição PUT para atualizar o produto
-      const response = await api.put(`/api/v1/produtos/${id}`, payload);
+      const response = await api.put(`/api/v1/produtos/${id}`, formData, config);
 
       if (response.status === 200) {
         toast.success("Produto atualizado com sucesso!");
@@ -265,7 +295,7 @@ const ProdutosEditForm = () => {
               />
             </div>
             <div className="w-full">
-              <label htmlFor="imagem_url" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL da Imagem</label>
+              <label htmlFor="imagem_url" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL da Imagem (opcional)</label>
               <input
                 type="text"
                 name="imagem_url"
@@ -273,9 +303,24 @@ const ProdutosEditForm = () => {
                 value={produto.imagem_url}
                 onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="URL da Imagem"
-                required
+                placeholder="URL da Imagem (opcional se fizer upload)"
               />
+            </div>
+            <div className="w-full">
+              <label htmlFor="imagem" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload de Imagem</label>
+              <input
+                type="file"
+                name="imagem"
+                id="imagem"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+              {produto.imagem && (
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Arquivo selecionado: {produto.imagem.name}
+                </p>
+              )}
             </div>
             <div className="flex items-center">
               <input

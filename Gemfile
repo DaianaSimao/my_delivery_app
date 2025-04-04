@@ -19,6 +19,7 @@ gem 'faker'
 gem 'kaminari'
 gem 'groupdate'
 gem 'i18n'
+gem 'aws-sdk-s3'
 
 group :development, :test do
   gem 'debug', platforms: %i[ mri windows ], require: 'debug/prelude'

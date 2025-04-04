@@ -71,6 +71,10 @@ class Api::V1::ProdutosController < ApplicationController
     produto.restaurante_id = current_user.restaurantes.find(current_user.restaurante_ativo).id
 
     if produto.save
+      if params[:produto][:imagem].present?
+        produto.imagem.attach(params[:produto][:imagem])
+      end
+
       render json: ProdutoSerializer.new(produto), status: :created
     else
       render json: { errors: produto.errors.full_messages }, status: :unprocessable_entity
@@ -78,6 +82,12 @@ class Api::V1::ProdutosController < ApplicationController
   end
 
   def update
+    if params[:produto][:imagem].present?
+      @produto.imagem.purge if @produto.imagem.attached?
+      @produto.imagem.attach(params[:produto][:imagem])
+      params[:produto].delete(:imagem)
+    end
+
     if @produto.update(produto_params)
       render json: ProdutoSerializer.new(@produto)
     else
@@ -97,8 +107,8 @@ class Api::V1::ProdutosController < ApplicationController
   end
 
   def produto_params
-    params.require(:produto).permit(:nome, :descricao, :preco, :imagem_url,
-    :disponivel, :restaurante_id, produto_acompanhamentos_attributes: [ :id, :acompanhamento_id, :_destroy ],
+    params.require(:produto).permit(:nome, :descricao, :preco, :imagem_url, :disponivel, :restaurante_id,
+    produto_acompanhamentos_attributes: [ :id, :acompanhamento_id, :_destroy ],
     produto_secoes_attributes: [ :id, :secoes_cardapio_id, :_destroy ])
   end
 end
