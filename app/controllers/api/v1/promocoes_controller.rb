@@ -26,7 +26,7 @@ class Api::V1::PromocoesController < ApplicationController
   def create
     @promocao = Promocao.new(promocao_params)
     @promocao.restaurante_id = current_user.restaurante_ativo
-    binding.pry
+
     if @promocao.save
       render json: @promocao, status: :created
     else

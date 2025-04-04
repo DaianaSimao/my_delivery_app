@@ -27,7 +27,6 @@ class Api::V1::RelatoriosController < ApplicationController
     ticket_medio_anterior = pedidos_total_anterior.zero? ? 0 : (vendas_do_dia_anterior / pedidos_total_anterior.to_f).round(2)
     crescimento_ticket_medio = calcular_crescimento(ticket_medio, ticket_medio_anterior)
 
-    # Dados para os gráficos
     vendas_semanais = calcular_vendas_semanais(restaurante.id, periodo)
     pedidos_semanais = calcular_pedidos_semanais(restaurante.id, periodo)
     entregas_semanais = calcular_entregas_semanais(restaurante.id, periodo)
@@ -60,7 +59,8 @@ class Api::V1::RelatoriosController < ApplicationController
       0
     elsif anterior == 0
       100
-    else
+    elsif anterior > atual
+
       (((atual - anterior) / anterior) * 100).round(2)
     end
   end
