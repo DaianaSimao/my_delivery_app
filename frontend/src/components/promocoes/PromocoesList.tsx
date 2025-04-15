@@ -222,23 +222,18 @@ const PromocoesList: React.FC = () => {
                 </a>
               </li>
               {(() => {
-                // Lógica para limitar o número de botões de página
-                const maxVisibleButtons = 5; // Número máximo de botões de página visíveis
+                const maxVisibleButtons = 5;
                 let startPage = 1;
                 let endPage = totalPages;
                 
                 if (totalPages > maxVisibleButtons) {
-                  // Centralizar os botões em torno da página atual
                   const halfButtons = Math.floor(maxVisibleButtons / 2);
                   
                   if (currentPage <= halfButtons + 1) {
-                    // Estamos perto do início
                     endPage = maxVisibleButtons;
                   } else if (currentPage >= totalPages - halfButtons) {
-                    // Estamos perto do fim
                     startPage = totalPages - maxVisibleButtons + 1;
                   } else {
-                    // Estamos no meio
                     startPage = currentPage - halfButtons;
                     endPage = currentPage + halfButtons;
                   }
@@ -246,7 +241,6 @@ const PromocoesList: React.FC = () => {
                 
                 const pageButtons = [];
                 
-                // Adicionar o botão da primeira página se não estiver incluído
                 if (startPage > 1) {
                   pageButtons.push(
                     <li key={1}>
@@ -267,7 +261,6 @@ const PromocoesList: React.FC = () => {
                     </li>
                   );
                   
-                  // Adicionar reticências se houver um gap
                   if (startPage > 2) {
                     pageButtons.push(
                       <li key="ellipsis1" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
@@ -277,7 +270,7 @@ const PromocoesList: React.FC = () => {
                   }
                 }
                 
-                // Adicionar botões de página no intervalo calculado
+                
                 for (let i = startPage; i <= endPage; i++) {
                   pageButtons.push(
                     <li key={i}>
@@ -299,7 +292,6 @@ const PromocoesList: React.FC = () => {
                   );
                 }
                 
-                // Adicionar reticências e última página se necessário
                 if (endPage < totalPages) {
                   if (endPage < totalPages - 1) {
                     pageButtons.push(
