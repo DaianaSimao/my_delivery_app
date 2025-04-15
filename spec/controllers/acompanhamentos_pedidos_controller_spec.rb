@@ -24,7 +24,6 @@ require 'rails_helper'
 # `rails-controller-testing` gem.
 
 RSpec.describe AcompanhamentosPedidosController, type: :controller do
-
   # This should return the minimal set of attributes required to create a valid
   # AcompanhamentosPedido. As you add validations to AcompanhamentosPedido, be sure to
   # adjust the attributes here as well.
@@ -52,7 +51,7 @@ RSpec.describe AcompanhamentosPedidosController, type: :controller do
   describe "GET #show" do
     it "returns a success response" do
       acompanhamentos_pedido = AcompanhamentosPedido.create! valid_attributes
-      get :show, params: {id: acompanhamentos_pedido.to_param}, session: valid_session
+      get :show, params: { id: acompanhamentos_pedido.to_param }, session: valid_session
       expect(response).to be_successful
     end
   end
@@ -61,12 +60,12 @@ RSpec.describe AcompanhamentosPedidosController, type: :controller do
     context "with valid params" do
       it "creates a new AcompanhamentosPedido" do
         expect {
-          post :create, params: {acompanhamentos_pedido: valid_attributes}, session: valid_session
+          post :create, params: { acompanhamentos_pedido: valid_attributes }, session: valid_session
         }.to change(AcompanhamentosPedido, :count).by(1)
       end
 
       it "renders a JSON response with the new acompanhamentos_pedido" do
-        post :create, params: {acompanhamentos_pedido: valid_attributes}, session: valid_session
+        post :create, params: { acompanhamentos_pedido: valid_attributes }, session: valid_session
         expect(response).to have_http_status(:created)
         expect(response.content_type).to eq('application/json')
         expect(response.location).to eq(acompanhamentos_pedido_url(AcompanhamentosPedido.last))
@@ -75,7 +74,7 @@ RSpec.describe AcompanhamentosPedidosController, type: :controller do
 
     context "with invalid params" do
       it "renders a JSON response with errors for the new acompanhamentos_pedido" do
-        post :create, params: {acompanhamentos_pedido: invalid_attributes}, session: valid_session
+        post :create, params: { acompanhamentos_pedido: invalid_attributes }, session: valid_session
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to eq('application/json')
       end
@@ -90,14 +89,14 @@ RSpec.describe AcompanhamentosPedidosController, type: :controller do
 
       it "updates the requested acompanhamentos_pedido" do
         acompanhamentos_pedido = AcompanhamentosPedido.create! valid_attributes
-        put :update, params: {id: acompanhamentos_pedido.to_param, acompanhamentos_pedido: new_attributes}, session: valid_session
+        put :update, params: { id: acompanhamentos_pedido.to_param, acompanhamentos_pedido: new_attributes }, session: valid_session
         acompanhamentos_pedido.reload
         skip("Add assertions for updated state")
       end
 
       it "renders a JSON response with the acompanhamentos_pedido" do
         acompanhamentos_pedido = AcompanhamentosPedido.create! valid_attributes
-        put :update, params: {id: acompanhamentos_pedido.to_param, acompanhamentos_pedido: new_attributes}, session: valid_session
+        put :update, params: { id: acompanhamentos_pedido.to_param, acompanhamentos_pedido: new_attributes }, session: valid_session
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq('application/json')
       end
@@ -106,7 +105,7 @@ RSpec.describe AcompanhamentosPedidosController, type: :controller do
     context "with invalid params" do
       it "renders a JSON response with errors for the acompanhamentos_pedido" do
         acompanhamentos_pedido = AcompanhamentosPedido.create! valid_attributes
-        put :update, params: {id: acompanhamentos_pedido.to_param, acompanhamentos_pedido: invalid_attributes}, session: valid_session
+        put :update, params: { id: acompanhamentos_pedido.to_param, acompanhamentos_pedido: invalid_attributes }, session: valid_session
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to eq('application/json')
       end
@@ -117,9 +116,8 @@ RSpec.describe AcompanhamentosPedidosController, type: :controller do
     it "destroys the requested acompanhamentos_pedido" do
       acompanhamentos_pedido = AcompanhamentosPedido.create! valid_attributes
       expect {
-        delete :destroy, params: {id: acompanhamentos_pedido.to_param}, session: valid_session
+        delete :destroy, params: { id: acompanhamentos_pedido.to_param }, session: valid_session
       }.to change(AcompanhamentosPedido, :count).by(-1)
     end
   end
-
 end

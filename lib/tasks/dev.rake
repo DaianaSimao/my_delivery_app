@@ -81,12 +81,12 @@ namespace :dev do
           descricao: Faker::Food.description,
           preco: rand(10.0..100.0).round(2),
           imagem_url: Faker::LoremFlickr.image,
-          disponivel: [true, false].sample
+          disponivel: [ true, false ].sample
         )
       end
 
       Produto.all.each do |produto|
-        if [true, false].sample
+        if [ true, false ].sample
           acompanhamento = Acompanhamento.all.sample
           produto.acompanhamentos << acompanhamento
         end
@@ -119,7 +119,7 @@ namespace :dev do
           preco_unitario: preco_unitario
         )
 
-        if [true, false].sample
+        if [ true, false ].sample
           rand(1..3).times do
             AcompanhamentosPedido.create!(
               itens_pedido_id: item_pedido.id,
@@ -155,7 +155,7 @@ namespace :dev do
 
     puts "Criando avaliações..."
     Pedido.all.each do |pedido|
-      next unless [true, false].sample
+      next unless [ true, false ].sample
 
       Avaliacao.create!(
         pedido_id: pedido.id,
@@ -187,9 +187,9 @@ namespace :dev do
 
   desc "Importa estados, cidades e bairros de um CSV"
   task bairros: :environment do
-    require 'csv'
+    require "csv"
 
-    csv_path = Rails.root.join('public', 'bairros.csv')
+    csv_path = Rails.root.join("public", "bairros.csv")
 
     unless File.exist?(csv_path)
       puts "Arquivo CSV não encontrado em #{csv_path}"
@@ -200,9 +200,9 @@ namespace :dev do
 
     # Lê o arquivo CSV
     CSV.foreach(csv_path, headers: true) do |row|
-      uf = row['uf']
-      cidade_nome = row['cidade']
-      bairro_nome = row['bairro']
+      uf = row["uf"]
+      cidade_nome = row["cidade"]
+      bairro_nome = row["bairro"]
 
       bairro = Bairro.create(
         uf: uf,

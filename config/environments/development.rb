@@ -55,10 +55,10 @@ Rails.application.configure do
   config.active_record.verbose_query_logs = false
   config.active_record.query_log_tags_enabled = false
   config.active_job.verbose_enqueue_logs = false
-  
+
 
   config.hosts.clear
-  
+
   # Annotate rendered view with file names.
   config.action_view.annotate_rendered_view_with_filenames = true
 

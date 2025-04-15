@@ -1,4 +1,4 @@
 class AcompanhamentoSerializer
   include FastJsonapi::ObjectSerializer
-  attributes 
+  attributes
 end

@@ -32,7 +32,7 @@ Rails.application.routes.draw do
           get "dashboard"
         end
       end
-      
+
       resources :financeiro do
         collection do
           get "relatorio_entradas_saidas"

@@ -3,5 +3,5 @@ class JwtDenylist < ApplicationRecord
 
   validates :jti, presence: true, uniqueness: true
 
-  self.table_name = 'jwt_denylists'
+  self.table_name = "jwt_denylists"
 end

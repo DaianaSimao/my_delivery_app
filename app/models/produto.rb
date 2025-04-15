@@ -18,7 +18,7 @@ class Produto < ApplicationRecord
     return self[:imagem_url] unless imagem.attached?
 
     Rails.application.routes.url_helpers.rails_blob_url(
-      imagem, 
+      imagem,
       host: Rails.application.config.active_storage.default_url_options[:host],
       port: Rails.application.config.active_storage.default_url_options[:port]
     )

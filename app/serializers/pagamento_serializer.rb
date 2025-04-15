@@ -1,4 +1,4 @@
 class PagamentoSerializer
   include FastJsonapi::ObjectSerializer
-  attributes 
+  attributes
 end

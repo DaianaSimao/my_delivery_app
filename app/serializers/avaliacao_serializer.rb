@@ -1,4 +1,4 @@
 class AvaliacaoSerializer
   include FastJsonapi::ObjectSerializer
-  attributes 
+  attributes
 end

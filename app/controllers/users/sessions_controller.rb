@@ -7,15 +7,14 @@ class Users::SessionsController < Devise::SessionsController
     @token = request.env["warden-jwt_auth.token"]
     headers["Authorization"] = @token
     resource.update(jti: request.env["warden-jwt_auth.token"]) # Atualizar o jti do usuário
-    request.env["restaurante_id"] = resource.restaurantes.first.id if resource.restaurantes.present?
-
+    request.env["restaurante_id"] = resource.restaurante_ativo
     render json: {
       status: {
         code: 200, message: "Logged in successfully.",
         data: {
           token: @token,
           user: UserSerializer.new(resource).serializable_hash[:data][:attributes],
-          active_restaurante: resource.restaurantes.first
+          active_restaurante: resource.restaurante_ativo
         }
       }
     }, status: :ok
@@ -32,7 +31,7 @@ class Users::SessionsController < Devise::SessionsController
     if current_user
       render json: {
         status: 200,
-        message: "Logout successfully.",
+        message: "Logout successfully."
       }, status: :ok
     else
       render json: {

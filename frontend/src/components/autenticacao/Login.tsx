@@ -30,7 +30,7 @@ const Login: React.FC = () => {
       );
 
       const token = response.data.status?.data?.token;
-      const restauranteId = response.data.status?.data?.active_restaurante.id;
+      const restauranteId = response.data.status?.data?.active_restaurante;
 
       if (!token) {
         throw new Error("Token não encontrado na resposta do backend");
