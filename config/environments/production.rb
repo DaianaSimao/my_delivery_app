@@ -18,8 +18,11 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on the Amazon S3 (Backblaze B2) (see config/storage.yml for options).
+  config.active_storage.service = :amazon
+
+  # Configure default URL options for Active Storage
+  config.active_storage.default_url_options = { host: ENV.fetch("HOST", "192.168.2.24") }
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true

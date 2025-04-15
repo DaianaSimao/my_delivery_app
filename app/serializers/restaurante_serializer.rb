@@ -6,7 +6,7 @@ class RestauranteSerializer
             :tempo_medio_entrega, :avaliacao,
             :ativo, :fechamento, :abertura,
             :cnpj, :telefone, :email
-            
+
   belongs_to :endereco
   has_many :produtos
 end

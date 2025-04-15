@@ -1,6 +1,6 @@
 class Api::V1::PromocoesController < ApplicationController
-  before_action :set_promocao, only: [:show, :update, :destroy]
-  skip_before_action :authenticate_user!, only: [:show]
+  before_action :set_promocao, only: [ :show, :update, :destroy ]
+  skip_before_action :authenticate_user!, only: [ :show ]
 
   def index
     restaurante = Restaurante.find(current_user.restaurante_ativo)
@@ -20,7 +20,7 @@ class Api::V1::PromocoesController < ApplicationController
 
   def show
     @promocao = Promocao.includes(:produtos).find(params[:id])
-    render json: @promocao, include: [:produtos]
+    render json: @promocao, include: [ :produtos ]
   end
 
   def create

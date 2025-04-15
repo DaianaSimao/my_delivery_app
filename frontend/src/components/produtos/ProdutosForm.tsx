@@ -49,6 +49,16 @@ const ProdutosForm = () => {
       [name]: value,
     }));
   };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProduto((prevProduto) => ({
+        ...prevProduto,
+        imagem: file,
+      }));
+    }
+  };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
@@ -82,24 +92,38 @@ const ProdutosForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const payload = {
-        produto: {
-          nome: produto.nome,
-          preco: produto.preco,
-          descricao: produto.descricao,
-          disponivel: produto.disponivel,
-          imagem_url: produto.imagem_url,
-          restaurante_id: produto.restaurante_id,
-          produto_acompanhamentos_attributes: produto.acompanhamentos_selecionados.map((id) => ({
-            acompanhamento_id: id,
-          })),
-          produto_secoes_attributes: produto.secoes_selecionadas.map((id) => ({
-            secoes_cardapio_id: id,
-          })),
-        },
+      const formData = new FormData();
+      
+      formData.append('produto[nome]', produto.nome);
+      formData.append('produto[preco]', produto.preco);
+      formData.append('produto[descricao]', produto.descricao);
+      formData.append('produto[disponivel]', produto.disponivel.toString());
+      formData.append('produto[restaurante_id]', produto.restaurante_id.toString());
+      
+      
+      if (produto.imagem_url) {
+        formData.append('produto[imagem_url]', produto.imagem_url);
+      }
+      
+      if (produto.imagem) {
+        formData.append('produto[imagem]', produto.imagem);
+      }
+      
+      produto.acompanhamentos_selecionados.forEach((id, index) => {
+        formData.append(`produto[produto_acompanhamentos_attributes][${index}][acompanhamento_id]`, id.toString());
+      });
+      
+      produto.secoes_selecionadas.forEach((id, index) => {
+        formData.append(`produto[produto_secoes_attributes][${index}][secoes_cardapio_id]`, id.toString());
+      });
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       };
 
-      const response = await api.post("/api/v1/produtos", payload);
+      const response = await api.post("/api/v1/produtos", formData, config);
 
       if (response.status === 201) {
         toast.success("Produto cadastrado com sucesso!");
@@ -204,7 +228,7 @@ const ProdutosForm = () => {
               />
             </div>
             <div className="w-full">
-              <label htmlFor="imagem_url" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL da Imagem</label>
+              <label htmlFor="imagem_url" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL da Imagem (opcional)</label>
               <input
                 type="text"
                 name="imagem_url"
@@ -212,9 +236,24 @@ const ProdutosForm = () => {
                 value={produto.imagem_url}
                 onChange={handleChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="URL da Imagem"
-                required
+                placeholder="URL da Imagem (opcional se fizer upload)"
               />
+            </div>
+            <div className="w-full">
+              <label htmlFor="imagem" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload de Imagem</label>
+              <input
+                type="file"
+                name="imagem"
+                id="imagem"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              />
+              {produto.imagem && (
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Arquivo selecionado: {produto.imagem.name}
+                </p>
+              )}
             </div>
             <div className="flex items-center">
               <input

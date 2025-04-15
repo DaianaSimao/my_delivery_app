@@ -196,14 +196,14 @@ const PromocoesList: React.FC = () => {
               </tbody>
             </table>
           </div>
-          <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+          <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4 overflow-x-auto" aria-label="Table navigation">
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
               Mostrando 
               <span className="font-semibold text-gray-900 dark:text-white"> {((currentPage - 1) * perPage) + 1} - {Math.min(currentPage * perPage, promocoes.length)} </span>
               de  
               <span className="font-semibold text-gray-900 dark:text-white"> {promocoes.length} </span>
             </span>
-            <ul className="inline-flex items-stretch -space-x-px">
+            <ul className="inline-flex items-stretch -space-x-px flex-wrap">
               <li>
                 <a
                   href="#"
@@ -221,24 +221,108 @@ const PromocoesList: React.FC = () => {
                   </svg>
                 </a>
               </li>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <li key={page}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePageChange(page);
-                    }}
-                    className={`flex items-center justify-center text-sm py-2 px-3 leading-tight ${
-                      currentPage === page
-                        ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                    }`}
-                  >
-                    {page}
-                  </a>
-                </li>
-              ))}
+              {(() => {
+                const maxVisibleButtons = 5;
+                let startPage = 1;
+                let endPage = totalPages;
+                
+                if (totalPages > maxVisibleButtons) {
+                  const halfButtons = Math.floor(maxVisibleButtons / 2);
+                  
+                  if (currentPage <= halfButtons + 1) {
+                    endPage = maxVisibleButtons;
+                  } else if (currentPage >= totalPages - halfButtons) {
+                    startPage = totalPages - maxVisibleButtons + 1;
+                  } else {
+                    startPage = currentPage - halfButtons;
+                    endPage = currentPage + halfButtons;
+                  }
+                }
+                
+                const pageButtons = [];
+                
+                if (startPage > 1) {
+                  pageButtons.push(
+                    <li key={1}>
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(1);
+                        }}
+                        className={`flex items-center justify-center text-sm py-2 px-3 leading-tight ${
+                          currentPage === 1
+                            ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                            : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        }`}
+                      >
+                        1
+                      </a>
+                    </li>
+                  );
+                  
+                  if (startPage > 2) {
+                    pageButtons.push(
+                      <li key="ellipsis1" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
+                        ...
+                      </li>
+                    );
+                  }
+                }
+                
+                
+                for (let i = startPage; i <= endPage; i++) {
+                  pageButtons.push(
+                    <li key={i}>
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(i);
+                        }}
+                        className={`flex items-center justify-center text-sm py-2 px-3 leading-tight ${
+                          currentPage === i
+                            ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                            : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        }`}
+                      >
+                        {i}
+                      </a>
+                    </li>
+                  );
+                }
+                
+                if (endPage < totalPages) {
+                  if (endPage < totalPages - 1) {
+                    pageButtons.push(
+                      <li key="ellipsis2" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">
+                        ...
+                      </li>
+                    );
+                  }
+                  
+                  pageButtons.push(
+                    <li key={totalPages}>
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(totalPages);
+                        }}
+                        className={`flex items-center justify-center text-sm py-2 px-3 leading-tight ${
+                          currentPage === totalPages
+                            ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                            : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        }`}
+                      >
+                        {totalPages}
+                      </a>
+                    </li>
+                  );
+                }
+                
+                return pageButtons;
+              })()}
               <li>
                 <a
                   href="#"

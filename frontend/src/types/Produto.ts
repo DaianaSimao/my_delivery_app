@@ -5,6 +5,7 @@ export interface Produto {
   descricao: string;
   disponivel: boolean;
   imagem_url: string;
+  imagem?: File;
   restaurante_id: number;
   acompanhamentos_selecionados: number[],
   produto_acompanhamentos: {

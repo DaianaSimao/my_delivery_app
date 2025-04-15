@@ -14,11 +14,11 @@ class Api::V1::EnderecosController < ApplicationController
   def create
     params[:regioes_entrega_id] == 0 ? nil : params[:endereco][:regioes_entrega_id]
     endereco = Endereco.new(endereco_params)
-    
+
     if endereco.regioes_entrega_id == 0
         endereco.regioes_entrega_id = nil
     end
-    
+
     if endereco.save
       render json: endereco.as_json, status: :created
     else

@@ -1,5 +1,5 @@
 class  Api::V1::SecoesCardapiosController < ApplicationController
-  before_action :set_secao, only: [:show, :update, :destroy]
+  before_action :set_secao, only: [ :show, :update, :destroy ]
 
   # GET /secoes_cardapio
   def index

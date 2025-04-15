@@ -3,10 +3,9 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosE
 
 // Configura a URL base do axios
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000", // URL base da sua API
+  baseURL: "http://localhost:3000",
 });
 
-// Adiciona um interceptor para incluir o token no cabeçalho de todas as requisições
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem("token");
 
@@ -17,17 +16,15 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// Adiciona um interceptor para tratar erros globais
 api.interceptors.response.use(
-  (response: AxiosResponse) => response, // Retorna a resposta diretamente se não houver erro
+  (response: AxiosResponse) => response, 
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Se o erro for 401 (não autorizado), redireciona para a página de login
-      localStorage.removeItem("token"); // Remove o token inválido
-      window.location.href = "/login"; // Redireciona para a página de login
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
 
-    return Promise.reject(error); // Rejeita a promessa para que o erro seja tratado no componente
+    return Promise.reject(error); 
   }
 );
 

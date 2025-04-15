@@ -24,7 +24,6 @@ require 'rails_helper'
 # `rails-controller-testing` gem.
 
 RSpec.describe ProdutoAcompanhamentosController, type: :controller do
-
   # This should return the minimal set of attributes required to create a valid
   # ProdutoAcompanhamento. As you add validations to ProdutoAcompanhamento, be sure to
   # adjust the attributes here as well.
@@ -52,7 +51,7 @@ RSpec.describe ProdutoAcompanhamentosController, type: :controller do
   describe "GET #show" do
     it "returns a success response" do
       produto_acompanhamento = ProdutoAcompanhamento.create! valid_attributes
-      get :show, params: {id: produto_acompanhamento.to_param}, session: valid_session
+      get :show, params: { id: produto_acompanhamento.to_param }, session: valid_session
       expect(response).to be_successful
     end
   end
@@ -61,12 +60,12 @@ RSpec.describe ProdutoAcompanhamentosController, type: :controller do
     context "with valid params" do
       it "creates a new ProdutoAcompanhamento" do
         expect {
-          post :create, params: {produto_acompanhamento: valid_attributes}, session: valid_session
+          post :create, params: { produto_acompanhamento: valid_attributes }, session: valid_session
         }.to change(ProdutoAcompanhamento, :count).by(1)
       end
 
       it "renders a JSON response with the new produto_acompanhamento" do
-        post :create, params: {produto_acompanhamento: valid_attributes}, session: valid_session
+        post :create, params: { produto_acompanhamento: valid_attributes }, session: valid_session
         expect(response).to have_http_status(:created)
         expect(response.content_type).to eq('application/json')
         expect(response.location).to eq(produto_acompanhamento_url(ProdutoAcompanhamento.last))
@@ -75,7 +74,7 @@ RSpec.describe ProdutoAcompanhamentosController, type: :controller do
 
     context "with invalid params" do
       it "renders a JSON response with errors for the new produto_acompanhamento" do
-        post :create, params: {produto_acompanhamento: invalid_attributes}, session: valid_session
+        post :create, params: { produto_acompanhamento: invalid_attributes }, session: valid_session
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to eq('application/json')
       end
@@ -90,14 +89,14 @@ RSpec.describe ProdutoAcompanhamentosController, type: :controller do
 
       it "updates the requested produto_acompanhamento" do
         produto_acompanhamento = ProdutoAcompanhamento.create! valid_attributes
-        put :update, params: {id: produto_acompanhamento.to_param, produto_acompanhamento: new_attributes}, session: valid_session
+        put :update, params: { id: produto_acompanhamento.to_param, produto_acompanhamento: new_attributes }, session: valid_session
         produto_acompanhamento.reload
         skip("Add assertions for updated state")
       end
 
       it "renders a JSON response with the produto_acompanhamento" do
         produto_acompanhamento = ProdutoAcompanhamento.create! valid_attributes
-        put :update, params: {id: produto_acompanhamento.to_param, produto_acompanhamento: new_attributes}, session: valid_session
+        put :update, params: { id: produto_acompanhamento.to_param, produto_acompanhamento: new_attributes }, session: valid_session
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to eq('application/json')
       end
@@ -106,7 +105,7 @@ RSpec.describe ProdutoAcompanhamentosController, type: :controller do
     context "with invalid params" do
       it "renders a JSON response with errors for the produto_acompanhamento" do
         produto_acompanhamento = ProdutoAcompanhamento.create! valid_attributes
-        put :update, params: {id: produto_acompanhamento.to_param, produto_acompanhamento: invalid_attributes}, session: valid_session
+        put :update, params: { id: produto_acompanhamento.to_param, produto_acompanhamento: invalid_attributes }, session: valid_session
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to eq('application/json')
       end
@@ -117,9 +116,8 @@ RSpec.describe ProdutoAcompanhamentosController, type: :controller do
     it "destroys the requested produto_acompanhamento" do
       produto_acompanhamento = ProdutoAcompanhamento.create! valid_attributes
       expect {
-        delete :destroy, params: {id: produto_acompanhamento.to_param}, session: valid_session
+        delete :destroy, params: { id: produto_acompanhamento.to_param }, session: valid_session
       }.to change(ProdutoAcompanhamento, :count).by(-1)
     end
   end
-
 end

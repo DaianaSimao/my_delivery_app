@@ -121,7 +121,7 @@ const PedidoNotificacao: React.FC = () => {
       {notifications.map((pedido) => (
         <div
           key={pedido.id}
-          className="p-4 mb-4 text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 w-96 mt-16"
+          className="p-4 mb-4 text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800 w-80 mt-16"
           onClick={() => openModal(pedido)}
           role="alert"
         >

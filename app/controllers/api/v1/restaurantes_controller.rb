@@ -1,6 +1,6 @@
 class Api::V1::RestaurantesController < ApplicationController
   before_action :set_restaurante, only: %i[show update destroy regioes_entrega]
-  skip_before_action :authenticate_user!, only: %i[show regioes_entrega mais_pedidos secoes_cardapio]
+  skip_before_action :authenticate_user!, only: %i[show regioes_entrega mais_pedidos secoes_cardapio restaurantes_ativos]
 
   def index
     @restaurantes = current_user.restaurantes
