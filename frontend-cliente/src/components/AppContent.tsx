@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
-import { useCart } from '../contexts/CartContext'; // Usar o contexto
+import { useCart } from '../contexts/CartContext';
 import { CardapioLayout } from './CardapioLayout';
 import ItemDetails from './itens/ItemDetail';
 import { Cart } from './carrinho/Cart';
@@ -11,6 +11,7 @@ import CustomerData from './cliente/CustomerData';
 import OrderTracking from './pedidos/OrderTracking';
 import type { CartItem } from '../types';
 import RestauranteInfo from './restaurante/RestauranteInfo';
+import { useParams } from 'react-router-dom';
 
 const AppContent: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -23,7 +24,12 @@ const AppContent: React.FC = () => {
     setItemToEdit
   } = useCart();
   const navigate = useNavigate();
-  const restauranteId = localStorage.getItem('restauranteId');
+  const { restauranteId } = useParams<{ restauranteId: string }>();
+  if (restauranteId) {
+    localStorage.setItem('restauranteId', restauranteId);
+  }
+
+  const restauranteIdFromStorage = localStorage.getItem('restauranteId');
 
   const handleAddToCart = (item: CartItem) => {
     setCartItems((prev) => {
@@ -54,7 +60,7 @@ const AppContent: React.FC = () => {
     navigate(`/item/${item.id.split('-')[0]}`);
   };
 
-  const handleAddMore = () => navigate(`/cardapio/${restauranteId}`);
+  const handleAddMore = () => navigate(`/cardapio/${restauranteIdFromStorage}`);
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
@@ -97,7 +103,7 @@ const AppContent: React.FC = () => {
           }
         />
         <Route path="/order-tracking" element={<OrderTracking />} />
-        <Route path="*" element={<Navigate to={`/cardapio/${restauranteId}`} />} />
+        <Route path="*" element={<Navigate to={`/cardapio/${restauranteIdFromStorage}`} />} />
         <Route
           path="/restaurante" 
           element={
