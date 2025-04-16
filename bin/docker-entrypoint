@@ -29,5 +29,16 @@ if [ "$RAILS_ENV" = "development" ] && [ ! -f config/credentials.yml.enc ] && [ 
   rm config/master.key
 fi
 
+if [ "$RAILS_ENV" = "production" ] && [ -n "$DATABASE_PUBLIC_URL" ]; then
+  primary_db=$(echo $DATABASE_PUBLIC_URL | sed 's/.*\///')
+  base_url=$(echo $DATABASE_PUBLIC_URL | sed 's/\/[^\/]*$//')
+  
+  for db_suffix in "_prod_cache" "_prod_queue" "_prod_cable"; do
+    db_name="my_delivery_app${db_suffix}"
+    psql "${base_url}/postgres" -c "CREATE DATABASE ${db_name};" || \
+    echo "Database ${db_name} já existe ou erro na criação"
+  done
+fi
+
 # Executa o comando principal
 exec "$@"
