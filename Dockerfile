@@ -51,7 +51,6 @@ COPY --from=build /rails /rails
 
 # Copy credentials again to ensure they're in the final image
 COPY --from=build /rails/config/credentials.yml.enc /rails/config/
-COPY --from=build /rails/config/master.key /rails/config/
 
 # Create necessary directories
 RUN mkdir -p /rails/storage /rails/tmp /rails/log
