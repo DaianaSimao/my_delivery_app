@@ -17,6 +17,8 @@ services:
       - AWS_BUCKET=${AWS_BUCKET}
       - AWS_ENDPOINT=${AWS_ENDPOINT}
       - RAILS_STORAGE_SERVICE=amazon
+    volumes:
+      - ./logs:/rails/log
     networks:
       - app-network
 

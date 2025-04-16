@@ -52,13 +52,15 @@ RUN mkdir -p /rails/storage /rails/tmp /rails/log
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
 
-
 RUN mkdir -p /rails/config && \
     touch /rails/config/credentials.yml.enc && \
-    chown -R rails:rails /rails/config && \
-    chmod 600 /rails/config/credentials.yml.enc && \
     mkdir -p /rails/tmp && \
-    chown rails:rails /rails/tmp
+    mkdir -p /rails/log && \
+    touch /rails/log/production.log && \
+    chown -R rails:rails /rails && \
+    chmod 600 /rails/config/credentials.yml.enc && \
+    chmod 0664 /rails/log/production.log && \
+    chmod -R 777 /rails/tmp
     
 USER 1000:1000
 

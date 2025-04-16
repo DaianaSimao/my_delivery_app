@@ -1,11 +1,26 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
-# Enable jemalloc for reduced memory usage and latency.
+# Configura permissões (executado como root)
+if [ "$(id -u)" = "0" ]; then
+    # Ajusta permissões para o usuário rails
+    chown -R rails:rails /rails/log /rails/tmp
+    chmod -R 775 /rails/log
+    chmod -R 777 /rails/tmp
+    touch /rails/log/production.log
+    chmod 664 /rails/log/production.log
+    
+    # Executa o comando como usuário rails
+    exec su-exec rails "$@"
+fi
+
+# Configuração do jemalloc
 if [ -z "${LD_PRELOAD+x}" ]; then
     LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
     export LD_PRELOAD
 fi
 
+# Configuração de credentials em desenvolvimento
 if [ "$RAILS_ENV" = "development" ] && [ ! -f config/credentials.yml.enc ] && [ -n "$RAILS_MASTER_KEY" ]; then
   echo "==> Setting up credentials in development..."
   echo "$RAILS_MASTER_KEY" > config/master.key
@@ -14,4 +29,5 @@ if [ "$RAILS_ENV" = "development" ] && [ ! -f config/credentials.yml.enc ] && [ 
   rm config/master.key
 fi
 
-exec "${@}"
+# Executa o comando principal
+exec "$@"
