@@ -17,6 +17,7 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV['DATABASE_URL'] %>
+    sslmode: require
   cache:
     <<: *primary_production
     database: my_delivery_app_prod_cache
