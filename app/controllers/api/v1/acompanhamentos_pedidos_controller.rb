@@ -1,4 +1,4 @@
-class AcompanhamentosPedidosController < ApplicationController
+class Api::V1::AcompanhamentosPedidosController < ApplicationController
   before_action :set_acompanhamentos_pedido, only: %i[ show update destroy ]
 
   # GET /acompanhamentos_pedidos

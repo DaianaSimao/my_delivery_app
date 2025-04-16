@@ -3,15 +3,13 @@ require "aws-sdk-s3"
 
 # Configuração global do AWS SDK
 Aws.config.update({
-  region: "us-east-005",
-  endpoint: "https://s3.us-east-005.backblazeb2.com",
+  region: ENV.fetch('AWS_REGION'),
+  endpoint: ENV.fetch('AWS_ENDPOINT'),
   credentials: Aws::Credentials.new(
-    Rails.application.credentials.dig(:aws, :access_key_id),
-    Rails.application.credentials.dig(:aws, :secret_access_key)
+    ENV.fetch('AWS_ACCESS_KEY_ID'),
+    ENV.fetch('AWS_SECRET_ACCESS_KEY')
   ),
-  # Desativa a verificação de checksum
   compute_checksums: false,
-  # Configura o cliente para usar path-style URLs
   force_path_style: true
 })
 

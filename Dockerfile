@@ -35,8 +35,6 @@ RUN bundle install && \
 # Copy application code including credentials
 COPY . .
 
-# Copy credentials explicitly (redundante com o COPY . ., mas para garantir)
-COPY config/credentials.yml.enc config/
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
@@ -47,16 +45,21 @@ FROM base
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
-# Copy credentials again to ensure they're in the final image
-COPY --from=build /rails/config/credentials.yml.enc /rails/config/
-
 # Create necessary directories
 RUN mkdir -p /rails/storage /rails/tmp /rails/log
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp config/credentials.yml.enc
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
+
+
+RUN mkdir -p /rails/config && \
+    touch /rails/config/credentials.yml.enc && \
+    chown -R rails:rails /rails/config && \
+    chmod 600 /rails/config/credentials.yml.enc && \
+    mkdir -p /rails/tmp && \
+    chown rails:rails /rails/tmp
+    
 USER 1000:1000
 
 # Entrypoint prepares the database.

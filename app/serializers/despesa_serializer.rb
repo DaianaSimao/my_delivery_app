@@ -1,4 +1,6 @@
-class DespesaSerializer < ActiveModel::Serializer
+class DespesaSerializer
+  include FastJsonapi::ObjectSerializer
+
   attributes :id, :descricao, :valor, :data, :status, :observacoes, :categoria_despesa_id, :restaurante_id, :created_at, :updated_at
 
   belongs_to :restaurante

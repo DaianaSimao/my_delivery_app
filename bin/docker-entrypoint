@@ -6,9 +6,12 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+if [ "$RAILS_ENV" = "development" ] && [ ! -f config/credentials.yml.enc ] && [ -n "$RAILS_MASTER_KEY" ]; then
+  echo "==> Setting up credentials in development..."
+  echo "$RAILS_MASTER_KEY" > config/master.key
+  chmod 600 config/master.key
+  EDITOR="echo" bundle exec rails credentials:edit
+  rm config/master.key
 fi
 
 exec "${@}"
