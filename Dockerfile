@@ -37,8 +37,6 @@ COPY . .
 
 # Copy credentials explicitly (redundante com o COPY . ., mas para garantir)
 COPY config/credentials.yml.enc config/
-COPY ./config/master.key ./config/master.key
-
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
