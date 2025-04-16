@@ -9,3 +9,4 @@ production:
   adapter: postgresql
   channel_prefix: my_delivery_app_production
   url: <%= ENV['DATABASE_URL'] %>
+  allowed_request_origins: "*"

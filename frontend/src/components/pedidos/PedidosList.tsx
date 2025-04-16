@@ -30,7 +30,8 @@ const PedidosList: React.FC = () => {
       return;
     }
 
-    const cable = createConsumer(`ws://localhost:3000/cable?token=${token}`);
+    const cableUrl = `${import.meta.env.VITE_CABLE_URL}?token=${token}`;
+    const cable = createConsumer(cableUrl);
 
     const subscription = cable.subscriptions.create(
       { channel: 'PedidosChannel', restaurante_id: restauranteId },

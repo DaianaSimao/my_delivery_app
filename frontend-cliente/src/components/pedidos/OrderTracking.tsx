@@ -77,8 +77,10 @@ const OrderTracking: React.FC = () => {
     const pedidoId = pedido.data.id;
     
     if (!restauranteId || !pedidoId) return;
-
-    const cable = createConsumer(`ws://localhost:3000/cable?restaurante_id=${restauranteId}`);
+    
+    const cableUrl = `${import.meta.env.VITE_CABLE_URL}?restaurante_id=${restauranteId}`;
+    const cable = createConsumer(cableUrl);
+    
     const subscription = cable.subscriptions.create(
       { channel: 'PedidoStatusChannel', pedido_id: pedidoId },
       {

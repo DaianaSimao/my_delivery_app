@@ -88,7 +88,8 @@ const PedidoNotificacao: React.FC = () => {
       return;
     }
 
-    const consumer = createConsumer(`ws://localhost:3000/cable?token=${token}`);
+    const cableUrl = `${import.meta.env.VITE_CABLE_URL}?restaurante_id=${restauranteId}`;
+    const consumer = createConsumer(cableUrl);
 
     const subscription: Subscription = consumer.subscriptions.create(
       { channel: 'PedidoNotificacaoChannel', restaurante_id: restauranteId },

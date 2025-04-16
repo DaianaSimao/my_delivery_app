@@ -3,7 +3,7 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosE
 
 // Configura a URL base do axios
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
