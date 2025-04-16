@@ -11,7 +11,7 @@ import CustomerData from './cliente/CustomerData';
 import OrderTracking from './pedidos/OrderTracking';
 import type { CartItem } from '../types';
 import RestauranteInfo from './restaurante/RestauranteInfo';
-import { useParams } from 'react-router-dom';
+import { useRestauranteId } from '../hooks/useRestauranteId';
 
 const AppContent: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -24,12 +24,8 @@ const AppContent: React.FC = () => {
     setItemToEdit
   } = useCart();
   const navigate = useNavigate();
-  const { restauranteId } = useParams<{ restauranteId: string }>();
-  if (restauranteId) {
-    localStorage.setItem('restauranteId', restauranteId);
-  }
 
-  const restauranteIdFromStorage = localStorage.getItem('restauranteId');
+  const restauranteId = useRestauranteId();
 
   const handleAddToCart = (item: CartItem) => {
     setCartItems((prev) => {
@@ -60,13 +56,13 @@ const AppContent: React.FC = () => {
     navigate(`/item/${item.id.split('-')[0]}`);
   };
 
-  const handleAddMore = () => navigate(`/cardapio/${restauranteIdFromStorage}`);
+  const handleAddMore = () => navigate(`/cardapio/${restauranteId}`);
 
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200`}>
       <Toaster />
       <Routes>
-        <Route path="/cardapio/:restauranteId/*" element={<CardapioLayout />} />
+      <Route path="/cardapio/:restauranteId/*" element={<CardapioLayout />} />
         <Route 
           path="/item/:itemId" 
           element={
@@ -103,7 +99,18 @@ const AppContent: React.FC = () => {
           }
         />
         <Route path="/order-tracking" element={<OrderTracking />} />
-        <Route path="*" element={<Navigate to={`/cardapio/${restauranteIdFromStorage}`} />} />
+        <Route
+          path="*"
+          element={
+            restauranteId ? (
+              <Navigate to={`/cardapio/${restauranteId}`} />
+            ) : (
+              <div className="text-center mt-10 text-red-500">
+                Restaurante não identificado. Acesse por um link válido.
+              </div>
+            )
+          }
+        />
         <Route
           path="/restaurante" 
           element={

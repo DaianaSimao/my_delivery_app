@@ -1,21 +1,19 @@
 // components/CardapioLayout.tsx
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import  { Header } from './Header';
 import MenuPage from './cardapio/MenuPage';
 import { useState, useEffect } from 'react';
 import type { MenuSection } from '../types';
+import { useRestauranteId } from '../hooks/useRestauranteId';
+
 
 export const CardapioLayout: React.FC = () => {
-  const { restauranteId } = useParams<{ restauranteId: string }>();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   const [activeSection, setActiveSection] = useState<string>('popular');
 
-  if (restauranteId) {
-    localStorage.setItem('restauranteId', restauranteId);
-  }
+  const restauranteId = useRestauranteId();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,7 +57,7 @@ export const CardapioLayout: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Header
-        restauranteId={restauranteId}
+        restauranteId={restauranteId ?? undefined}
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
         menuSections={menuSections}
