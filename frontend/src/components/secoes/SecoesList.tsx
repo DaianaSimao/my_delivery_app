@@ -17,6 +17,12 @@ const SecoesList = () => {
   useEffect(() => {
     const fetchSecoes = async () => {
       try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          throw new Error("Token de autenticação não encontrado.");
+        }
+
         const response = await api.get("/api/v1/secoes_cardapios", {
           params: {
             page: currentPage,
