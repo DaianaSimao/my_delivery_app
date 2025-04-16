@@ -3,18 +3,6 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-development:
-  <<: *default
-  database: my_delivery_app_dev
-  username: postgres
-  password: daiana
-
-test:
-  <<: *default
-  database: my_delivery_app_test
-  username: postgres
-  password: daiana
-
 production:
   primary: &primary_production
     <<: *default
