@@ -14,11 +14,11 @@ test:
   database: my_delivery_app_test
   username: postgres
   password: daiana
-  
+
 production:
   primary: &primary_production
     <<: *default
-    url: <%= ENV['DATABASE_URL'] %>
+    url: <%= ENV['DATABASE_PUBLIC_URL'] %>
     sslmode: require
   cache:
     <<: *primary_production
