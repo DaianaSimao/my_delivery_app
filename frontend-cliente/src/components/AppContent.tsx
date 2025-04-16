@@ -102,7 +102,7 @@ const AppContent: React.FC = () => {
         <Route
           path="*"
           element={
-            restauranteId ? (
+            restauranteId && restauranteId !== 'null' ? (
               <Navigate to={`/cardapio/${restauranteId}`} />
             ) : (
               <div className="text-center mt-10 text-red-500">
