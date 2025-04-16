@@ -17,6 +17,7 @@ import { useCart } from '../../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { OrderItem } from '../../types/OrderItem';
 import { Cliente } from '../../types/Cliente';
+import { useRestauranteId } from '../../hooks/useRestauranteId';
 
 interface CustomerDataProps {
   cartItems: OrderItem[];
@@ -31,6 +32,7 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
   const [showNeighborhoodModal, setShowNeighborhoodModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showTrocoModal, setShowTrocoModal] = useState(false);
+  const restauranteId = useRestauranteId();
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
 
   const navigate = useNavigate();
@@ -77,7 +79,6 @@ const CustomerData: React.FC<CustomerDataProps> = ({ cartItems, onBack, isDarkMo
   }, [cartItems, navigate, isOrderFinalized]);
 
   useEffect(() => {
-    const restauranteId = localStorage.getItem('restauranteId');
     if (restauranteId) {
       fetchRegioesEntrega(restauranteId)
         .then((data) => {

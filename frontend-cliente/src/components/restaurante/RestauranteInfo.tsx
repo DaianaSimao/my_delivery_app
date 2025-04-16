@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapPin, Clock, Phone, Mail, Calendar, DollarSign, Star, Package, Home, MapPinned, Truck, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { fetchRestaurantInfo, fetchRegioesEntrega } from '../../services/api';
 import type { Restaurante, RegiaoEntrega } from '../../types';
+import { useRestauranteId } from '../../hooks/useRestauranteId';
 
 interface RestauranteInfoProps {
   onBack: () => void;
@@ -28,13 +29,11 @@ const RestauranteInfo: React.FC<RestauranteInfoProps> = ({ isDarkMode, onToggleD
   const [regioes, setRegioes] = useState<RegiaoEntrega[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const restauranteId = useRestauranteId();
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Recupera o ID do restaurante do localStorage
-        const restauranteId = localStorage.getItem('restauranteId');
-        
         if (!restauranteId) {
           throw new Error('ID do restaurante não encontrado.');
         }

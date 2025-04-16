@@ -1,5 +1,5 @@
 // OrderTracking.tsx
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { fetchRestaurantInfo, fetchPedidoById } from '../../services/api';
 import { useCart } from '../../contexts/CartContext';
@@ -11,18 +11,19 @@ import { OrderStatusSteps } from './OrderStatusSteps';
 import { OrderDetails } from './OrderDetails';
 import type { Restaurante } from '../../types';
 import type { PedidoSalvo } from '../../types/PedidoData';
+import { useRestauranteId } from '../../hooks/useRestauranteId';
 
 const OrderTracking: React.FC = () => {
   const navigate = useNavigate();
   const { clearCart } = useCart();
   const { isDarkMode } = useTheme();
-  const restauranteId = localStorage.getItem('restauranteId');
-  const [restaurantInfo, setRestaurantInfo] = React.useState<Restaurante | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const [pedido, setPedido] = React.useState<PedidoSalvo | null>(null);
-  const [pedidoConcluido, setPedidoConcluido] = React.useState(false);
-  const [orderStatus, setOrderStatus] = React.useState<string>('Recebido');
+  const restauranteId = useRestauranteId();
+  const [restaurantInfo, setRestaurantInfo] = useState<Restaurante | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pedido, setPedido] = useState<PedidoSalvo | null>(null);
+  const [pedidoConcluido, setPedidoConcluido] = useState(false);
+  const [orderStatus, setOrderStatus] = useState<string>('Recebido');
 
   const handleBack = () => {
     if (restauranteId) {
@@ -66,12 +67,12 @@ const OrderTracking: React.FC = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     clearCart();
     fetchPedidoAtual();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!pedido?.data?.id) return;
 
     const pedidoId = pedido.data.id;
@@ -102,7 +103,7 @@ const OrderTracking: React.FC = () => {
     };
   }, [pedido?.data?.id, restauranteId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadRestaurantInfo = async () => {
       try {
         if (restauranteId) {

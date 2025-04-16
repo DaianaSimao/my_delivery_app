@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchRegioesEntrega } from '../../../services/api';
+import { useRestauranteId } from '../../../hooks/useRestauranteId';
 
 interface NeighborhoodModalProps {
   onNeighborhoodChange: (neighborhood: string, regionId: number, cidade: string) => void; 
@@ -11,9 +12,9 @@ const NeighborhoodModal: React.FC<NeighborhoodModalProps> = ({
   onClose,
 }) => {
   const [regioes, setRegioes] = useState<any[]>([]);
+  const restauranteId = useRestauranteId();
 
   useEffect(() => {
-    const restauranteId = localStorage.getItem('restauranteId');
     if (restauranteId) {
       fetchRegioesEntrega(restauranteId).then((data) => {
         setRegioes(data);
