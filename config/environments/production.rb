@@ -22,7 +22,7 @@ Rails.application.configure do
   config.active_storage.service = :amazon
 
   # Configure default URL options for Active Storage
-  config.active_storage.default_url_options[:host] = "https://my-delivery-app-api-7fsg.onrender.com"
+  config.active_storage.default_url_options = { host: ENV.fetch("HOST", "https://my-delivery-app-api-7fsg.onrender.com") }
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -59,7 +59,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "example.com" }
-  config.action_cable.allowed_request_origins = [ "http://localhost:3000", "https://my-delivery-app-api-7fsg.onrender.com" ]
+  config.action_cable.allowed_request_origins = [ "http://localhost:5173", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002",  ]
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
